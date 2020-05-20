@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -132,6 +132,48 @@ static FList* g_futureControllers; // FList<FPlatformController*>
 
 #if F_CONFIG_TRAIT_KEYBOARD
 static FPlatformButton* g_keys[F_KEY_NUM];
+
+#if F_CONFIG_LIB_SDL == 1
+    #define F__KEY_CODE(Scancode, Keycode) (Keycode)
+#elif F_CONFIG_LIB_SDL == 2
+    #define F__KEY_CODE(Scancode, Keycode) (Scancode)
+#endif
+
+static const int g_keysMap[F_KEY_NUM] = {
+    [F_KEY_UP] = F__KEY_CODE(SDL_SCANCODE_UP, SDLK_UP),
+    [F_KEY_DOWN] = F__KEY_CODE(SDL_SCANCODE_DOWN, SDLK_DOWN),
+    [F_KEY_LEFT] = F__KEY_CODE(SDL_SCANCODE_LEFT, SDLK_LEFT),
+    [F_KEY_RIGHT] = F__KEY_CODE(SDL_SCANCODE_RIGHT, SDLK_RIGHT),
+    [F_KEY_Z] = F__KEY_CODE(SDL_SCANCODE_Z, SDLK_z),
+    [F_KEY_X] = F__KEY_CODE(SDL_SCANCODE_X, SDLK_x),
+    [F_KEY_C] = F__KEY_CODE(SDL_SCANCODE_C, SDLK_c),
+    [F_KEY_V] = F__KEY_CODE(SDL_SCANCODE_V, SDLK_v),
+    [F_KEY_M] = F__KEY_CODE(SDL_SCANCODE_M, SDLK_m),
+    [F_KEY_ENTER] = F__KEY_CODE(SDL_SCANCODE_RETURN, SDLK_RETURN),
+    [F_KEY_SPACE] = F__KEY_CODE(SDL_SCANCODE_SPACE, SDLK_SPACE),
+    [F_KEY_HOME] = F__KEY_CODE(SDL_SCANCODE_HOME, SDLK_HOME),
+    [F_KEY_END] = F__KEY_CODE(SDL_SCANCODE_END, SDLK_END),
+    [F_KEY_PAGEUP] = F__KEY_CODE(SDL_SCANCODE_PAGEUP, SDLK_PAGEUP),
+    [F_KEY_PAGEDOWN] = F__KEY_CODE(SDL_SCANCODE_PAGEDOWN, SDLK_PAGEDOWN),
+    [F_KEY_LALT] = F__KEY_CODE(SDL_SCANCODE_LALT, SDLK_LALT),
+    [F_KEY_LCTRL] = F__KEY_CODE(SDL_SCANCODE_LCTRL, SDLK_LCTRL),
+    [F_KEY_LSHIFT] = F__KEY_CODE(SDL_SCANCODE_LSHIFT, SDLK_LSHIFT),
+    [F_KEY_RALT] = F__KEY_CODE(SDL_SCANCODE_RALT, SDLK_RALT),
+    [F_KEY_RCTRL] = F__KEY_CODE(SDL_SCANCODE_RCTRL, SDLK_RCTRL),
+    [F_KEY_RSHIFT] = F__KEY_CODE(SDL_SCANCODE_RSHIFT, SDLK_RSHIFT),
+    [F_KEY_F1] = F__KEY_CODE(SDL_SCANCODE_F1, SDLK_F1),
+    [F_KEY_F2] = F__KEY_CODE(SDL_SCANCODE_F2, SDLK_F2),
+    [F_KEY_F3] = F__KEY_CODE(SDL_SCANCODE_F3, SDLK_F3),
+    [F_KEY_F4] = F__KEY_CODE(SDL_SCANCODE_F4, SDLK_F4),
+    [F_KEY_F5] = F__KEY_CODE(SDL_SCANCODE_F5, SDLK_F5),
+    [F_KEY_F6] = F__KEY_CODE(SDL_SCANCODE_F6, SDLK_F6),
+    [F_KEY_F7] = F__KEY_CODE(SDL_SCANCODE_F7, SDLK_F7),
+    [F_KEY_F8] = F__KEY_CODE(SDL_SCANCODE_F8, SDLK_F8),
+    [F_KEY_F9] = F__KEY_CODE(SDL_SCANCODE_F9, SDLK_F9),
+    [F_KEY_F10] = F__KEY_CODE(SDL_SCANCODE_F10, SDLK_F10),
+    [F_KEY_F11] = F__KEY_CODE(SDL_SCANCODE_F11, SDLK_F11),
+    [F_KEY_F12] = F__KEY_CODE(SDL_SCANCODE_F12, SDLK_F12),
+};
 
 static void keyAdd(FKeyId Id, int Code)
 {
@@ -418,8 +460,6 @@ static bool controllerInit(FPlatformController* Controller, int Index)
                 buttonAdd(Controller, F_BUTTON_START, 8);
                 #if F_CONFIG_SYSTEM_GP2X
                     buttonAdd(Controller, F_BUTTON_STICKCLICK, 18);
-                #elif F_CONFIG_SYSTEM_WIZ
-                    buttonAdd(Controller, F_BUTTON_START, 8);
                 #endif
 
                 // Split diagonals into individual cardinal directions
@@ -720,46 +760,10 @@ void f_platform_sdl_input__init(void)
     g_forwardButtonsQueue[0] = f_list_new();
     g_forwardButtonsQueue[1] = f_list_new();
 
-    #if F_CONFIG_LIB_SDL == 1
-        #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Keycode)
-    #elif F_CONFIG_LIB_SDL == 2
-        #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Scancode)
-    #endif
-
     #if F_CONFIG_TRAIT_KEYBOARD
-        keyAdd(F_KEY_UP, SDL_SCANCODE_UP, SDLK_UP);
-        keyAdd(F_KEY_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN);
-        keyAdd(F_KEY_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT);
-        keyAdd(F_KEY_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT);
-        keyAdd(F_KEY_Z, SDL_SCANCODE_Z, SDLK_z);
-        keyAdd(F_KEY_X, SDL_SCANCODE_X, SDLK_x);
-        keyAdd(F_KEY_C, SDL_SCANCODE_C, SDLK_c);
-        keyAdd(F_KEY_V, SDL_SCANCODE_V, SDLK_v);
-        keyAdd(F_KEY_M, SDL_SCANCODE_M, SDLK_m);
-        keyAdd(F_KEY_ENTER, SDL_SCANCODE_RETURN, SDLK_RETURN);
-        keyAdd(F_KEY_SPACE, SDL_SCANCODE_SPACE, SDLK_SPACE);
-        keyAdd(F_KEY_HOME, SDL_SCANCODE_HOME, SDLK_HOME);
-        keyAdd(F_KEY_END, SDL_SCANCODE_END, SDLK_END);
-        keyAdd(F_KEY_PAGEUP, SDL_SCANCODE_PAGEUP, SDLK_PAGEUP);
-        keyAdd(F_KEY_PAGEDOWN, SDL_SCANCODE_PAGEDOWN, SDLK_PAGEDOWN);
-        keyAdd(F_KEY_LALT, SDL_SCANCODE_LALT, SDLK_LALT);
-        keyAdd(F_KEY_LCTRL, SDL_SCANCODE_LCTRL, SDLK_LCTRL);
-        keyAdd(F_KEY_LSHIFT, SDL_SCANCODE_LSHIFT, SDLK_LSHIFT);
-        keyAdd(F_KEY_RALT, SDL_SCANCODE_RALT, SDLK_RALT);
-        keyAdd(F_KEY_RCTRL, SDL_SCANCODE_RCTRL, SDLK_RCTRL);
-        keyAdd(F_KEY_RSHIFT, SDL_SCANCODE_RSHIFT, SDLK_RSHIFT);
-        keyAdd(F_KEY_F1, SDL_SCANCODE_F1, SDLK_F1);
-        keyAdd(F_KEY_F2, SDL_SCANCODE_F2, SDLK_F2);
-        keyAdd(F_KEY_F3, SDL_SCANCODE_F3, SDLK_F3);
-        keyAdd(F_KEY_F4, SDL_SCANCODE_F4, SDLK_F4);
-        keyAdd(F_KEY_F5, SDL_SCANCODE_F5, SDLK_F5);
-        keyAdd(F_KEY_F6, SDL_SCANCODE_F6, SDLK_F6);
-        keyAdd(F_KEY_F7, SDL_SCANCODE_F7, SDLK_F7);
-        keyAdd(F_KEY_F8, SDL_SCANCODE_F8, SDLK_F8);
-        keyAdd(F_KEY_F9, SDL_SCANCODE_F9, SDLK_F9);
-        keyAdd(F_KEY_F10, SDL_SCANCODE_F10, SDLK_F10);
-        keyAdd(F_KEY_F11, SDL_SCANCODE_F11, SDLK_F11);
-        keyAdd(F_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
+        for(int k = 0; k < F_KEY_NUM; k++) {
+            keyAdd(k, g_keysMap[k]);
+        }
     #endif
 
     #if F_CONFIG_LIB_SDL == 1
@@ -816,6 +820,7 @@ void f_platform_sdl_input__uninit(void)
 void f_platform_api__inputPoll(void)
 {
     g_mouse.tap = false;
+    g_mouse.delta = (FVecInt){0, 0};
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -1067,8 +1072,10 @@ void f_platform_api__inputPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                g_mouse.coords.x = event.button.x;
-                g_mouse.coords.y = event.button.y;
+                g_mouse.coords.x = event.motion.x;
+                g_mouse.coords.y = event.motion.y;
+                g_mouse.delta.x = event.motion.xrel;
+                g_mouse.delta.y = event.motion.yrel;
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {
@@ -1111,13 +1118,6 @@ void f_platform_api__inputPoll(void)
 
     f_list_clear(g_forwardButtonsQueue[0]);
     f_list_clear(g_forwardButtonsQueue[1]);
-
-    #if !F_CONFIG_SYSTEM_EMSCRIPTEN
-        FVecInt mouseDelta = {0, 0};
-        SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
-
-        g_mouse.delta = mouseDelta;
-    #endif
 }
 
 #if F_CONFIG_TRAIT_KEYBOARD

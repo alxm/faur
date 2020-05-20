@@ -80,7 +80,7 @@ static void f_console__init1(void)
     }
 
     g_toggle = f_button_new();
-    f_button_bindKey(g_toggle, F_KEY_F11);
+    f_button_bindKey(g_toggle, F_KEY_F10);
     f_button_bindCombo(g_toggle,
                        NULL,
                        F_BUTTON_A, F_BUTTON_B, F_BUTTON_X, F_BUTTON_Y,
