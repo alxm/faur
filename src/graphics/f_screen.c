@@ -53,7 +53,7 @@ static void f_screen__init(void)
 
     #if F__SCREEN_CHANGE_FULL
         g_fullScreenButton = f_button_new();
-        f_button_bindKey(g_fullScreenButton, F_KEY_F5);
+        f_button_bindKey(g_fullScreenButton, F_KEY_F11);
     #endif
 
     #if F__SCREEN_CHANGE_ZOOM
