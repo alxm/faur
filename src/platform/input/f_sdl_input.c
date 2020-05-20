@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -820,6 +820,7 @@ void f_platform_sdl_input__uninit(void)
 void f_platform_api__inputPoll(void)
 {
     g_mouse.tap = false;
+    g_mouse.delta = (FVecInt){0, 0};
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -1071,8 +1072,10 @@ void f_platform_api__inputPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                g_mouse.coords.x = event.button.x;
-                g_mouse.coords.y = event.button.y;
+                g_mouse.coords.x = event.motion.x;
+                g_mouse.coords.y = event.motion.y;
+                g_mouse.delta.x = event.motion.xrel;
+                g_mouse.delta.y = event.motion.yrel;
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {
@@ -1115,13 +1118,6 @@ void f_platform_api__inputPoll(void)
 
     f_list_clear(g_forwardButtonsQueue[0]);
     f_list_clear(g_forwardButtonsQueue[1]);
-
-    #if !F_CONFIG_SYSTEM_EMSCRIPTEN
-        FVecInt mouseDelta = {0, 0};
-        SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
-
-        g_mouse.delta = mouseDelta;
-    #endif
 }
 
 #if F_CONFIG_TRAIT_KEYBOARD
