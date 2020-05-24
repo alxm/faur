@@ -37,6 +37,7 @@ static const FPack* g_packs[] = {
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
+    &f_pack__sym,
 };
 
 void f_init__init(void)
