@@ -233,9 +233,9 @@ void f_console__draw(void)
         #endif
 
         #if F_CONFIG_RENDER_SOFTWARE
-            f_font_print("S/W Gfx\n");
+            f_font_print("S/W gfx\n");
         #elif F_CONFIG_RENDER_SDL2
-            f_font_print("SDL2 Gfx\n");
+            f_font_print("SDL2 gfx\n");
         #endif
 
         #if F_CONFIG_SOUND_ENABLED
