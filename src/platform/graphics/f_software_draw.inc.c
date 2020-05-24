@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -146,20 +146,18 @@ static void F__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 
 static void F__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
 {
-    F__BLEND_SETUP;
-
     // Using inclusive coords
     if(--Radius < 0) {
         return;
     }
 
     if(Radius == 0) {
-        f_draw_pixel(X,     Y);
-        f_draw_pixel(X - 1, Y);
-        f_draw_pixel(X,     Y - 1);
-        f_draw_pixel(X - 1, Y - 1);
+        F__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
+
         return;
     }
+
+    F__BLEND_SETUP;
 
     int x = Radius;
     int y = 0;
@@ -289,20 +287,18 @@ static void F__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
 
 static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
 {
-    F__BLEND_SETUP;
-
     // Using inclusive coords
     if(--Radius < 0) {
         return;
     }
 
     if(Radius == 0) {
-        f_draw_pixel(X,     Y);
-        f_draw_pixel(X - 1, Y);
-        f_draw_pixel(X,     Y - 1);
-        f_draw_pixel(X - 1, Y - 1);
+        F__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
+
         return;
     }
+
+    F__BLEND_SETUP;
 
     const int q1X = X,     q1Y = Y - 1;
     const int q2X = X - 1, q2Y = Y - 1;
@@ -479,10 +475,13 @@ static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
 
 static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 {
-    if(--Radius <= 0) {
-        if(Radius == 0) {
-            f_draw_rectangle(X - 1, Y - 1, 2, 2);
-        }
+    // Using inclusive coords
+    if(--Radius < 0) {
+        return;
+    }
+
+    if(Radius == 0) {
+        F__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
 
         return;
     }
@@ -501,8 +500,8 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     int y4 = Y + x;
 
     while(x > y) {
-        f_draw_lineh(x1, x2, y1);
-        f_draw_lineh(x1, x2, y2);
+        f_platform_api__drawLineH(x1, x2, y1);
+        f_platform_api__drawLineH(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
@@ -513,8 +512,8 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
         x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            f_draw_lineh(x3, x4, y3);
-            f_draw_lineh(x3, x4, y4);
+            f_platform_api__drawLineH(x3, x4, y3);
+            f_platform_api__drawLineH(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
@@ -527,8 +526,8 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        f_draw_lineh(x3, x4, y3);
-        f_draw_lineh(x3, x4, y4);
+        f_platform_api__drawLineH(x3, x4, y3);
+        f_platform_api__drawLineH(x3, x4, y4);
     }
 }
 
