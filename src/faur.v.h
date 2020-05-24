@@ -40,6 +40,7 @@ F_EXTERN_C_START
 #include "general/f_main.v.h"
 #include "general/f_out.v.h"
 #include "general/f_state.v.h"
+#include "general/f_sym.v.h"
 #include "graphics/f_align.v.h"
 #include "graphics/f_color.v.h"
 #include "graphics/f_fade.v.h"
