@@ -99,7 +99,7 @@ FPalette* f_palette_newFromPng(const char* Path)
 
 FPalette* f_palette_newFromSprite(const FSprite* Sprite)
 {
-    return newPalette(f_sprite__pixelsGetc(Sprite));
+    return newPalette(&Sprite->pixels);
 }
 
 void f_palette_free(FPalette* Palette)

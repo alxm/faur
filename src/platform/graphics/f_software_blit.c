@@ -493,9 +493,6 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         p2 = {X + ROTATE_X(xPls, yPls), Y + ROTATE_Y(xPls, yPls)},
         p3 = {X + ROTATE_X(xMns, yPls), Y + ROTATE_Y(xMns, yPls)};
 
-    #undef ROTATE_X
-    #undef ROTATE_Y
-
     FVecInt screenTop, screenBottom, screenLeft, screenRight;
     FVecFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
 

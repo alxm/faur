@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -93,11 +93,10 @@ void f_pixels__copyFrame(const FPixels* Dst, unsigned DstFrame, const FPixels* S
            Src->bufferSize);
 }
 
-void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY)
+void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, int SrcX, int SrcY)
 {
     FColorPixel* dst = f_pixels__bufferGetStart(Dst, DstFrame);
-    const FColorPixel* src = f_pixels__bufferGetFrom(
-                                SrcPixels, SrcFrame, SrcX, SrcY);
+    const FColorPixel* src = f_pixels__bufferGetFrom(SrcPixels, 0, SrcX, SrcY);
 
     for(int i = Dst->size.y; i--; ) {
         memcpy(dst, src, (unsigned)Dst->size.x * sizeof(FColorPixel));
@@ -126,17 +125,17 @@ void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value)
     }
 }
 
-static int findNextVerticalEdge(const FPixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeX)
+static int findNextVerticalEdge(const FPixels* Pixels, int StartX, int StartY, int* EdgeX)
 {
     for(int x = StartX + *EdgeX + 1; x < Pixels->size.x; x++) {
-        FColorPixel p = f_pixels__bufferGetValue(Pixels, Frame, x, StartY);
+        FColorPixel p = f_pixels__bufferGetValue(Pixels, 0, x, StartY);
 
         if(p == f_color__limit) {
             *EdgeX = x - StartX;
 
             int len = 1;
             FColorPixel* buffer = f_pixels__bufferGetFrom(
-                                    Pixels, Frame, x, StartY + 1);
+                                    Pixels, 0, x, StartY + 1);
 
             for(int y = Pixels->size.y - (StartY + 1); y--; ) {
                 if(*buffer != f_color__limit) {
@@ -154,17 +153,17 @@ static int findNextVerticalEdge(const FPixels* Pixels, unsigned Frame, int Start
     return -1;
 }
 
-static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeY)
+static int findNextHorizontalEdge(const FPixels* Pixels, int StartX, int StartY, int* EdgeY)
 {
     for(int y = StartY + *EdgeY + 1; y < Pixels->size.y; y++) {
-        FColorPixel p = f_pixels__bufferGetValue(Pixels, Frame, StartX, y);
+        FColorPixel p = f_pixels__bufferGetValue(Pixels, 0, StartX, y);
 
         if(p == f_color__limit) {
             *EdgeY = y - StartY;
 
             int len = 1;
             FColorPixel* buffer = f_pixels__bufferGetFrom(
-                                    Pixels, Frame, StartX + 1, y);
+                                    Pixels, 0, StartX + 1, y);
 
             for(int x = Pixels->size.x - (StartX + 1); x--; ) {
                 if(*buffer != f_color__limit) {
@@ -182,7 +181,7 @@ static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int Sta
     return -1;
 }
 
-FVecInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y)
+FVecInt f_pixels__boundsFind(const FPixels* Pixels, int X, int Y)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
@@ -198,15 +197,15 @@ FVecInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y
     FVecInt bounds;
 
     int vEdgeX = 0;
-    int vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);
+    int vEdgeLen = findNextVerticalEdge(Pixels, X, Y, &vEdgeX);
     int hEdgeY = 0;
-    int hEdgeLen = findNextHorizontalEdge(Pixels, Frame, X, Y, &hEdgeY);
+    int hEdgeLen = findNextHorizontalEdge(Pixels, X, Y, &hEdgeY);
 
     while(vEdgeLen != -1 && hEdgeLen != -1) {
         if(vEdgeLen < hEdgeY) {
-            vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);
+            vEdgeLen = findNextVerticalEdge(Pixels, X, Y, &vEdgeX);
         } else if(hEdgeLen < vEdgeX) {
-            hEdgeLen = findNextHorizontalEdge(Pixels, Frame, X, Y, &hEdgeY);
+            hEdgeLen = findNextHorizontalEdge(Pixels, X, Y, &hEdgeY);
         } else {
             break;
         }

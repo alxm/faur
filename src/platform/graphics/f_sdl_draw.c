@@ -112,10 +112,12 @@ void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
 void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
 {
     // Using inclusive coords
-    if(--Radius <= 0) {
-        if(Radius == 0) {
-            f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
-        }
+    if(--Radius < 0) {
+        return;
+    }
+
+    if(Radius == 0) {
+        f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
 
         return;
     }
@@ -204,6 +206,12 @@ void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
     }
 
     if(x == y) {
+        scanlines[scanline1][0] = (SDL_Point){x1, y1};
+        scanlines[scanline1][1] = (SDL_Point){x2, y1};
+
+        scanlines[scanline2][0] = (SDL_Point){x1, y2};
+        scanlines[scanline2][1] = (SDL_Point){x2, y2};
+
         scanlines[scanline3][0] = (SDL_Point){x3, y3};
         scanlines[scanline3][1] = (SDL_Point){x4, y3};
 
@@ -221,10 +229,12 @@ void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
 void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     // Using inclusive coords
-    if(--Radius <= 0) {
-        if(Radius == 0) {
-            f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
-        }
+    if(--Radius < 0) {
+        return;
+    }
+
+    if(Radius == 0) {
+        f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
 
         return;
     }

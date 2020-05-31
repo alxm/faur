@@ -27,7 +27,7 @@ static inline void lazyInitTextures(FSprite* Sprite)
 }
 #endif
 
-static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, int FrameWidth, int FrameHeight)
+static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
     FVecInt gridDim;
 
@@ -38,12 +38,14 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
         }
     #endif
 
+    // If start is at origin and frame size is negative, use entire image
     if(X == 0 && Y == 0 && FrameWidth < 0) {
         gridDim = Pixels->size;
     } else {
-        gridDim = f_pixels__boundsFind(Pixels, Frame, X, Y);
+        gridDim = f_pixels__boundsFind(Pixels, X, Y);
     }
 
+    // If frame size is not positive, make a single frame the entire area size
     if(FrameWidth < 1) {
         FrameWidth = gridDim.x;
         FrameHeight = gridDim.y;
@@ -73,7 +75,7 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
 
     for(int y = Y; y < endY; y += FrameHeight) {
         for(int x = X; x < endX; x += FrameWidth, f++) {
-            f_pixels__copyFrameEx(&s->pixels, f, Pixels, Frame, x, y);
+            f_pixels__copyFrameEx(&s->pixels, f, Pixels, x, y);
         }
     }
 
@@ -102,7 +104,7 @@ FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
         }
     }
 
-    FSprite* s = spriteNew(pixels, 0, X, Y, FrameWidth, FrameHeight);
+    FSprite* s = spriteNew(pixels, X, Y, FrameWidth, FrameHeight);
 
     f_pixels__free(pixels);
 
@@ -112,7 +114,7 @@ FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 
 FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    return spriteNew(&Sheet->pixels, 0, X, Y, FrameWidth, FrameHeight);
+    return spriteNew(&Sheet->pixels, X, Y, FrameWidth, FrameHeight);
 }
 
 FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
@@ -304,16 +306,6 @@ const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Fram
 FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
-}
-
-FPixels* f_sprite__pixelsGet(FSprite* Sprite)
-{
-    return &Sprite->pixels;
-}
-
-const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite)
-{
-    return &Sprite->pixels;
 }
 
 #if F_CONFIG_RENDER_SOFTWARE

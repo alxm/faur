@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -47,13 +47,13 @@ extern void f_pixels__free(FPixels* Pixels);
 
 extern void f_pixels__copy(FPixels* Dst, const FPixels* Src);
 extern void f_pixels__copyFrame(const FPixels* Dst, unsigned DstFrame, const FPixels* Src, unsigned SrcFrame);
-extern void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
+extern void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, int SrcX, int SrcY);
 
 extern void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H);
 
 extern void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value);
 
-extern FVecInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y);
+extern FVecInt f_pixels__boundsFind(const FPixels* Pixels, int X, int Y);
 
 static inline FColorPixel* f_pixels__bufferGetStart(const FPixels* Pixels, unsigned Frame)
 {
