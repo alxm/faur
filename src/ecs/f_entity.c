@@ -201,10 +201,8 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     e->componentBits = f_bitfield_new(f_component__num);
     e->lastActive = f_fps_ticksGet() - 1;
 
-    FCollection* collection = f_collection__get();
-
-    if(collection) {
-        e->collectionNode = f_list_addLast(collection, e);
+    if(f__collection) {
+        e->collectionNode = f_list_addLast(f__collection, e);
     }
 
     if(Template) {

@@ -18,16 +18,11 @@
 #include "f_collection.v.h"
 #include <faur.v.h>
 
-static FCollection* g_current; // New entities are added to this collection
-
-FCollection* f_collection__get(void)
-{
-    return g_current;
-}
+FCollection* f__collection; // New entities are added to this collection
 
 void f_collection_set(FCollection* Collection)
 {
-    g_current = Collection;
+    f__collection = Collection;
 }
 
 FCollection* f_collection_new(void)
