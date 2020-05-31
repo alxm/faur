@@ -33,10 +33,12 @@ FCollection* f_collection_new(void)
 void f_collection_free(FCollection* Collection)
 {
     f_entity__ignoreRefDec = true;
-
     f_list_freeEx(Collection, (FFree*)f_entity__freeEx);
-
     f_entity__ignoreRefDec = false;
+
+    if(f__collection == Collection) {
+        f__collection = NULL;
+    }
 }
 
 void f_collection_clear(FCollection* Collection)
