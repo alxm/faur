@@ -308,16 +308,6 @@ FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }
 
-FPixels* f_sprite__pixelsGet(FSprite* Sprite)
-{
-    return &Sprite->pixels;
-}
-
-const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite)
-{
-    return &Sprite->pixels;
-}
-
 #if F_CONFIG_RENDER_SOFTWARE
 void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame)
 {

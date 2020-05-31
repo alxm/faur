@@ -166,16 +166,14 @@ void f_screen_clear(void)
 void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(F_FLAGS_TEST_ANY(
-            f_sprite__pixelsGetc(Sprite)->flags, F_PIXELS__CONST)) {
-
+        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
             F__FATAL("f_screen_push: Const sprite");
         }
     #endif
 
     f_list_push(g_stack, f_mem_dup(&f__screen, sizeof(FScreen)));
 
-    f__screen.pixels = f_sprite__pixelsGet(Sprite);
+    f__screen.pixels = &Sprite->pixels;
     f__screen.sprite = Sprite;
     f__screen.frame = Frame;
 
@@ -283,10 +281,8 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
     }
 
     #if F_CONFIG_RENDER_SOFTWARE
-        f_pixels__copyFrame(f_sprite__pixelsGetc(Sprite),
-                            Frame,
-                            f__screen.pixels,
-                            f__screen.frame);
+        f_pixels__copyFrame(
+            &Sprite->pixels, Frame, f__screen.pixels, f__screen.frame);
     #else
         f_platform_api__screenToTexture(f_sprite__textureGet(Sprite), Frame);
     #endif

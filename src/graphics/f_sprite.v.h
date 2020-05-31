@@ -27,8 +27,6 @@ struct FSprite {
     FPlatformTexture* texture;
 };
 
-extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
-extern const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite);
 extern FPlatformTextureScreen* f_sprite__textureGet(const FSprite* Sprite);
 extern void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame);
 
