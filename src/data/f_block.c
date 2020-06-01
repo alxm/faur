@@ -21,9 +21,10 @@
 struct FBlock {
     char* text; // own content
     FList* blocks; // FList<FBlock*>, all blocks indented under this block
-    FHash* index; // FHash<const char*, FList<FBlock*>>, same blocks by text
+    FHash* index; // FHash<const char*, FList<const FBlock*>> indexed by text
     const FBlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
+    int references; // added when merged into another parent block
 };
 
 static FBlock* blockNew(const char* Content)
@@ -37,6 +38,10 @@ static FBlock* blockNew(const char* Content)
 
 static void blockFree(FBlock* Block)
 {
+    if(Block->references-- > 0) {
+        return;
+    }
+
     if(Block->blocks) {
         f_list_freeEx(Block->blocks, (FFree*)blockFree);
         f_hash_freeEx(Block->index, (FFree*)f_list_free);
@@ -68,6 +73,8 @@ static void blockAdd(FBlock* Parent, FBlock* Child)
 static void blockCommitLines(FBlock* Block)
 {
     if(Block->blocks != NULL) {
+        f_mem_free(Block->array);
+
         Block->array = (const FBlock**)f_list_toArray(Block->blocks);
         Block->arrayLen = f_list_sizeGet(Block->blocks);
     }
@@ -150,6 +157,21 @@ void f_block_free(FBlock* Block)
     }
 
     blockFree(Block);
+}
+
+void f_block__merge(FBlock* Dst, const FBlock* Src)
+{
+    if(Src->blocks == NULL) {
+        return;
+    }
+
+    F_LIST_ITERATE(Src->blocks, FBlock*, b) {
+        blockAdd(Dst, b);
+
+        b->references++;
+    }
+
+    blockCommitLines(Dst);
 }
 
 const FList* f_block_blocksGet(const FBlock* Block)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,7 @@
 #define F_INC_DATA_BLOCK_V_H
 
 #include "f_block.p.h"
+
+extern void f_block__merge(FBlock* Dst, const FBlock* Src);
 
 #endif // F_INC_DATA_BLOCK_V_H

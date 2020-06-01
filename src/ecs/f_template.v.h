@@ -30,6 +30,7 @@ struct FTemplate {
     FList* componentsOwn; // FList<const FComponent*> this template only
     FList* componentsAll; // FList<const FComponent*> this template or parent
     FBitfield* componentsBits; // Set if this template or parent has component
+    const FBlock* block; // Only valid while reading current config file
     uint32_t iNumber; // Incremented by every new entity
     void* data[1]; // [f_component__num] Loaded config data, or NULL
                    // Component bit might be set even if data is NULL

@@ -53,7 +53,9 @@ static FTemplate* templateNew(const char* Id, const FBlock* Block)
     }
 
     if(Block) {
-        F_LIST_ITERATE(f_block_blocksGet(Block), const FBlock*, b) {
+        t->block = Block;
+
+        F_LIST_ITERATE(f_block_blocksGet(Block), FBlock*, b) {
             const char* componentId = f_block_lineGetString(b, 0);
             const FComponent* c = f_hash_get(f_component__index, componentId);
 
@@ -65,12 +67,20 @@ static FTemplate* templateNew(const char* Id, const FBlock* Block)
                 continue;
             }
 
+            if(f_bitfield_test(t->componentsBits, c->bitId)) {
+                f_block__merge(
+                    b, f_block_keyGetBlock(t->parent->block, c->stringId));
+            } else {
+                f_list_addLast(t->componentsAll, (void*)c);
+                f_bitfield_set(t->componentsBits, c->bitId);
+            }
+
             f_list_addLast(t->componentsOwn, (void*)c);
-            f_list_addLast(t->componentsAll, (void*)c);
-            f_bitfield_set(t->componentsBits, c->bitId);
 
             t->data[c->bitId] = f_component__dataInit(c, b);
         }
+    } else if(t->parent) {
+        t->block = t->parent->block;
     }
 
     f_hash_add(g_templates, f_str_dup(Id), t);
