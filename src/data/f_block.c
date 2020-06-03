@@ -36,22 +36,6 @@ static FBlock* blockNew(const char* Content)
     return block;
 }
 
-static void blockFree(FBlock* Block)
-{
-    if(Block->references-- > 0) {
-        return;
-    }
-
-    if(Block->blocks) {
-        f_list_freeEx(Block->blocks, (FFree*)blockFree);
-        f_hash_freeEx(Block->index, (FFree*)f_list_free);
-        f_mem_free(Block->array);
-    }
-
-    f_mem_free(Block->text);
-    f_mem_free(Block);
-}
-
 static void blockAdd(FBlock* Parent, FBlock* Child)
 {
     if(Parent->blocks == NULL) {
@@ -152,11 +136,23 @@ FBlock* f_block_new(const char* File)
 
 void f_block_free(FBlock* Block)
 {
-    if(!f_str_equal(Block->text, "")) {
-        F__FATAL("f_block_free: Must call on root block");
+    if(Block->references-- > 0) {
+        return;
     }
 
-    blockFree(Block);
+    if(Block->blocks) {
+        f_list_freeEx(Block->blocks, (FFree*)f_block_free);
+        f_hash_freeEx(Block->index, (FFree*)f_list_free);
+        f_mem_free(Block->array);
+    }
+
+    f_mem_free(Block->text);
+    f_mem_free(Block);
+}
+
+void f_block__refInc(FBlock* Block)
+{
+    Block->references++;
 }
 
 void f_block__merge(FBlock* Dst, const FBlock* Src)
@@ -167,8 +163,7 @@ void f_block__merge(FBlock* Dst, const FBlock* Src)
 
     F_LIST_ITERATE(Src->blocks, FBlock*, b) {
         blockAdd(Dst, b);
-
-        b->references++;
+        f_block__refInc(b);
     }
 
     blockCommitLines(Dst);

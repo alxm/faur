@@ -20,6 +20,7 @@
 
 #include "f_block.p.h"
 
+extern void f_block__refInc(FBlock* Block);
 extern void f_block__merge(FBlock* Dst, const FBlock* Src);
 
 #endif // F_INC_DATA_BLOCK_V_H
