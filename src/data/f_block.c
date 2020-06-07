@@ -36,7 +36,7 @@ static FBlock* blockNew(const char* Content)
     return block;
 }
 
-static void blockAdd(FBlock* Parent, FBlock* Child)
+static void blockAdd(FBlock* Parent, FBlock* Child, bool Prepend)
 {
     if(Parent->blocks == NULL) {
         Parent->blocks = f_list_new();
@@ -50,8 +50,13 @@ static void blockAdd(FBlock* Parent, FBlock* Child)
         f_hash_add(Parent->index, Child->text, indexList);
     }
 
-    f_list_addLast(Parent->blocks, Child);
-    f_list_addLast(indexList, Child);
+    if(Prepend) {
+        f_list_addFirst(Parent->blocks, Child);
+        f_list_addFirst(indexList, Child);
+    } else {
+        f_list_addLast(Parent->blocks, Child);
+        f_list_addLast(indexList, Child);
+    }
 }
 
 static void blockCommitLines(FBlock* Block)
@@ -120,7 +125,7 @@ FBlock* f_block_new(const char* File)
         FBlock* parent = f_list_peek(stack);
         FBlock* block = blockNew(textStart);
 
-        blockAdd(parent, block);
+        blockAdd(parent, block, false);
         f_list_push(stack, block);
     }
 
@@ -161,8 +166,8 @@ void f_block__merge(FBlock* Dst, const FBlock* Src)
         return;
     }
 
-    F_LIST_ITERATE(Src->blocks, FBlock*, b) {
-        blockAdd(Dst, b);
+    F_LIST_ITERATE_REV(Src->blocks, FBlock*, b) {
+        blockAdd(Dst, b, true);
         f_block__refInc(b);
     }
 
