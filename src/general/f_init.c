@@ -34,10 +34,10 @@ static const FPack* g_packs[] = {
     &f_pack__fix,
     &f_pack__hash,
     &f_pack__state,
+    &f_pack__sym,
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
-    &f_pack__sym,
 };
 
 void f_init__init(void)
