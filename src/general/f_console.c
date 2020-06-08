@@ -252,7 +252,14 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        f_font_printf("%u entities", f_entity__numGet());
+        unsigned eTotal = f_entity__numGet();
+        unsigned eActive = f_entity__numGetActive();
+
+        f_font_printf("%u entities\n", eTotal);
+
+        if(eTotal > 0) {
+            f_font_printf("%u active (%u%%)", eActive, 100 * eActive / eTotal);
+        }
     }
 
     f_align_pop();

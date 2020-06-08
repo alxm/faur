@@ -29,6 +29,9 @@ typedef enum {
 } FEntityList;
 
 static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
+static unsigned g_activeNum; // Number of active entities this frame
+static unsigned g_activeNumPermanent; // Number of always-active entities
+
 bool f_entity__ignoreRefDec; // Set to prevent using freed entities
 
 static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* Data)
@@ -85,6 +88,8 @@ void f_entity__tick(void)
     if(g_lists[0] == NULL) {
         return;
     }
+
+    g_activeNum = 0;
 
     f_entity__flushFromSystems();
 
@@ -185,6 +190,11 @@ unsigned f_entity__numGet(void)
     return sum;
 }
 
+unsigned f_entity__numGetActive(void)
+{
+    return g_activeNum + g_activeNumPermanent;
+}
+
 FEntity* f_entity_new(const char* Template, const void* Context)
 {
     FEntity* e = f_mem_mallocz(
@@ -261,6 +271,10 @@ void f_entity__free(FEntity* Entity)
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ALLOC_STRING_ID)) {
         f_mem_free(Entity->id);
+    }
+
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
+        g_activeNumPermanent--;
     }
 
     f_mem_free(Entity);
@@ -436,6 +450,10 @@ void f_entity_activeSet(FEntity* Entity)
         }
     #endif
 
+    if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
+        g_activeNum++;
+    }
+
     Entity->lastActive = f_fps_ticksGet();
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_REMOVED)) {
@@ -469,6 +487,8 @@ void f_entity_activeSetPermanent(FEntity* Entity)
     #endif
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
+
+    g_activeNumPermanent++;
 }
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)

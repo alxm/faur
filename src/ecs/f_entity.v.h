@@ -60,6 +60,7 @@ extern void f_entity__uninit(void);
 extern void f_entity__tick(void);
 extern void f_entity__flushFromSystems(void);
 extern unsigned f_entity__numGet(void);
+extern unsigned f_entity__numGetActive(void);
 
 extern void f_entity__free(FEntity* Entity);
 extern void f_entity__freeEx(FEntity* Entity);
