@@ -216,6 +216,8 @@ FEntity* f_entity_new(const char* Template, const void* Context)
         e->id = f_str_dup(id);
         e->templ = t;
 
+        F_FLAGS_SET(e->flags, F_ENTITY__ALLOC_STRING_ID);
+
         F_LIST_ITERATE(t->componentsAll, const FComponent*, c) {
             componentAdd(e, c, t->data[c->bitId]);
         }
@@ -257,7 +259,10 @@ void f_entity__free(FEntity* Entity)
 
     f_bitfield_free(Entity->componentBits);
 
-    f_mem_free(Entity->id);
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ALLOC_STRING_ID)) {
+        f_mem_free(Entity->id);
+    }
+
     f_mem_free(Entity);
 }
 
