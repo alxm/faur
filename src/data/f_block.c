@@ -21,9 +21,10 @@
 struct FBlock {
     char* text; // own content
     FList* blocks; // FList<FBlock*>, all blocks indented under this block
-    FHash* index; // FHash<const char*, FList<FBlock*>>, same blocks by text
+    FHash* index; // FHash<const char*, FList<const FBlock*>> indexed by text
     const FBlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
+    int references; // added when merged into another parent block
 };
 
 static FBlock* blockNew(const char* Content)
@@ -35,19 +36,7 @@ static FBlock* blockNew(const char* Content)
     return block;
 }
 
-static void blockFree(FBlock* Block)
-{
-    if(Block->blocks) {
-        f_list_freeEx(Block->blocks, (FFree*)blockFree);
-        f_hash_freeEx(Block->index, (FFree*)f_list_free);
-        f_mem_free(Block->array);
-    }
-
-    f_mem_free(Block->text);
-    f_mem_free(Block);
-}
-
-static void blockAdd(FBlock* Parent, FBlock* Child)
+static void blockAdd(FBlock* Parent, FBlock* Child, bool Prepend)
 {
     if(Parent->blocks == NULL) {
         Parent->blocks = f_list_new();
@@ -61,13 +50,20 @@ static void blockAdd(FBlock* Parent, FBlock* Child)
         f_hash_add(Parent->index, Child->text, indexList);
     }
 
-    f_list_addLast(Parent->blocks, Child);
-    f_list_addLast(indexList, Child);
+    if(Prepend) {
+        f_list_addFirst(Parent->blocks, Child);
+        f_list_addFirst(indexList, Child);
+    } else {
+        f_list_addLast(Parent->blocks, Child);
+        f_list_addLast(indexList, Child);
+    }
 }
 
 static void blockCommitLines(FBlock* Block)
 {
     if(Block->blocks != NULL) {
+        f_mem_free(Block->array);
+
         Block->array = (const FBlock**)f_list_toArray(Block->blocks);
         Block->arrayLen = f_list_sizeGet(Block->blocks);
     }
@@ -129,7 +125,7 @@ FBlock* f_block_new(const char* File)
         FBlock* parent = f_list_peek(stack);
         FBlock* block = blockNew(textStart);
 
-        blockAdd(parent, block);
+        blockAdd(parent, block, false);
         f_list_push(stack, block);
     }
 
@@ -145,11 +141,37 @@ FBlock* f_block_new(const char* File)
 
 void f_block_free(FBlock* Block)
 {
-    if(!f_str_equal(Block->text, "")) {
-        F__FATAL("f_block_free: Must call on root block");
+    if(Block->references-- > 0) {
+        return;
     }
 
-    blockFree(Block);
+    if(Block->blocks) {
+        f_list_freeEx(Block->blocks, (FFree*)f_block_free);
+        f_hash_freeEx(Block->index, (FFree*)f_list_free);
+        f_mem_free(Block->array);
+    }
+
+    f_mem_free(Block->text);
+    f_mem_free(Block);
+}
+
+void f_block__refInc(FBlock* Block)
+{
+    Block->references++;
+}
+
+void f_block__merge(FBlock* Dst, const FBlock* Src)
+{
+    if(Src->blocks == NULL) {
+        return;
+    }
+
+    F_LIST_ITERATE_REV(Src->blocks, FBlock*, b) {
+        blockAdd(Dst, b, true);
+        f_block__refInc(b);
+    }
+
+    blockCommitLines(Dst);
 }
 
 const FList* f_block_blocksGet(const FBlock* Block)

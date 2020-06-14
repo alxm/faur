@@ -88,8 +88,7 @@ void f_ecs__populate(void)
            components_num = len(components),
            systems = '\n'.join([f'        &{s},' for s in systems]),
            systems_num = len(systems),
-           entities =
-            '\n'.join([f'    f_template__set("{e}", {e});' for e in entities]))
+           entities = '\n'.join([f'    f_sym_set({e});' for e in entities]))
     else:
         content = f"""\
 //

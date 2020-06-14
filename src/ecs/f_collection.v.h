@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,6 @@
 
 #include "f_collection.p.h"
 
-extern FCollection* f_collection__get(void);
+extern FCollection* f__collection;
 
 #endif // F_INC_ECS_COLLECTION_V_H

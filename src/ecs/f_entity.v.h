@@ -31,6 +31,7 @@ typedef enum {
     F_ENTITY__DEBUG = F_FLAGS_BIT(2), // print debug messages for this entity
     F_ENTITY__REMOVED = F_FLAGS_BIT(3), // marked for removal, may have refs
     F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
+    F_ENTITY__ALLOC_STRING_ID = F_FLAGS_BIT(5), // free string ID if set
 } FEntityFlags;
 
 struct FEntity {
@@ -59,6 +60,7 @@ extern void f_entity__uninit(void);
 extern void f_entity__tick(void);
 extern void f_entity__flushFromSystems(void);
 extern unsigned f_entity__numGet(void);
+extern unsigned f_entity__numGetActive(void);
 
 extern void f_entity__free(FEntity* Entity);
 extern void f_entity__freeEx(FEntity* Entity);
