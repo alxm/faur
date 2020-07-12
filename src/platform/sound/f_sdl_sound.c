@@ -27,10 +27,6 @@
     #include <SDL2/SDL_mixer.h>
 #endif
 
-#if F_CONFIG_SYSTEM_EMSCRIPTEN && F_CONFIG_LIB_SDL == 1
-    #define F__SOUND_LIMITED_SUPPORT 1
-#endif
-
 static bool g_enabled;
 static bool g_mute = F_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
@@ -39,7 +35,7 @@ static int g_currentSampleChannel;
 
 void f_platform_sdl_sound__init(void)
 {
-    #if !F__SOUND_LIMITED_SUPPORT
+    #if !F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT
         SDL_version cv, rv = *Mix_Linked_Version();
         SDL_MIXER_VERSION(&cv);
 
@@ -124,7 +120,7 @@ void f_platform_api__soundVolumeSet(int MusicVolume, int SamplesVolume)
         return;
     }
 
-    #if F__SOUND_LIMITED_SUPPORT
+    #if F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT
         F_UNUSED(MusicVolume);
         F_UNUSED(SamplesVolume);
     #else
