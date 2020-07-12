@@ -103,7 +103,7 @@ const char* f_main_argsGet(int ArgNum)
 
 F__ATTRIBUTE_NORETURN static void handleFatal(void)
 {
-    #if F_CONFIG_BUILD_DEBUG_FATAL_SPIN
+    #if F_CONFIG_DEBUG_FATAL_SPIN
         while(true);
     #else
         #if F__BACKTRACE
@@ -126,7 +126,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             f_screen__draw();
         }
 
-        #if F_CONFIG_BUILD_DEBUG_WAIT
+        #if F_CONFIG_DEBUG_WAIT
             while(true) {
                 printf("Waiting to attach debugger: PID %d\n", getpid());
                 f_time_spinSec(1);

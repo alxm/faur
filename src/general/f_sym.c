@@ -58,7 +58,7 @@ int f_sym_int(const char* Name)
         return 0;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!f_hash_contains(g_map, Name)) {
             F__FATAL("f_sym_int(%s): Not found", Name);
         }
@@ -73,7 +73,7 @@ unsigned f_sym_intu(const char* Name)
         return 0;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!f_hash_contains(g_map, Name)) {
             F__FATAL("f_sym_intu(%s): Not found", Name);
         }
@@ -88,7 +88,7 @@ uintptr_t f_sym_address(const char* Name)
         return 0;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!f_hash_contains(g_map, Name)) {
             F__FATAL("f_sym_address(%s): Not found", Name);
         }

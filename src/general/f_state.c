@@ -33,7 +33,7 @@ static const FEvent* g_blockEvent;
 
 static FStateCallback *g_tickPre, *g_tickPost, *g_drawPre, *g_drawPost;
 
-#if F_CONFIG_BUILD_DEBUG
+#if F_CONFIG_DEBUG
 static const char* g_stageNames[F__STATE_STAGE_NUM] = {
     [F__STATE_STAGE_INIT] = "Init",
     [F__STATE_STAGE_TICK] = "Loop",
@@ -66,7 +66,7 @@ static void pending_handle(void)
         bool resetFps = false;
 
         if(current->stage == F__STATE_STAGE_INIT) {
-            #if F_CONFIG_BUILD_DEBUG
+            #if F_CONFIG_DEBUG
                 f_out__state("'%s' going from %s to %s",
                              current->name,
                              g_stageNames[F__STATE_STAGE_INIT],
@@ -76,7 +76,7 @@ static void pending_handle(void)
             current->stage = F__STATE_STAGE_TICK;
             resetFps = true;
         } else if(current->stage == F__STATE_STAGE_FREE) {
-            #if F_CONFIG_BUILD_DEBUG
+            #if F_CONFIG_DEBUG
                 f_out__state("Destroying '%s' instance", current->name);
             #endif
 
@@ -98,7 +98,7 @@ static void pending_handle(void)
     FStateStackEntry* pendingState = f_list_pop(g_pending);
 
     if(pendingState == NULL) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             if(current == NULL) {
                 F__FATAL("Pop state: stack is empty");
             }
@@ -113,7 +113,7 @@ static void pending_handle(void)
 
         current->stage = F__STATE_STAGE_FREE;
     } else {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("Push '%s'", pendingState->name);
 
             F_LIST_ITERATE(g_stack, const FStateStackEntry*, e) {
@@ -164,14 +164,14 @@ void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FState
 void f_state_push(FState* Handler, const char* Name)
 {
     if(g_exiting) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("f_state_push(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_out__state("f_state_push(%s)", Name);
     #endif
 
@@ -181,14 +181,14 @@ void f_state_push(FState* Handler, const char* Name)
 void f_state_pop(void)
 {
     if(g_exiting) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("f_state_pop: Already exiting");
         #endif
 
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_out__state("f_state_pop()");
     #endif
 
@@ -198,14 +198,14 @@ void f_state_pop(void)
 void f_state_popUntil(FState* Handler, const char* Name)
 {
     if(g_exiting) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("f_state_popUntil(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_out__state("f_state_popUntil(%s)", Name);
     #endif
 
@@ -233,14 +233,14 @@ void f_state_popUntil(FState* Handler, const char* Name)
 void f_state_replace(FState* Handler, const char* Name)
 {
     if(g_exiting) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("f_state_replace(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_out__state("f_state_replace(%s)", Name);
     #endif
 
@@ -251,7 +251,7 @@ void f_state_replace(FState* Handler, const char* Name)
 void f_state_exit(void)
 {
     if(g_exiting) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("f_state_exit: Already exiting");
         #endif
 
@@ -371,7 +371,7 @@ bool f_state__runStep(void)
 
         f_fps__frame();
     } else {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__state("'%s' running %s", s->name, g_stageNames[s->stage]);
         #endif
 
@@ -385,7 +385,7 @@ bool f__state_stageCheck(FStateStage Stage)
 {
     const FStateStackEntry* e = f_list_peek(g_stack);
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(e == NULL) {
             F__FATAL("%s: state stack is empty", g_stageNames[Stage]);
         }

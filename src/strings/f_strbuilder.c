@@ -28,7 +28,7 @@ struct FStrBuilder {
 
 FStrBuilder* f_strbuilder_new(size_t Bytes)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Bytes == 0) {
             F__FATAL("f_strbuilder_new: Invalid size 0");
         }

@@ -31,7 +31,7 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
 {
     FVecInt gridDim;
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
             F__FATAL(
                 "FrameWidth = %d, FrameHeight = %d", FrameWidth, FrameHeight);
@@ -225,7 +225,7 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
 
 void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
             F__FATAL("f_sprite_swapColor: Const sprite");
         }
@@ -250,7 +250,7 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
 
 void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
             F__FATAL("f_sprite_swapColors: Const sprite");
         }

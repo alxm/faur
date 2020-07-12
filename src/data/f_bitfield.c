@@ -29,7 +29,7 @@ struct FBitfield {
 
 FBitfield* f_bitfield_new(unsigned NumBits)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(NumBits < 1) {
             F__FATAL("f_bitfield_new(0): Invalid size");
         }

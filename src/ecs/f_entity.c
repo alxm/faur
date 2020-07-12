@@ -112,7 +112,7 @@ void f_entity__tick(void)
 
     // Add entities to the systems they match
     F_LIST_ITERATE(g_lists[F_LIST__RESTORE], FEntity*, e) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             if(f_list_sizeIsEmpty(e->matchingSystemsActive)
                 && f_list_sizeIsEmpty(e->matchingSystemsRest)) {
 
@@ -144,7 +144,7 @@ void f_entity__tick(void)
 void f_entity__flushFromSystems(void)
 {
     F_LIST_ITERATE(g_lists[F_LIST__FLUSH], FEntity*, e) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
                 f_out__info("%s removed from all systems", e->id);
             }
@@ -161,7 +161,7 @@ void f_entity__flushFromSystems(void)
 
 void f_entity__flushFromSystemsActive(FEntity* Entity)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("%s removed from active-only systems", Entity->id);
         }
@@ -244,7 +244,7 @@ void f_entity__free(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity__free(%s)", Entity->id);
         }
@@ -312,7 +312,7 @@ FEntity* f_entity_parentGet(const FEntity* Entity)
 
 void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_parentSet(%s, %s)",
                         Entity->id,
@@ -355,7 +355,7 @@ bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
 
 void f_entity_refInc(FEntity* Entity)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
             F__FATAL("f_entity_refInc(%s): Entity is removed", Entity->id);
         }
@@ -384,7 +384,7 @@ void f_entity_refDec(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Entity->references == 0) {
             F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
         }
@@ -412,7 +412,7 @@ bool f_entity_removedGet(const FEntity* Entity)
 void f_entity_removedSet(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__warning(
                 "f_entity_removedSet(%s): Entity is removed", Entity->id);
         #endif
@@ -420,7 +420,7 @@ void f_entity_removedSet(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_removedSet(%s)", Entity->id);
         }
@@ -444,7 +444,7 @@ void f_entity_activeSet(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_activeSet(%s)", Entity->id);
         }
@@ -469,7 +469,7 @@ void f_entity_activeSet(FEntity* Entity)
 
 void f_entity_activeSetRemove(FEntity* Entity)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
         }
@@ -480,7 +480,7 @@ void f_entity_activeSetRemove(FEntity* Entity)
 
 void f_entity_activeSetPermanent(FEntity* Entity)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
         }
@@ -493,7 +493,7 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!listIsIn(Entity, F_LIST__NEW)) {
             F__FATAL("f_entity_componentAdd(%s, %s): Too late",
                      Entity->id,
@@ -532,7 +532,7 @@ void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
 {
     FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(instance == NULL) {
             F__FATAL("f_entity_componentReq(%s, %s): Missing component",
                      Entity->id,
@@ -551,7 +551,7 @@ bool f_entity_muteGet(const FEntity* Entity)
 void f_entity_muteInc(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__warning(
                 "f_entity_muteInc(%s): Entity is removed", Entity->id);
         #endif
@@ -559,7 +559,7 @@ void f_entity_muteInc(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Entity->muteCount == INT_MAX) {
             F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
         }
@@ -580,7 +580,7 @@ void f_entity_muteInc(FEntity* Entity)
 void f_entity_muteDec(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__warning(
                 "f_entity_muteDec(%s): Entity is removed", Entity->id);
         #endif
@@ -588,7 +588,7 @@ void f_entity_muteDec(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Entity->muteCount == 0) {
             F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
         }

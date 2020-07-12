@@ -18,7 +18,7 @@
 #include "f_mem.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_BUILD_DEBUG_ALLOC
+#if F_CONFIG_DEBUG_ALLOC
 size_t f_mem__tally, f_mem__top;
 
 static inline void tallyAdd(size_t Size)
@@ -38,7 +38,7 @@ static inline void tallyAdd(size_t Size)
 
 void* f_mem_malloc(size_t Size)
 {
-    #if F_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_ALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = malloc(total);
 
@@ -64,7 +64,7 @@ void* f_mem_malloc(size_t Size)
 
 void* f_mem_mallocz(size_t Size)
 {
-    #if F_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_ALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = calloc(1, total);
 
@@ -90,7 +90,7 @@ void* f_mem_mallocz(size_t Size)
 
 void* f_mem_malloca(size_t Size, unsigned AlignExp)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if((1u << AlignExp) < sizeof(void*)) {
             F__FATAL(
                 "f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
@@ -121,7 +121,7 @@ void f_mem_free(void* Buffer)
         return;
     }
 
-    #if F_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_ALLOC
         FMaxMemAlignType* header = (FMaxMemAlignType*)Buffer - 1;
 
         f_mem__tally -= header->u_size;

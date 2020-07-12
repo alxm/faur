@@ -33,7 +33,7 @@ void f_system__init(FSystem* const* Systems, size_t SystemsNum)
         sys->componentBits = f_bitfield_new(f_component__num);
 
         for(unsigned c = sys->componentsNum; c--; ) {
-            #if F_CONFIG_BUILD_DEBUG
+            #if F_CONFIG_DEBUG
                 if(sys->components[c] == NULL) {
                     F__FATAL("%s component %u/%u is NULL",
                              sys->stringId,

@@ -28,7 +28,7 @@ struct FFile {
     char* lineBuffer;
     unsigned lineBufferSize;
     unsigned lineNumber;
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         FFileMode mode;
     #endif
     bool eof;
@@ -66,7 +66,7 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 
 FFile* f_file_new(const char* Path, FFileMode Mode)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ALL(Mode, F_FILE_READ | F_FILE_WRITE)
             || !F_FLAGS_TEST_ANY(Mode, F_FILE_READ | F_FILE_WRITE)) {
 
@@ -104,7 +104,7 @@ FFile* f_file_new(const char* Path, FFileMode Mode)
     f->path = path;
     f->f.file = file;
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f->mode = Mode;
     #endif
 
@@ -142,7 +142,7 @@ FILE* f_file_handleGet(const FFile* File)
 
 bool f_file_prefixRead(FFile* File, const char* Prefix)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
             F__FATAL("f_file_prefixRead(%s, %s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -167,7 +167,7 @@ bool f_file_prefixRead(FFile* File, const char* Prefix)
 
 void f_file_prefixWrite(FFile* File, const char* Prefix)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
             F__FATAL("f_file_prefixWrite(%s, %s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -181,7 +181,7 @@ void f_file_prefixWrite(FFile* File, const char* Prefix)
 
 bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
             F__FATAL("f_file_read(%s, %zu): Bad mode %x",
                      f_path_getFull(File->path),
@@ -209,7 +209,7 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
 
 bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
             F__FATAL("f_file_write(%s, %zu): Bad mode %x",
                      f_path_getFull(File->path),
@@ -231,7 +231,7 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 
 bool f_file_writef(FFile* File, const char* Format, ...)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
             F__FATAL("f_file_writef(%s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -256,7 +256,7 @@ bool f_file_writef(FFile* File, const char* Format, ...)
 
 bool f_file_flush(FFile* File)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
             F__FATAL("f_file_flush(%s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -313,7 +313,7 @@ static int readChar(FFile* File)
 
 bool f_file_lineRead(FFile* File)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
             F__FATAL("f_file_lineRead(%s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -359,7 +359,7 @@ bool f_file_lineRead(FFile* File)
 
 const char* f_file_lineBufferGet(const FFile* File)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
             F__FATAL("f_file_lineBufferGet(%s): Bad mode %x",
                      f_path_getFull(File->path),
@@ -372,7 +372,7 @@ const char* f_file_lineBufferGet(const FFile* File)
 
 unsigned f_file_lineNumberGet(const FFile* File)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
             F__FATAL("f_file_lineNumberGet(%s): Bad mode %x",
                      f_path_getFull(File->path),
