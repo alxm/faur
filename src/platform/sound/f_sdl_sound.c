@@ -53,14 +53,13 @@ void f_platform_sdl_sound__init(void)
         F__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        int cs = 2048;
-    #else
-        int cs = 256;
-    #endif
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY,
+                     MIX_DEFAULT_FORMAT,
+                     2,
+                     F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE) != 0) {
 
-    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, cs) != 0) {
         f_out__error("Mix_OpenAudio: %s", Mix_GetError());
+
         return;
     }
 
