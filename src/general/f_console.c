@@ -19,9 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#define F__CONSOLE_ENABLED (!F_CONFIG_SYSTEM_ARDUINO && !F_CONFIG_TRAIT_LOW_MEM)
-
-#if F__CONSOLE_ENABLED
+#if F_CONFIG_DEBUG_CONSOLE
 #include "../generated/media/g_console_19x7.png.h"
 
 #include <unistd.h>
@@ -289,7 +287,7 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F__CONSOLE_ENABLED
+#else // !F_CONFIG_DEBUG_CONSOLE
 const FPack f_pack__console;
 
 void f_console_showSet(bool Show)
@@ -316,4 +314,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     F_UNUSED(Type);
     F_UNUSED(Text);
 }
-#endif // !F__CONSOLE_ENABLED
+#endif // !F_CONFIG_DEBUG_CONSOLE
