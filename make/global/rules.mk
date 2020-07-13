@@ -1,9 +1,4 @@
 #
-# Process and reconcile build settings
-#
-include $(FAUR_PATH)/make/global/config.mk
-
-#
 # Unique build path
 #
 F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)

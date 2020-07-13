@@ -30,6 +30,7 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
     -fpie \
     -fsanitize=undefined \
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 all : $(F_FAUR_FILE_GEANY_TAGS)

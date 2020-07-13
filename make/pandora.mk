@@ -53,6 +53,7 @@ export READELF := $(F_TOOLCHAIN_PREFIX)readelf
 export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 export LD      := $(F_TOOLCHAIN_PREFIX)ld
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 F_PND_DIR_BASE := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/pnd

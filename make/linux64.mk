@@ -17,4 +17,5 @@ F_CONFIG_BUILD_LIBS += \
 F_CONFIG_BUILD_FLAGS_SHARED += \
     -fpie \
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

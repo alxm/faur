@@ -77,6 +77,7 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 run : all

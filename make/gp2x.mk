@@ -54,4 +54,5 @@ export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
 export READELF := $(F_TOOLCHAIN_PREFIX)readelf
 export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
