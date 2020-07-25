@@ -48,7 +48,7 @@
 
 #define F__ALLOCATE_LOGICAL_BUFFER \
     (F_CONFIG_LIB_SDL == 2 \
-        || F_CONFIG_SYSTEM_WIZ_SCREEN_FIX \
+        || (F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX) \
         || F_CONFIG_SCREEN_ZOOM > 1 || F_CONFIG_SCREEN_ZOOM_CAN_CHANGE)
 
 #define F__HARDWARE_SCREEN \
@@ -352,7 +352,7 @@ void f_platform_api__screenInit(void)
 
     mouseCursorSet(F_CONFIG_INPUT_MOUSE_CURSOR);
 
-    #if F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
+    #if F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
         f_platform_wiz__portraitModeSet();
     #endif
 }
@@ -453,7 +453,7 @@ void f_platform_api__screenClipSet(void)
 void f_platform_api__screenShow(void)
 {
     #if F_CONFIG_LIB_SDL == 1
-        #if F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
+        #if F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
             // The Wiz screen has diagonal tearing in landscape mode. As a slow
             // but simple workaround, the screen is set to portrait mode where
             // 320,0 is top-left and 0,240 is bottom-right, and the game's
