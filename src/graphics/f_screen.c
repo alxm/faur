@@ -21,18 +21,9 @@
 FScreen f__screen;
 static FList* g_stack; // FList<FScreen*>
 
-#define F__SCREEN_CHANGE_FULL \
-    (F_CONFIG_TRAIT_DESKTOP)
-
-#define F__SCREEN_CHANGE_ZOOM \
-    (F_CONFIG_SCREEN_ZOOM_CAN_CHANGE \
-        && (F_CONFIG_TRAIT_DESKTOP || F_CONFIG_SYSTEM_EMSCRIPTEN))
-
-#if F__SCREEN_CHANGE_FULL
+#if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
     static FButton* g_fullScreenButton;
-#endif
 
-#if F__SCREEN_CHANGE_ZOOM
     #define F__ZOOM_LEVELS 4
     static FButton* g_zoomButtons[F__ZOOM_LEVELS];
 #endif
@@ -51,12 +42,10 @@ static void f_screen__init(void)
     f__screen.clipEnd = size;
     f__screen.clipSize = size;
 
-    #if F__SCREEN_CHANGE_FULL
+    #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
         g_fullScreenButton = f_button_new();
         f_button_bindKey(g_fullScreenButton, F_KEY_F11);
-    #endif
 
-    #if F__SCREEN_CHANGE_ZOOM
         for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             g_zoomButtons[z] = f_button_new();
             f_button_bindKey(g_zoomButtons[z], F_KEY_F1 + z);
@@ -70,11 +59,9 @@ static void f_screen__uninit(void)
 {
     f_list_freeEx(g_stack, f_mem_free);
 
-    #if F__SCREEN_CHANGE_FULL
+    #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
         f_button_free(g_fullScreenButton);
-    #endif
 
-    #if F__SCREEN_CHANGE_ZOOM
         for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             f_button_free(g_zoomButtons[z]);
         }
@@ -93,7 +80,7 @@ const FPack f_pack__screen = {
 
 void f_screen__tick(void)
 {
-    #if F__SCREEN_CHANGE_FULL
+    #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
         if(f_button_pressGetOnce(g_fullScreenButton)) {
             f_platform_api__screenFullscreenFlip();
 
@@ -101,9 +88,7 @@ void f_screen__tick(void)
                         f_platform_api__screenFullscreenGet()
                             ? "fullscreen" : "windowed");
         }
-    #endif
 
-    #if F__SCREEN_CHANGE_ZOOM
         for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             if(f_button_pressGetOnce(g_zoomButtons[z])) {
                 int zoom = z + 1;
