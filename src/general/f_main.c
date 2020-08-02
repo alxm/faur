@@ -32,20 +32,6 @@
 static int g_argsNum;
 static const char** g_args;
 
-static void f__atexit(void)
-{
-    f_out__info("Running atexit");
-
-    f_init__uninit();
-
-    #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
-        #if F_CONFIG_SYSTEM_GP2X_MENU
-            chdir("/usr/gp2x");
-            execl("gp2xmenu", "gp2xmenu", NULL);
-        #endif
-    #endif
-}
-
 #if F_CONFIG_BUILD_MAIN
 int main(int Argc, char* Argv[])
 {
@@ -63,6 +49,15 @@ int main(int Argc, char* Argv[])
         while(f_state__runStep()) {
             continue;
         }
+
+        f_init__uninit();
+
+        #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
+            #if F_CONFIG_SYSTEM_GP2X_MENU
+                chdir("/usr/gp2x");
+                execl("gp2xmenu", "gp2xmenu", NULL);
+            #endif
+        #endif
     #endif
 
     return 0;
@@ -78,10 +73,6 @@ void f__main(void)
                 F__APP_VERSION_STRING,
                 F_CONFIG_APP_AUTHOR);
     f_out__info("Build timestamp: %s", F_CONFIG_BUILD_FAUR_TIME);
-
-    if(atexit(f__atexit)) {
-        f_out__error("Cannot register atexit callback");
-    }
 
     f_init__init();
     f_state_push(f_main);
