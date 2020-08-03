@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)
     g_rand = Rand;
     g_srand = Srand;
 
-    #if !F_CONFIG_SYSTEM_GAMEBUINO
+    #if !F_CONFIG_TRAIT_NO_SEEDING
         f_random_seedSet((unsigned)time(NULL));
     #endif
 }

@@ -57,6 +57,7 @@
     #define F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT 0
 
     #define F_CONFIG_TRAIT_LOW_MEM 1
+    #define F_CONFIG_TRAIT_NO_SEEDING 1
 #endif // !F_CONFIG_BUILD_MAKE
 
 // The Gamebuino target also requires the application to provide the file
