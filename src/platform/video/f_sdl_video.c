@@ -152,7 +152,7 @@ static FVecInt sdlScreenSizeGetNative(void)
 
 static void mouseCursorSet(bool Show)
 {
-    #if F_CONFIG_INPUT_MOUSE_CURSOR
+    #if F_CONFIG_LIB_SDL_CURSOR
         int setting = Show ? SDL_ENABLE : SDL_DISABLE;
     #else
         F_UNUSED(Show);
@@ -351,7 +351,7 @@ void f_platform_api__screenInit(void)
         }
     #endif
 
-    mouseCursorSet(F_CONFIG_INPUT_MOUSE_CURSOR);
+    mouseCursorSet(F_CONFIG_LIB_SDL_CURSOR);
 
     #if F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
         f_platform_wiz__portraitModeSet();
