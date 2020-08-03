@@ -25,10 +25,10 @@
     static int g_samplesVolume;
     static int g_volumeMax;
 
-    #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ
-        #define F__SOUND_VOLUME_BAR 1
+    #if F_CONFIG_SOUND_VOLUME_BAR
         #define F__VOLUME_STEP 1
         #define F__VOLBAR_SHOW_MS 500
+
         static FTimer* g_volTimer;
         static FButton* g_volumeUpButton;
         static FButton* g_volumeDownButton;
@@ -55,7 +55,7 @@ static void f_sound__init(void)
     #if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
         g_volumeMax = f_platform_api__soundVolumeGetMax();
 
-        #if F__SOUND_VOLUME_BAR
+        #if F_CONFIG_SOUND_VOLUME_BAR
             adjustSoundVolume(g_volumeMax / 16);
             g_volTimer = f_timer_new(F_TIMER_MS, F__VOLBAR_SHOW_MS, false);
 
@@ -78,7 +78,7 @@ static void f_sound__init(void)
 
 static void f_sound__uninit(void)
 {
-    #if F__SOUND_VOLUME_BAR
+    #if F_CONFIG_SOUND_VOLUME_BAR
         f_timer_free(g_volTimer);
     #endif
 
@@ -101,7 +101,7 @@ const FPack f_pack__sound = {
 
 void f_sound__tick(void)
 {
-    #if F__SOUND_VOLUME_BAR
+    #if F_CONFIG_SOUND_VOLUME_BAR
         int adjust = 0;
 
         if(f_button_pressGet(g_volumeUpButton)) {
@@ -128,7 +128,7 @@ void f_sound__tick(void)
 
 void f_sound__draw(void)
 {
-    #if F__SOUND_VOLUME_BAR
+    #if F_CONFIG_SOUND_VOLUME_BAR
         if(!f_timer_runGet(g_volTimer) || f_timer_expiredGet(g_volTimer)) {
             return;
         }

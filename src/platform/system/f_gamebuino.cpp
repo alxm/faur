@@ -32,7 +32,7 @@ void setup(void)
 
     SerialUSB.begin(9600);
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         unsigned now = millis();
 
         while(!SerialUSB && millis() - now < 1000) {
@@ -51,7 +51,7 @@ void loop(void)
 
     f_state__runStep();
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         gb.display.setColor(WHITE);
         gb.display.setCursor(2, 46);
         gb.display.print(gb.getCpuLoad(), DEC);

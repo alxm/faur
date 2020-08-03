@@ -7,7 +7,6 @@ F_CONFIG_LIB_SDL := 2
 F_CONFIG_LIB_SDL_CONFIG := sdl2-config
 F_CONFIG_SYSTEM_LINUX := 1
 F_CONFIG_TRAIT_DESKTOP := 1
-F_CONFIG_TRAIT_KEYBOARD := 1
 
 F_CONFIG_BUILD_LIBS += \
     -lpng \
@@ -17,4 +16,5 @@ F_CONFIG_BUILD_LIBS += \
 F_CONFIG_BUILD_FLAGS_SHARED += \
     -fpie \
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

@@ -8,7 +8,6 @@ F_CONFIG_LIB_SDL := 2
 F_CONFIG_LIB_SDL_CONFIG := $(F_SDK_MINGW64_ROOT)/x86_64-w64-mingw32/bin/sdl2-config
 F_CONFIG_SYSTEM_MINGW := 1
 F_CONFIG_TRAIT_DESKTOP := 1
-F_CONFIG_TRAIT_KEYBOARD := 1
 
 F_CONFIG_BUILD_LIBS += \
     -u SDL_main \
@@ -28,6 +27,7 @@ export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
 export READELF := $(F_TOOLCHAIN_PREFIX)readelf
 export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 run : all

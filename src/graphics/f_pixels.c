@@ -20,7 +20,7 @@
 
 FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Frames == 0) {
             F__FATAL("f_pixels__new(%d, %d): 0 frames", W, H);
         }
@@ -35,7 +35,7 @@ FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
 
 void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags Flags)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Frames == 0) {
             F__FATAL("f_pixels__init(%d, %d): 0 frames", W, H);
         }
@@ -183,7 +183,7 @@ static int findNextHorizontalEdge(const FPixels* Pixels, int StartX, int StartY,
 
 FVecInt f_pixels__boundsFind(const FPixels* Pixels, int X, int Y)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
             F__FATAL(
                 "f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",

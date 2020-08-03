@@ -24,12 +24,14 @@ F_CONFIG_BUILD_OPT := 3
 F_CONFIG_FILES_PREFIX := /faur-idbfs/
 F_CONFIG_LIB_PNG := 1
 F_CONFIG_LIB_SDL ?= 2
+F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 2048
 F_CONFIG_SCREEN_VSYNC ?= 1
 F_CONFIG_SYSTEM_EMSCRIPTEN := 1
 F_CONFIG_TRAIT_KEYBOARD := 1
 F_CONFIG_TRAIT_NO_SLEEP := 1
 
 ifeq ($(F_CONFIG_LIB_SDL), 1)
+    F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT := 1
     F_CONFIG_SCREEN_FORMAT := F_COLOR_FORMAT_ABGR_8888
 endif
 
@@ -75,6 +77,7 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
+include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 run : all

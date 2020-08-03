@@ -97,7 +97,7 @@ void f_font_pop(void)
 {
     FFontState* state = f_list_pop(g_stateStack);
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(state == NULL) {
             F__FATAL("f_font_pop: Stack is empty");
         }

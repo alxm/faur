@@ -63,7 +63,7 @@ void f_platform_api__screenClear(void)
 
 void f_platform_api__screenShow(void)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_font_printf("%u", f_fps_rateDrawGetMax());
     #endif
 

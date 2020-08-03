@@ -66,7 +66,7 @@ void f_color_pop(void)
 {
     FColorState* state = f_list_pop(g_stateStack);
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(state == NULL) {
             F__FATAL("f_color_pop: Stack is empty");
         }
@@ -212,7 +212,7 @@ void f_color_colorSetPixel(FColorPixel Pixel)
 
 void f_color_colorSetIndex(unsigned ColorIndex)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(f__color.palette == NULL) {
             F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
         }

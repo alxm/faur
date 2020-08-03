@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)
     g_rand = Rand;
     g_srand = Srand;
 
-    #if !F_CONFIG_SYSTEM_GAMEBUINO
+    #if !F_CONFIG_TRAIT_NO_SEEDING
         f_random_seedSet((unsigned)time(NULL));
     #endif
 }
@@ -71,7 +71,7 @@ void f_random_seedSet(unsigned Seed)
 
 int f_random_int(int Max)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Max <= 0) {
             F__FATAL("f_random_int(%d): Invalid arg", Max);
         }
@@ -82,7 +82,7 @@ int f_random_int(int Max)
 
 unsigned f_random_intu(unsigned Max)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Max == 0) {
             F__FATAL("f_random_intu(0): Invalid arg");
         }
@@ -93,7 +93,7 @@ unsigned f_random_intu(unsigned Max)
 
 int f_random_range(int Min, int Max)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Min >= Max) {
             F__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
         }
@@ -109,7 +109,7 @@ unsigned f_random_rangeu(unsigned Min, unsigned Max)
 
 bool f_random_chance(int Something, int OutOf)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Something > OutOf) {
             F__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
         }
@@ -120,7 +120,7 @@ bool f_random_chance(int Something, int OutOf)
 
 bool f_random_chanceu(unsigned Something, unsigned OutOf)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Something > OutOf) {
             F__FATAL(
                 "f_random_chanceu(%d, %d): Invalid args", Something, OutOf);

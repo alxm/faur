@@ -26,14 +26,15 @@
     #define F_CONFIG_APP_VERSION_MINOR 0
     #define F_CONFIG_APP_VERSION_MICRO 0
 
-    #define F_CONFIG_BUILD_DEBUG 0
-    #define F_CONFIG_BUILD_DEBUG_FATAL_SPIN 1
     #define F_CONFIG_BUILD_FAUR_GIT "<commit unknown>"
     #define F_CONFIG_BUILD_FAUR_TIME __DATE__ " " __TIME__
     #define F_CONFIG_BUILD_UID "gamebuino_meta_arduino"
 
     #define F_CONFIG_COLOR_SPRITE_BORDER 0x00FF00
     #define F_CONFIG_COLOR_SPRITE_KEY 0xFF00FF
+
+    #define F_CONFIG_DEBUG 0
+    #define F_CONFIG_DEBUG_FATAL_SPIN 1
 
     #define F_CONFIG_FILES_PREFIX ""
 
@@ -56,6 +57,7 @@
     #define F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT 0
 
     #define F_CONFIG_TRAIT_LOW_MEM 1
+    #define F_CONFIG_TRAIT_NO_SEEDING 1
 #endif // !F_CONFIG_BUILD_MAKE
 
 // The Gamebuino target also requires the application to provide the file

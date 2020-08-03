@@ -55,7 +55,7 @@ void f_align_pop(void)
 {
     FAlign* align = f_list_pop(g_stack);
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(align == NULL) {
             F__FATAL("f_align_pop: Stack is empty");
         }

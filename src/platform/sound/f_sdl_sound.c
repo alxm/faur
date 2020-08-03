@@ -27,10 +27,6 @@
     #include <SDL2/SDL_mixer.h>
 #endif
 
-#if F_CONFIG_SYSTEM_EMSCRIPTEN && F_CONFIG_LIB_SDL == 1
-    #define F__SOUND_LIMITED_SUPPORT 1
-#endif
-
 static bool g_enabled;
 static bool g_mute = F_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
@@ -39,7 +35,7 @@ static int g_currentSampleChannel;
 
 void f_platform_sdl_sound__init(void)
 {
-    #if !F__SOUND_LIMITED_SUPPORT
+    #if !F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT
         SDL_version cv, rv = *Mix_Linked_Version();
         SDL_MIXER_VERSION(&cv);
 
@@ -53,14 +49,13 @@ void f_platform_sdl_sound__init(void)
         F__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        int cs = 2048;
-    #else
-        int cs = 256;
-    #endif
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY,
+                     MIX_DEFAULT_FORMAT,
+                     2,
+                     F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE) != 0) {
 
-    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, cs) != 0) {
         f_out__error("Mix_OpenAudio: %s", Mix_GetError());
+
         return;
     }
 
@@ -125,7 +120,7 @@ void f_platform_api__soundVolumeSet(int MusicVolume, int SamplesVolume)
         return;
     }
 
-    #if F__SOUND_LIMITED_SUPPORT
+    #if F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT
         F_UNUSED(MusicVolume);
         F_UNUSED(SamplesVolume);
     #else
@@ -230,7 +225,7 @@ void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel,
     }
 
     if(Mix_PlayChannel(Channel, (Mix_Chunk*)Sample, Loop ? -1 : 0) == -1) {
-        #if F_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_DEBUG
             f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
         #endif
     }

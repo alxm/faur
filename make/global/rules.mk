@@ -1,9 +1,4 @@
 #
-# Process and reconcile build settings
-#
-include $(FAUR_PATH)/make/global/config.mk
-
-#
 # Unique build path
 #
 F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
@@ -133,7 +128,7 @@ F_BUILD_FLAGS_SHARED := \
     -O$(F_CONFIG_BUILD_OPT) \
     $(F_CONFIG_BUILD_FLAGS_SHARED) \
 
-ifeq ($(F_CONFIG_BUILD_DEBUG), 0)
+ifeq ($(F_CONFIG_DEBUG), 0)
     F_BUILD_FLAGS_SHARED += -s
 else
     F_BUILD_FLAGS_SHARED += -g

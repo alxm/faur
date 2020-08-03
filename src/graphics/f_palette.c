@@ -30,7 +30,7 @@ struct FPalette {
 
 static FPalette* newPalette(const FPixels* Pixels)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Pixels->size.x < 1 || Pixels->size.y < 2) {
             F__FATAL(
                 "Invalid palette size %dx%d", Pixels->size.x, Pixels->size.y);
@@ -73,7 +73,7 @@ static FPalette* newPalette(const FPixels* Pixels)
         }
     }
 
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         f_out__info("Loaded %u colors from palette", num);
     #endif
 
@@ -109,7 +109,7 @@ void f_palette_free(FPalette* Palette)
 
 FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Index >= Palette->size) {
             F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
         }
@@ -120,7 +120,7 @@ FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 
 FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_DEBUG
         if(Index >= Palette->size) {
             F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
         }
