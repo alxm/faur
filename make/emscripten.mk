@@ -68,9 +68,8 @@ F_CONFIG_BUILD_LIBS += \
     $(F_EMSCRIPTEN_OPTIONS) \
     -lidbfs.js \
     --use-preload-plugins \
-    $(addprefix --preload-file $(F_DIR_ROOT_FROM_MAKE)/, \
-        $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
-               $(addprefix @, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
+    $(foreach f, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
+        --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
 
 F_CONFIG_BUILD_FLAGS_SHARED += \
     $(F_EMSCRIPTEN_OPTIONS) \
