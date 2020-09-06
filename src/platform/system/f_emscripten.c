@@ -40,7 +40,7 @@ void f_platform_emscripten__init(void)
 
 void f_platform_emscripten__loop(void)
 {
-    if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
+    if(!EM_ASM_INT({ return Module.faur_fsIsReady; })) {
         return;
     }
 

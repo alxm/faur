@@ -140,12 +140,9 @@ bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t S
     bool ret = fwrite(Buffer, Size, 1, File) == 1;
 
     #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        EM_ASM(
-            {
-                FS.syncfs(false, function(Error) {});
-            },
-            0
-        );
+        EM_ASM({
+            FS.syncfs(false, function(Error) {});
+        });
     #endif
 
     return ret;
