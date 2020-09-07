@@ -60,10 +60,10 @@
     #define F_CONFIG_TRAIT_NO_SEEDING 1
 #endif // !F_CONFIG_BUILD_MAKE
 
-// The Gamebuino target also requires the application to provide the file
-// `<src>/config-gamebuino.h`, which is used by the Gamebuino_META lib for its
-// own build-time settings. `config-gamebuino.h` only has to #include <faur.h>,
-// which sets all the Gamebuino_META options it needs.
+// The Gamebuino_META library requires the user application to provide the file
+// "<src>/config-gamebuino.h", which is used to manage the library's build-time
+// settings. That file should only have one line, "#include <faur.h>", which
+// sets all the necessary Gamebuino_META settings here:
 
 #undef FOLDER_NAME
 #define FOLDER_NAME F_CONFIG_APP_NAME
