@@ -57,7 +57,6 @@ F_EMSCRIPTEN_OPTIONS := \
     -s USE_LIBPNG=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s WASM=1 \
-    --shell-file $(F_EMSCRIPTEN_SHELL) \
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY
     F_EMSCRIPTEN_OPTIONS += -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
@@ -66,6 +65,7 @@ endif
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
     $(F_EMSCRIPTEN_OPTIONS) \
+    --shell-file $(F_EMSCRIPTEN_SHELL) \
     -lidbfs.js \
     --use-preload-plugins \
     $(foreach f, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
