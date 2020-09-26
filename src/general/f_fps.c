@@ -55,12 +55,8 @@ static void f_fps__init(void)
 
 const FPack f_pack__fps = {
     "FPS",
-    {
-        [0] = f_fps__init,
-    },
-    {
-        NULL,
-    }
+    f_fps__init,
+    NULL,
 };
 
 void f_fps__reset(void)

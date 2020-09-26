@@ -30,12 +30,8 @@ static void f_random__init(void)
 
 const FPack f_pack__random = {
     "Random",
-    {
-        [0] = f_random__init,
-    },
-    {
-        NULL,
-    },
+    f_random__init,
+    NULL,
 };
 
 void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)

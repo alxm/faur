@@ -91,12 +91,8 @@ static void f_sound__uninit(void)
 
 const FPack f_pack__sound = {
     "Sound",
-    {
-        [0] = f_sound__init,
-    },
-    {
-        [0] = f_sound__uninit,
-    },
+    f_sound__init,
+    f_sound__uninit,
 };
 
 void f_sound__tick(void)

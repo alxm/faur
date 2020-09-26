@@ -35,12 +35,8 @@ static void f_ecs__uninit(void)
 
 const FPack f_pack__ecs = {
     "ECS",
-    {
-        [0] = f_ecs__init,
-    },
-    {
-        [0] = f_ecs__uninit,
-    },
+    f_ecs__init,
+    f_ecs__uninit,
 };
 
 void f_ecs__set(FComponent* const* Components, size_t ComponentsNum, FSystem* const* Systems, size_t SystemsNum)

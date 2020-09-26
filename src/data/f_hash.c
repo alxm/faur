@@ -61,12 +61,8 @@ static void f_hash__init(void)
 
 const FPack f_pack__hash = {
     "Hash",
-    {
-        [0] = f_hash__init,
-    },
-    {
-        NULL,
-    },
+    f_hash__init,
+    NULL,
 };
 #else // !F_CONFIG_BUILD_LUT_GENERATE
 const FPack f_pack__hash;

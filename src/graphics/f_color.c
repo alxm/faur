@@ -47,12 +47,8 @@ static void f_color__uninit(void)
 
 const FPack f_pack__color = {
     "Color",
-    {
-        [0] = f_color__init,
-    },
-    {
-        [0] = f_color__uninit,
-    },
+    f_color__init,
+    f_color__uninit,
 };
 
 void f_color_push(void)

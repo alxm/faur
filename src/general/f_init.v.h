@@ -20,15 +20,13 @@
 
 #include "f_init.p.h"
 
-#define F_PACK__PASSES_NUM 2
-
 typedef void FPackInit(void);
 typedef void FPackUninit(void);
 
 typedef struct {
     const char* name;
-    FPackInit* init[F_PACK__PASSES_NUM];
-    FPackUninit* uninit[F_PACK__PASSES_NUM];
+    FPackInit* init;
+    FPackUninit* uninit;
 } FPack;
 
 extern void f_init__init(void);

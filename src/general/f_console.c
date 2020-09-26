@@ -97,15 +97,16 @@ static void f_console__uninit1(void)
     f_button_free(g_toggle);
 }
 
-const FPack f_pack__console = {
-    "Console",
-    {
-        [0] = f_console__init0,
-        [1] = f_console__init1,
-    },
-    {
-        [1] = f_console__uninit1,
-    },
+const FPack f_pack__console_0 = {
+    "Console 0",
+    f_console__init0,
+    NULL,
+};
+
+const FPack f_pack__console_1 = {
+    "Console 1",
+    f_console__init1,
+    f_console__uninit1,
 };
 
 void f_console__tick(void)
@@ -288,7 +289,8 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     }
 }
 #else // !F_CONFIG_DEBUG_CONSOLE
-const FPack f_pack__console;
+const FPack f_pack__console_0;
+const FPack f_pack__console_1;
 
 void f_console_showSet(bool Show)
 {

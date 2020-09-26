@@ -79,10 +79,6 @@ static void f_platform__uninit(void)
 
 const FPack f_pack__platform = {
     "Platform",
-    {
-        [0] = f_platform__init,
-    },
-    {
-        [0] = f_platform__uninit,
-    },
+    f_platform__init,
+    f_platform__uninit,
 };

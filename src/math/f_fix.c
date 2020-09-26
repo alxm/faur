@@ -98,12 +98,8 @@ static void f_fix__init(void)
 
 const FPack f_pack__fix = {
     "Fix",
-    {
-        [0] = f_fix__init,
-    },
-    {
-        NULL,
-    },
+    f_fix__init,
+    NULL,
 };
 #else // !F_CONFIG_BUILD_LUT_GENERATE
 const FPack f_pack__fix;

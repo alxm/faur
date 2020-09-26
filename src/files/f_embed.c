@@ -40,12 +40,8 @@ static void f_embed__uninit(void)
 
 const FPack f_pack__embed = {
     "Embed",
-    {
-        [0] = f_embed__init,
-    },
-    {
-        [0] = f_embed__uninit,
-    },
+    f_embed__init,
+    f_embed__uninit,
 };
 
 FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)

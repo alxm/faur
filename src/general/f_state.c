@@ -145,12 +145,8 @@ static void f_state__uninit(void)
 
 const FPack f_pack__state = {
     "State",
-    {
-        [0] = f_state__init,
-    },
-    {
-        [0] = f_state__uninit,
-    },
+    f_state__init,
+    f_state__uninit,
 };
 
 void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost)

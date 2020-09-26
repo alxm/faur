@@ -36,12 +36,8 @@ static void f_align__uninit(void)
 
 const FPack f_pack__align = {
     "Align",
-    {
-        [0] = f_align__init,
-    },
-    {
-        [0] = f_align__uninit,
-    },
+    f_align__init,
+    f_align__uninit,
 };
 
 void f_align_push(void)
