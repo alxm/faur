@@ -141,7 +141,9 @@ bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t S
 
     #if F_CONFIG_SYSTEM_EMSCRIPTEN
         EM_ASM({
-            FS.syncfs(false, function(Error) {});
+            if(Module.faur_fsIsReady == 2) {
+                FS.syncfs(false, function(Error) {});
+            }
         });
     #endif
 

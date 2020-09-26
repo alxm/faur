@@ -32,7 +32,18 @@ void f_platform_emscripten__init(void)
 
             FS.mkdir(prefix);
             FS.mount(IDBFS, {}, prefix);
-            FS.syncfs(true, function(Error) { Module.faur_fsIsReady = 1; });
+            FS.syncfs(
+                true,
+                function(Error)
+                {
+                    if(Error) {
+                        Module.printErr("Could not init IDBFS");
+                        Module.faur_fsIsReady = 1;
+                    } else {
+                        Module.faur_fsIsReady = 2;
+                    }
+                }
+            );
         },
         F_CONFIG_FILES_PREFIX
     );
