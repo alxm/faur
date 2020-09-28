@@ -20,7 +20,7 @@
 
 static void f_ecs__init(void)
 {
-    #if F_CONFIG_BUILD_GEN
+    #if F_CONFIG_BUILD_GEN_CODE
         f_ecs__populate();
     #endif
 }
