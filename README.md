@@ -16,6 +16,7 @@ sudo apt install build-essential git python3
 sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 
 # Optional
+sudo apt install python3-pil ffmpeg
 sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
 
 # Clone repo to ~/faur
