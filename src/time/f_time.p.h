@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,9 +30,9 @@ extern void f_time_waitSec(uint32_t Sec);
 extern void f_time_spinMs(uint32_t Ms);
 extern void f_time_spinSec(uint32_t Sec);
 
-static inline unsigned f_time_ticksFromMs(unsigned Ms)
+static inline FFixu f_time_ticksFromMs(unsigned Ms)
 {
-    return (f_fps_rateTickGet() * Ms + 500) / 1000;
+    return (FFixu)((uint64_t)f_fixu_fromInt(f_fps_rateTickGet()) * Ms / 1000);
 }
 
 static inline unsigned f_time_ticksFromSec(unsigned Sec)

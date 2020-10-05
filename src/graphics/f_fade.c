@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -71,8 +71,9 @@ static void newFade(FFadeOpId Op, unsigned DurationMs)
     g_fade.event = 1;
     g_fade.op = Op;
     g_fade.angle = 0;
-    g_fade.angleInc = F_DEG_090_FIX
-                        / f_math_maxu(f_time_ticksFromMs(DurationMs), 1);
+    g_fade.angleInc = f_fixu_div(
+                        F_DEG_090_FIX,
+                        f_math_maxu(f_time_ticksFromMs(DurationMs), 1));
 }
 
 void f_fade_startColorTo(unsigned DurationMs)
