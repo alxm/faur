@@ -51,7 +51,6 @@ static inline unsigned getNow(const FTimer* Timer)
 {
     switch(Timer->type) {
         case F_TIMER_MS:
-        case F_TIMER_SEC:
             return g_now.ms;
 
         case F_TIMER_TICKS:
@@ -121,10 +120,6 @@ FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat)
 {
     FTimer* t = f_mem_mallocz(sizeof(FTimer));
 
-    if(Type == F_TIMER_SEC) {
-        Period *= 1000;
-    }
-
     t->type = Type;
     t->period = Period;
 
@@ -167,19 +162,11 @@ unsigned f_timer_elapsedGet(const FTimer* Timer)
 
 unsigned f_timer_periodGet(const FTimer* Timer)
 {
-    if(Timer->type == F_TIMER_SEC) {
-        return Timer->period / 1000;
-    }
-
     return Timer->period;
 }
 
 void f_timer_periodSet(FTimer* Timer, unsigned Period)
 {
-    if(Timer->type == F_TIMER_SEC) {
-        Period *= 1000;
-    }
-
     Timer->period = Period;
     Timer->expiredCount = 0;
 

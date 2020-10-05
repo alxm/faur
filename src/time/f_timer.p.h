@@ -25,7 +25,6 @@ typedef struct FTimer FTimer;
 typedef enum {
     F_TIMER_INVALID = -1,
     F_TIMER_MS,
-    F_TIMER_SEC,
     F_TIMER_TICKS,
     F_TIMER_NUM
 } FTimerType;
