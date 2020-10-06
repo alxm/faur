@@ -36,7 +36,7 @@ struct FTimer {
 
 static struct {
     unsigned ms;
-    unsigned ticks;
+    FFixu ticks;
 } g_now;
 
 static FList* g_runningTimers; // FList<FTimer*>
@@ -44,7 +44,7 @@ static FList* g_runningTimers; // FList<FTimer*>
 static inline void setNow(void)
 {
     g_now.ms = f_time_getMs();
-    g_now.ticks = f_fps_ticksGet();
+    g_now.ticks = f_fixu_fromInt(f_fps_ticksGet());
 }
 
 static inline unsigned getNow(const FTimer* Timer)
@@ -94,24 +94,30 @@ void f_timer__tick(void)
             continue;
         }
 
-        t->diff = getNow(t) - t->start;
+        unsigned diff = getNow(t) - t->start;
 
-        if(t->diff >= t->period) {
+        if(diff >= t->period) {
             F_FLAGS_SET(t->flags, F_TIMER__EXPIRED);
-            t->expiredCount++;
 
             if(F_FLAGS_TEST_ANY(t->flags, F_TIMER__REPEAT)) {
                 if(t->period > 0) {
-                    t->start += (t->diff / t->period) * t->period;
+                    // This works as intended for both FFix and int division
+                    t->start += (diff / t->period) * t->period;
                 }
             } else {
-                t->diff = 0;
-
                 // Will be kicked out of running list next frame
                 F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING);
             }
+
+            if(t->period > 0) {
+                t->diff = t->period - 1;
+            }
+
+            t->expiredCount++;
         } else {
             F_FLAGS_CLEAR(t->flags, F_TIMER__EXPIRED);
+
+            t->diff = diff;
         }
     }
 }
