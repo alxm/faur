@@ -137,18 +137,7 @@ bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size)
 
 bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size)
 {
-    bool ret = fwrite(Buffer, Size, 1, File) == 1;
-
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        EM_ASM(
-            {
-                FS.syncfs(false, function(Error) {});
-            },
-            0
-        );
-    #endif
-
-    return ret;
+    return fwrite(Buffer, Size, 1, File) == 1;
 }
 
 bool f_platform_api__fileWritef(FPlatformFile* File, const char* Format, va_list Args)

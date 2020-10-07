@@ -24,7 +24,7 @@
     #define F_FIX__ATAN_SCALE 1
 #endif
 
-#if F_CONFIG_BUILD_LUT_GENERATE
+#if F_CONFIG_BUILD_GEN_LUTS
 FFix f__fix_sin[F_FIX_ANGLES_NUM];
 FFix f__fix_csc[F_FIX_ANGLES_NUM];
 static unsigned g_atan_angles[F_FIX_ONE / F_FIX__ATAN_SCALE];
@@ -98,14 +98,10 @@ static void f_fix__init(void)
 
 const FPack f_pack__fix = {
     "Fix",
-    {
-        [0] = f_fix__init,
-    },
-    {
-        NULL,
-    },
+    f_fix__init,
+    NULL,
 };
-#else // !F_CONFIG_BUILD_LUT_GENERATE
+#else // !F_CONFIG_BUILD_GEN_LUTS
 const FPack f_pack__fix;
 
 const FFix f__fix_sin[F_FIX_ANGLES_NUM] = {
@@ -125,7 +121,7 @@ static const unsigned g_atan_angles[F_FIX_ONE / F_FIX__ATAN_SCALE] = {
         #error Invalid F_FIX__ATAN_SCALE
     #endif
 };
-#endif // !F_CONFIG_BUILD_LUT_GENERATE
+#endif // !F_CONFIG_BUILD_GEN_LUTS
 
 unsigned f_fix_atan(FFix X1, FFix Y1, FFix X2, FFix Y2)
 {

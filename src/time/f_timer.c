@@ -76,12 +76,8 @@ static void f_timer__uninit(void)
 
 const FPack f_pack__timer = {
     "Timer",
-    {
-        [0] = f_timer__init,
-    },
-    {
-        [0] = f_timer__uninit,
-    },
+    f_timer__init,
+    f_timer__uninit,
 };
 
 void f_timer__tick(void)

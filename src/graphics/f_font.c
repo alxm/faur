@@ -61,12 +61,8 @@ static void f_font__uninit(void)
 
 const FPack f_pack__font = {
     "Font",
-    {
-        [0] = f_font__init,
-    },
-    {
-        [0] = f_font__uninit,
-    },
+    f_font__init,
+    f_font__uninit,
 };
 
 #if F_CONFIG_LIB_PNG

@@ -70,12 +70,8 @@ static void f_screen__uninit(void)
 
 const FPack f_pack__screen = {
     "Screen",
-    {
-        [0] = f_screen__init,
-    },
-    {
-        [0] = f_screen__uninit,
-    },
+    f_screen__init,
+    f_screen__uninit,
 };
 
 void f_screen__tick(void)

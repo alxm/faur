@@ -57,12 +57,8 @@ static void f_fade__uninit(void)
 
 const FPack f_pack__fade = {
     "Fade",
-    {
-        [0] = f_fade__init,
-    },
-    {
-        [0] = f_fade__uninit,
-    },
+    f_fade__init,
+    f_fade__uninit,
 };
 
 const FEvent* f_fade_eventGet(void)

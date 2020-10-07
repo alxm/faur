@@ -30,12 +30,8 @@ static void f_input__uninit(void)
 
 const FPack f_pack__input = {
     "Input",
-    {
-        [0] = f_input__init,
-    },
-    {
-        [0] = f_input__uninit,
-    },
+    f_input__init,
+    f_input__uninit,
 };
 
 void f_input__tick(void)

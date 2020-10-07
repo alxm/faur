@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 static const FPack* g_packs[] = {
-    &f_pack__console,
+    &f_pack__console_0,
     &f_pack__embed,
     &f_pack__platform,
     &f_pack__timer,
@@ -38,28 +38,33 @@ static const FPack* g_packs[] = {
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
+    &f_pack__console_1,
 };
 
 void f_init__init(void)
 {
-    for(unsigned pass = 0; pass < F_PACK__PASSES_NUM; pass++) {
-        for(unsigned pack = 0; pack < F_ARRAY_LEN(g_packs); pack++) {
-            if(g_packs[pack]->init[pass]) {
-                f_out__info("[%s] Init pass %d", g_packs[pack]->name, pass);
-                g_packs[pack]->init[pass]();
-            }
+    unsigned num = F_ARRAY_LEN(g_packs);
+
+    for(unsigned p = 0; p < num; p++) {
+        const FPack* pack = g_packs[p];
+
+        if(pack->init != NULL) {
+            f_out__info("[Init %02u/%02u] %s", p + 1, num, pack->name);
+            pack->init();
         }
     }
 }
 
 void f_init__uninit(void)
 {
-    for(unsigned pass = F_PACK__PASSES_NUM; pass--; ) {
-        for(unsigned pack = F_ARRAY_LEN(g_packs); pack--; ) {
-            if(g_packs[pack]->uninit[pass]) {
-                f_out__info("[%s] Uninit pass %d", g_packs[pack]->name, pass);
-                g_packs[pack]->uninit[pass]();
-            }
+    unsigned num = F_ARRAY_LEN(g_packs);
+
+    for(unsigned p = num; p--; ) {
+        const FPack* pack = g_packs[p];
+
+        if(pack->uninit != NULL) {
+            f_out__info("[Uninit %02u/%02u] %s", p + 1, num, pack->name);
+            pack->uninit();
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,8 @@
 #include "../general/f_init.v.h"
 #include "../general/f_out.v.h"
 
-extern const FPack f_pack__console;
+extern const FPack f_pack__console_0;
+extern const FPack f_pack__console_1;
 
 extern void f_console__tick(void);
 extern void f_console__draw(void);

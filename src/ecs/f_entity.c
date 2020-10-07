@@ -298,6 +298,10 @@ void f_entity_debugSet(FEntity* Entity, bool DebugOn)
     } else {
         F_FLAGS_CLEAR(Entity->flags, F_ENTITY__DEBUG);
     }
+
+    #if F_CONFIG_DEBUG
+        f_out__info("f_entity_debugSet(%s, %d)", Entity->id, DebugOn);
+    #endif
 }
 
 const char* f_entity_idGet(const FEntity* Entity)

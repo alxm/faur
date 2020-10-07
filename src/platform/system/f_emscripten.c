@@ -32,7 +32,18 @@ void f_platform_emscripten__init(void)
 
             FS.mkdir(prefix);
             FS.mount(IDBFS, {}, prefix);
-            FS.syncfs(true, function(Error) { Module.faur_fsIsReady = 1; });
+            FS.syncfs(
+                true,
+                function(Error)
+                {
+                    if(Error) {
+                        Module.printErr("Could not init IDBFS");
+                        Module.faur_fsIsReady = 1;
+                    } else {
+                        Module.faur_fsIsReady = 2;
+                    }
+                }
+            );
         },
         F_CONFIG_FILES_PREFIX
     );
@@ -40,7 +51,7 @@ void f_platform_emscripten__init(void)
 
 void f_platform_emscripten__loop(void)
 {
-    if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
+    if(EM_ASM_INT({ return Module.faur_fsIsReady === 0; })) {
         return;
     }
 
@@ -59,5 +70,14 @@ FVecInt f_platform_emscripten__windowSizeGet(void)
             return window.innerHeight;
         })
     };
+}
+
+void f_platform_api__fileSync(void)
+{
+    EM_ASM({
+        if(Module.faur_fsIsReady === 2) {
+            FS.syncfs(false, function(Error) {});
+        }
+    });
 }
 #endif // F_CONFIG_SYSTEM_EMSCRIPTEN

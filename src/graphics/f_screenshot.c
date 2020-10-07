@@ -146,12 +146,8 @@ void f_screenshot__uninit(void)
 
 const FPack f_pack__screenshot = {
     "Screenshot",
-    {
-        [0] = f_screenshot__init,
-    },
-    {
-        [0] = f_screenshot__uninit,
-    },
+    f_screenshot__init,
+    f_screenshot__uninit,
 };
 
 void f_screenshot__tick(void)

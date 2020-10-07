@@ -27,7 +27,7 @@ static void f_embed__init(void)
     g_dirs = f_hash_newStr(256, false);
     g_files = f_hash_newStr(256, false);
 
-    #if F_CONFIG_BUILD_GEN
+    #if F_CONFIG_BUILD_GEN_CODE
         f_embed__populate();
     #endif
 }
@@ -40,12 +40,8 @@ static void f_embed__uninit(void)
 
 const FPack f_pack__embed = {
     "Embed",
-    {
-        [0] = f_embed__init,
-    },
-    {
-        [0] = f_embed__uninit,
-    },
+    f_embed__init,
+    f_embed__uninit,
 };
 
 FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)

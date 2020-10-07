@@ -34,12 +34,8 @@ static void f_sym__uninit(void)
 
 const FPack f_pack__sym = {
     "Sym",
-    {
-        [0] = f_sym__init,
-    },
-    {
-        [0] = f_sym__uninit,
-    },
+    f_sym__init,
+    f_sym__uninit,
 };
 
 void f_sym_set(const char* Name, uintptr_t Value)
