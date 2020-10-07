@@ -166,6 +166,11 @@ unsigned f_timer_elapsedGet(const FTimer* Timer)
     return Timer->diff;
 }
 
+FFixu f_timer_elapsedGetFraction(const FTimer* Timer)
+{
+    return Timer->period > 0 ? f_fixu_div(Timer->diff, Timer->period) : 0;
+}
+
 unsigned f_timer_periodGet(const FTimer* Timer)
 {
     return Timer->period;
@@ -174,6 +179,7 @@ unsigned f_timer_periodGet(const FTimer* Timer)
 void f_timer_periodSet(FTimer* Timer, unsigned Period)
 {
     Timer->period = Period;
+    Timer->diff = 0;
     Timer->expiredCount = 0;
 
     if(Period == 0 && F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING)) {
