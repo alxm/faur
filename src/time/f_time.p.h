@@ -25,19 +25,12 @@
 extern uint32_t f_time_getMs(void);
 
 extern void f_time_waitMs(uint32_t Ms);
-extern void f_time_waitSec(uint32_t Sec);
 
 extern void f_time_spinMs(uint32_t Ms);
-extern void f_time_spinSec(uint32_t Sec);
 
 static inline FFixu f_time_ticksFromMs(unsigned Ms)
 {
     return (FFixu)((uint64_t)f_fixu_fromInt(f_fps_rateTickGet()) * Ms / 1000);
-}
-
-static inline unsigned f_time_ticksFromSec(unsigned Sec)
-{
-    return f_fps_rateTickGet() * Sec;
 }
 
 #endif // F_INC_TIME_TIME_P_H

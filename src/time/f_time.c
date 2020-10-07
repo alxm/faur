@@ -28,11 +28,6 @@ void f_time_waitMs(uint32_t Ms)
     f_platform_api__timeMsWait(Ms);
 }
 
-void f_time_waitSec(uint32_t Sec)
-{
-    f_platform_api__timeMsWait(Sec * 1000);
-}
-
 void f_time_spinMs(uint32_t Ms)
 {
     const uint32_t start = f_platform_api__timeMsGet();
@@ -40,9 +35,4 @@ void f_time_spinMs(uint32_t Ms)
     while(f_platform_api__timeMsGet() - start < Ms) {
         continue;
     }
-}
-
-void f_time_spinSec(uint32_t Sec)
-{
-    f_time_spinMs(Sec * 1000);
 }
