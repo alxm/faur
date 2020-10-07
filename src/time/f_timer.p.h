@@ -22,16 +22,9 @@
 
 typedef struct FTimer FTimer;
 
-typedef enum {
-    F_TIMER_INVALID = -1,
-    F_TIMER_MS,
-    F_TIMER_TICKS,
-    F_TIMER_NUM
-} FTimerType;
-
 #include "../math/f_fix.p.h"
 
-extern FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat);
+extern FTimer* f_timer_new(unsigned PeriodMs, bool Repeat);
 extern FTimer* f_timer_dup(const FTimer* Timer);
 extern void f_timer_free(FTimer* Timer);
 
@@ -39,7 +32,7 @@ extern unsigned f_timer_elapsedGet(const FTimer* Timer);
 extern FFixu f_timer_elapsedGetFraction(const FTimer* Timer);
 
 extern unsigned f_timer_periodGet(const FTimer* Timer);
-extern void f_timer_periodSet(FTimer* Timer, unsigned Period);
+extern void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs);
 
 extern void f_timer_runStart(FTimer* Timer);
 extern void f_timer_runStop(FTimer* Timer);
