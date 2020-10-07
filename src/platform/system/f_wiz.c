@@ -141,7 +141,7 @@ uint32_t f_platform_api__timeMsGet(void)
 
 void f_platform_api__timeMsWait(uint32_t Ms)
 {
-    f_time_spinMs(Ms);
+    f_time_msSpin(Ms);
 }
 
 #if F_CONFIG_SYSTEM_WIZ

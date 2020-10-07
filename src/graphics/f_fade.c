@@ -71,9 +71,11 @@ static void newFade(FFadeOpId Op, unsigned DurationMs)
     g_fade.event = 1;
     g_fade.op = Op;
     g_fade.angle = 0;
-    g_fade.angleInc = f_fixu_div(
-                        F_DEG_090_FIX,
-                        f_math_maxu(f_time_ticksFromMs(DurationMs), 1));
+
+    g_fade.angleInc =
+        DurationMs == 0
+            ? F_DEG_090_FIX
+            : f_fixu_div(F_DEG_090_FIX, f_time_msToTicks(DurationMs));
 }
 
 void f_fade_startColorTo(unsigned DurationMs)

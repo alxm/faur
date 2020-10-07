@@ -22,13 +22,11 @@
 
 #include "../general/f_fps.p.h"
 
-extern uint32_t f_time_getMs(void);
+extern uint32_t f_time_msGet(void);
+extern void f_time_msWait(uint32_t Ms);
+extern void f_time_msSpin(uint32_t Ms);
 
-extern void f_time_waitMs(uint32_t Ms);
-
-extern void f_time_spinMs(uint32_t Ms);
-
-static inline FFixu f_time_ticksFromMs(unsigned Ms)
+static inline FFixu f_time_msToTicks(unsigned Ms)
 {
     return (FFixu)((uint64_t)f_fixu_fromInt(f_fps_rateTickGet()) * Ms / 1000);
 }

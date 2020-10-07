@@ -120,14 +120,14 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
         #if F_CONFIG_DEBUG_WAIT
             while(true) {
                 printf("Waiting to attach debugger: PID %d\n", getpid());
-                f_time_spinMs(1000);
+                f_time_msSpin(1000);
             }
         #elif !F_CONFIG_TRAIT_DESKTOP
             if(console) {
                 f_out__info("Exiting in 10s");
                 f_console__draw();
                 f_screen__draw();
-                f_time_waitMs(10 * 1000);
+                f_time_msWait(10 * 1000);
             }
         #endif
 

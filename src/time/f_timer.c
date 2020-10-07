@@ -101,7 +101,7 @@ FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
     FTimer* t = f_mem_mallocz(sizeof(FTimer));
 
     t->periodMs = PeriodMs;
-    t->period = f_time_ticksFromMs(PeriodMs);
+    t->period = f_time_msToTicks(PeriodMs);
 
     if(Repeat) {
         F_FLAGS_SET(t->flags, F_TIMER__REPEAT);
@@ -153,7 +153,7 @@ unsigned f_timer_periodGet(const FTimer* Timer)
 void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs)
 {
     Timer->periodMs = PeriodMs;
-    Timer->period = f_time_ticksFromMs(PeriodMs);
+    Timer->period = f_time_msToTicks(PeriodMs);
     Timer->diff = 0;
     Timer->expiredCount = 0;
 
