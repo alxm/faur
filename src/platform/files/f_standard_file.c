@@ -21,10 +21,6 @@
 #if F_CONFIG_FILES_STANDARD
 #include <sys/stat.h>
 
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-    #include <emscripten.h>
-#endif
-
 struct FPlatformFile {
     FILE* handle;
 };
