@@ -25,47 +25,21 @@ typedef enum {
 } FTimerFlags;
 
 struct FTimer {
-    FTimerType type;
     FTimerFlags flags;
-    unsigned period;
-    unsigned start;
-    unsigned diff;
+    unsigned periodMs;
+    FFixu period;
+    FFixu start;
+    FFixu diff;
     unsigned expiredCount;
     FListNode* runningListNode;
 };
 
-static struct {
-    unsigned ms;
-    unsigned ticks;
-} g_now;
-
+FFixu g_ticksNow;
 static FList* g_runningTimers; // FList<FTimer*>
-
-static inline void setNow(void)
-{
-    g_now.ms = f_time_getMs();
-    g_now.ticks = f_fps_ticksGet();
-}
-
-static inline unsigned getNow(const FTimer* Timer)
-{
-    switch(Timer->type) {
-        case F_TIMER_MS:
-        case F_TIMER_SEC:
-            return g_now.ms;
-
-        case F_TIMER_TICKS:
-            return g_now.ticks;
-
-        default:
-            return 0;
-    }
-}
 
 static void f_timer__init(void)
 {
-    setNow();
-
+    g_ticksNow = f_fixu_fromInt(f_fps_ticksGet());
     g_runningTimers = f_list_new();
 }
 
@@ -82,7 +56,7 @@ const FPack f_pack__timer = {
 
 void f_timer__tick(void)
 {
-    setNow();
+    g_ticksNow = f_fixu_fromInt(f_fps_ticksGet());
 
     F_LIST_ITERATE(g_runningTimers, FTimer*, t) {
         if(!F_FLAGS_TEST_ANY(t->flags, F_TIMER__RUNNING)) {
@@ -95,38 +69,39 @@ void f_timer__tick(void)
             continue;
         }
 
-        t->diff = getNow(t) - t->start;
+        unsigned diff = g_ticksNow - t->start;
 
-        if(t->diff >= t->period) {
+        if(diff >= t->period) {
             F_FLAGS_SET(t->flags, F_TIMER__EXPIRED);
-            t->expiredCount++;
 
             if(F_FLAGS_TEST_ANY(t->flags, F_TIMER__REPEAT)) {
                 if(t->period > 0) {
-                    t->start += (t->diff / t->period) * t->period;
+                    t->start += (diff / t->period) * t->period;
                 }
             } else {
-                t->diff = 0;
-
                 // Will be kicked out of running list next frame
                 F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING);
             }
+
+            if(t->period > 0) {
+                t->diff = t->period - 1;
+            }
+
+            t->expiredCount++;
         } else {
             F_FLAGS_CLEAR(t->flags, F_TIMER__EXPIRED);
+
+            t->diff = diff;
         }
     }
 }
 
-FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat)
+FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 {
     FTimer* t = f_mem_mallocz(sizeof(FTimer));
 
-    if(Type == F_TIMER_SEC) {
-        Period *= 1000;
-    }
-
-    t->type = Type;
-    t->period = Period;
+    t->periodMs = PeriodMs;
+    t->period = f_time_msToTicks(PeriodMs);
 
     if(Repeat) {
         F_FLAGS_SET(t->flags, F_TIMER__REPEAT);
@@ -165,25 +140,24 @@ unsigned f_timer_elapsedGet(const FTimer* Timer)
     return Timer->diff;
 }
 
-unsigned f_timer_periodGet(const FTimer* Timer)
+FFixu f_timer_elapsedGetFraction(const FTimer* Timer)
 {
-    if(Timer->type == F_TIMER_SEC) {
-        return Timer->period / 1000;
-    }
-
-    return Timer->period;
+    return Timer->period > 0 ? f_fixu_div(Timer->diff, Timer->period) : 0;
 }
 
-void f_timer_periodSet(FTimer* Timer, unsigned Period)
+unsigned f_timer_periodGet(const FTimer* Timer)
 {
-    if(Timer->type == F_TIMER_SEC) {
-        Period *= 1000;
-    }
+    return Timer->periodMs;
+}
 
-    Timer->period = Period;
+void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs)
+{
+    Timer->periodMs = PeriodMs;
+    Timer->period = f_time_msToTicks(PeriodMs);
+    Timer->diff = 0;
     Timer->expiredCount = 0;
 
-    if(Period == 0 && F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING)) {
+    if(PeriodMs == 0 && F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING)) {
         F_FLAGS_SET(Timer->flags, F_TIMER__EXPIRED);
         Timer->expiredCount++;
     }
@@ -191,7 +165,7 @@ void f_timer_periodSet(FTimer* Timer, unsigned Period)
 
 void f_timer_runStart(FTimer* Timer)
 {
-    Timer->start = getNow(Timer);
+    Timer->start = g_ticksNow;
     Timer->diff = 0;
     Timer->expiredCount = 0;
 

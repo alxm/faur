@@ -256,7 +256,7 @@ bool f_button_pressGetOnce(FButton* Button)
 void f_button_pressSetRepeat(FButton* Button, unsigned RepeatMs)
 {
     if(Button->autoRepeat == NULL) {
-        Button->autoRepeat = f_timer_new(F_TIMER_MS, RepeatMs, true);
+        Button->autoRepeat = f_timer_new(RepeatMs, true);
     } else {
         f_timer_runStop(Button->autoRepeat);
         f_timer_periodSet(Button->autoRepeat, RepeatMs);

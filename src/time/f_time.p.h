@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,22 +22,13 @@
 
 #include "../general/f_fps.p.h"
 
-extern uint32_t f_time_getMs(void);
+extern uint32_t f_time_msGet(void);
+extern void f_time_msWait(uint32_t Ms);
+extern void f_time_msSpin(uint32_t Ms);
 
-extern void f_time_waitMs(uint32_t Ms);
-extern void f_time_waitSec(uint32_t Sec);
-
-extern void f_time_spinMs(uint32_t Ms);
-extern void f_time_spinSec(uint32_t Sec);
-
-static inline unsigned f_time_ticksFromMs(unsigned Ms)
+static inline FFixu f_time_msToTicks(unsigned Ms)
 {
-    return (f_fps_rateTickGet() * Ms + 500) / 1000;
-}
-
-static inline unsigned f_time_ticksFromSec(unsigned Sec)
-{
-    return f_fps_rateTickGet() * Sec;
+    return (FFixu)((uint64_t)f_fixu_fromInt(f_fps_rateTickGet()) * Ms / 1000);
 }
 
 #endif // F_INC_TIME_TIME_P_H

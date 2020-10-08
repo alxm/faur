@@ -57,7 +57,7 @@ static void f_sound__init(void)
 
         #if F_CONFIG_SOUND_VOLUME_BAR
             adjustSoundVolume(g_volumeMax / 16);
-            g_volTimer = f_timer_new(F_TIMER_MS, F__VOLBAR_SHOW_MS, false);
+            g_volTimer = f_timer_new(F__VOLBAR_SHOW_MS, false);
 
             g_volumeUpButton = f_button_new();
             f_button_bindButton(g_volumeUpButton, NULL, F_BUTTON_VOLUP);
