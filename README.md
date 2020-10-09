@@ -17,7 +17,7 @@ sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 
 # Optional
 sudo apt install python3-pil ffmpeg
-sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
+sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev
 
 # Clone repo to ~/faur
 cd ~
@@ -40,7 +40,7 @@ make run
 
 ![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")
 
-Move the square with the arrow keys or a gamepad.
+You can move the square on screen with the arrow keys or with a game controller.
 
 ### Generated Files
 
@@ -139,23 +139,21 @@ void f_main(void)
 
 I first wrote Faur (formerly *a2x*) to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). These are the supported platforms now:
 
-#### Desktop
+Platform | Toolchain | Run-time Libraries
+--- | --- | ---
+***Desktop***
+Linux, FreeBSD | OS build tools | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
+Windows | MinGW-w64 | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
+Web | Emscripten | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
+***Embedded Linux***
+GP2X, Wiz | Open2x SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
+Caanoo | GPH SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
+Open Pandora | Pandora SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
+***Arduino***
+Gamebuino META | Arduino SAMD | Gamebuino META 1.3
+Odroid-GO | Arduino ESP32 | Odroid-GO 1.0
 
-* Linux, FreeBSD *(native)*
-* Windows *(MinGW-w64)*
-* Web *(Emscripten)*
-
-#### Embedded Linux
-
-* GP2X, Wiz, Caanoo *(Open2x SDK, GPH SDK)*
-* Open Pandora *(Pandora SDK)*
-
-#### Arduino
-
-* Gamebuino META *(Arduino SAMD)*
-* Odroid-GO *(Arduino ESP32)*
-
-The default toolchain paths are in faur/make/global/defs.mk and they can be overridden in ~/.config/faur/sdk.mk. To build for a different target, edit the application Makefile and replace `dev.mk` with another file from faur/make/.
+The default toolchain paths are in `faur/make/global/defs.mk` and they can be overridden in `~/.config/faur/sdk.mk`. To build for a different target, edit the application Makefile and replace `$(FAUR_PATH)/make/dev.mk` with another file from `$(FAUR_PATH)/make`.
 
 ## License
 
