@@ -83,6 +83,6 @@ include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 run : all
-	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-runweb $(F_BUILD_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-build-runweb $(F_BUILD_FILE_BIN)
 
 endif
