@@ -23,11 +23,21 @@
 #include "f_gp2x.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SYSTEM_GP2X
+#if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
+#if F_CONFIG_TRAIT_EXEC_AFTER_EXIT
+void f_platform_api__execAfterExit(void)
+{
+    chdir("/usr/gp2x");
+    execl("gp2xmenu", "gp2xmenu", NULL);
+}
+#endif
+#endif
+
+#if F_CONFIG_SYSTEM_GP2X
 #if F_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)
 {

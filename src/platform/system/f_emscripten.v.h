@@ -24,8 +24,6 @@
 
 extern void f_platform_emscripten__init(void);
 
-extern void f_platform_emscripten__loop(void);
-
 extern FVecInt f_platform_emscripten__windowSizeGet(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
