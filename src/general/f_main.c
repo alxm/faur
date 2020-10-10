@@ -25,14 +25,10 @@
     #include <execinfo.h>
 #endif
 
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-    #include <emscripten.h>
-#endif
-
 static int g_argsNum;
 static const char** g_args;
 
-#if F_CONFIG_BUILD_MAIN
+#if !F_CONFIG_TRAIT_CUSTOM_MAIN
 int main(int Argc, char* Argv[])
 {
     g_argsNum = Argc;
@@ -40,25 +36,11 @@ int main(int Argc, char* Argv[])
 
     f__main();
 
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        emscripten_set_main_loop(
-            f_platform_emscripten__loop,
-            f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
-            true);
-    #else
-        while(f_state__runStep()) {
-            continue;
-        }
+    while(f_state__runStep()) {
+        continue;
+    }
 
-        f_init__uninit();
-
-        #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
-            #if F_CONFIG_SYSTEM_GP2X_MENU
-                chdir("/usr/gp2x");
-                execl("gp2xmenu", "gp2xmenu", NULL);
-            #endif
-        #endif
-    #endif
+    f_init__uninit();
 
     return 0;
 }
@@ -131,8 +113,8 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             }
         #endif
 
-        #if F_CONFIG_SYSTEM_EMSCRIPTEN
-            emscripten_force_exit(1);
+        #if F_CONFIG_TRAIT_CUSTOM_EXIT
+            f_platform_api__customExit(EXIT_FAILURE);
         #endif
 
         exit(EXIT_FAILURE);

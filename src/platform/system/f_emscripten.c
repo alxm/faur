@@ -49,7 +49,12 @@ void f_platform_emscripten__init(void)
     );
 }
 
-void f_platform_emscripten__loop(void)
+void f_platform_api__customExit(int Status)
+{
+    emscripten_force_exit(Status);
+}
+
+static void f__loop(void)
 {
     if(EM_ASM_INT({ return Module.faur_fsIsReady === 0; })) {
         return;
@@ -58,6 +63,21 @@ void f_platform_emscripten__loop(void)
     if(!f_state__runStep()) {
         emscripten_cancel_main_loop();
     }
+}
+
+int main(int Argc, char* Argv[])
+{
+    F_UNUSED(Argc);
+    F_UNUSED(Argv);
+
+    f__main();
+
+    emscripten_set_main_loop(
+        f__loop,
+        f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
+        true);
+
+    return 0;
 }
 
 FVecInt f_platform_emscripten__windowSizeGet(void)

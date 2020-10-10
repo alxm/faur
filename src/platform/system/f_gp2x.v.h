@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2017, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,5 +22,7 @@
 
 extern void f_platform_gp2x__init(void);
 extern void f_platform_gp2x__uninit(void);
+
+extern void f_platform_gp2x__execMenu(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_GP2X_V_H

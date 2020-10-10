@@ -28,6 +28,8 @@ F_CONFIG_LIB_SDL ?= 2
 F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 2048
 F_CONFIG_SCREEN_VSYNC ?= 1
 F_CONFIG_SYSTEM_EMSCRIPTEN := 1
+F_CONFIG_TRAIT_CUSTOM_EXIT := 1
+F_CONFIG_TRAIT_CUSTOM_MAIN := 1
 F_CONFIG_TRAIT_KEYBOARD := 1
 F_CONFIG_TRAIT_NO_SLEEP := 1
 
@@ -81,6 +83,6 @@ include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 run : all
-	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-runweb $(F_BUILD_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-build-runweb $(F_BUILD_FILE_BIN)
 
 endif
