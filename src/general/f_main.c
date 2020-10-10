@@ -42,10 +42,6 @@ int main(int Argc, char* Argv[])
 
     f_init__uninit();
 
-    #if F_CONFIG_TRAIT_EXEC_AFTER_EXIT
-        f_platform_api__execAfterExit();
-    #endif
-
     return 0;
 }
 #endif

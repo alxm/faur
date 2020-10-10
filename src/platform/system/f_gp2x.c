@@ -28,13 +28,11 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#if F_CONFIG_TRAIT_EXEC_AFTER_EXIT
-void f_platform_api__execAfterExit(void)
+void f_platform_gp2x__execMenu(void)
 {
     chdir("/usr/gp2x");
     execl("gp2xmenu", "gp2xmenu", NULL);
 }
-#endif
 #endif
 
 #if F_CONFIG_SYSTEM_GP2X

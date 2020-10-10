@@ -36,10 +36,16 @@ static void f_platform__init(void)
         f_platform_sdl__init();
     #endif
 
-    #if F_CONFIG_SYSTEM_GP2X
-        f_platform_gp2x__init();
-    #elif F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
-        f_platform_wiz__init();
+    #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
+        #if F_CONFIG_SYSTEM_GP2X
+            f_platform_gp2x__init();
+        #else
+            f_platform_wiz__init();
+        #endif
+
+        #if F_CONFIG_SYSTEM_GP2X_MENU
+            atexit(f_platform_gp2x__execMenu);
+        #endif
     #endif
 
     #if F_CONFIG_SYSTEM_ODROID_GO

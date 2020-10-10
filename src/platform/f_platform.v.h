@@ -43,7 +43,6 @@ typedef void FPlatformFile;
 extern const FPack f_pack__platform;
 
 extern void f_platform_api__customExit(int Status);
-extern void f_platform_api__execAfterExit(void);
 
 extern uint32_t f_platform_api__timeMsGet(void);
 extern void f_platform_api__timeMsWait(uint32_t Ms);
