@@ -125,12 +125,8 @@ static void f_{pack_name}__uninit(void)
 
 const FPack f_pack__{pack_name} = {{
     "{pack_name}",
-    {{
-        [0] = f_{pack_name}__init,
-    }},
-    {{
-        [0] = f_{pack_name}__uninit,
-    }},
+    f_{pack_name}__init,
+    f_{pack_name}__uninit
 }};
 """)
 
