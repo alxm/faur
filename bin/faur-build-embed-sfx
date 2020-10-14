@@ -24,9 +24,9 @@ from utils.tool import Tool
 g_tool = Tool('Sound.wav GenFile.c/.h VarName')
 
 def main():
-    wav_file = g_tool.get_arg('Sound.wav')
-    target_file = g_tool.get_arg('GenFile.c/.h')
-    var_name = g_tool.sanitize_c_var(g_tool.get_arg('VarName'))
+    wav_file = g_tool.args.get('Sound.wav')
+    target_file = g_tool.args.get('GenFile.c/.h')
+    var_name = g_tool.sanitize_c_var(g_tool.args.get('VarName'))
 
     if not wav_file.endswith('.wav'):
         g_tool.usage('Sound file must be a .wav file')
@@ -38,7 +38,7 @@ def main():
     else:
         g_tool.usage('GenFile must be a .c or .h file')
 
-    g_tool.write_text(target_file, content)
+    g_tool.files.write_text(target_file, content)
 
 def process_h(VarName):
     content = f"""\
@@ -66,7 +66,7 @@ def process_c(VarName, WavFile):
     if ret.returncode != 0:
         g_tool.out.error(f'ffmpeg error code {ret.returncode}')
 
-    wav_bytes = g_tool.read_bytes(WavFile)
+    wav_bytes = g_tool.files.read_bytes(WavFile)
     gbm_bytes = ret.stdout
 
     def format_bytes(Bytes):

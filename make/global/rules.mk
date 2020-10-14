@@ -208,39 +208,39 @@ $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 #
 # ECS init code
 #
-$(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-ecs-init
+$(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-ecs-init $@ $(F_BUILD_FILES_ECS_HEADERS)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init $@ $(F_BUILD_FILES_ECS_HEADERS)
 
 #
 # Embedded files
 #
-$(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-bin
+$(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-bin
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
+	$(F_FAUR_DIR_BIN)/faur-build-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
-$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-embed-init
+$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
 
 #
 # Embedded objects
 #
-$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
-$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
 #
 # So application C files can use these generated headers
@@ -262,13 +262,13 @@ $(F_BUILD_DIR_FAUR_O)/%.cpp.o : $(F_FAUR_DIR_SRC)/%.cpp
 	@ mkdir -p $(@D)
 	$(CXX) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
 
-$(F_FAUR_DIR_SRC_GEN)/%.c : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+$(F_FAUR_DIR_SRC_GEN)/%.c : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_FAUR_DIR_SRC_GEN)/%.h : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+$(F_FAUR_DIR_SRC_GEN)/%.h : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 $(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
 

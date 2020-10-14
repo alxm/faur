@@ -49,7 +49,7 @@ class Output:
         return ''.join(f'\033[{color}m{text}\033[0m' for (text, color) in Args)
 
     def __worker(self, Tag, TagColor, Text, OutputFile):
-        if self.__tool.get_flag('-q'):
+        if self.__tool.args.get_flag('-q'):
             return
 
         tag = self.__colorfmt((f'[{Tag}]', TagColor))

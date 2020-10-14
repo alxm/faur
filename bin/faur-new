@@ -24,14 +24,14 @@ from utils.tool import Tool
 g_tool = Tool('ProjectName')
 
 def main():
-    project_name = g_tool.get_arg('ProjectName').replace(' ', '-')
+    project_name = g_tool.args.get('ProjectName').replace(' ', '-')
 
     if project_name != os.path.basename(project_name):
         g_tool.out.error(f'Project name cannot be a path: {project_name}')
 
     project_path = os.path.abspath(project_name)
 
-    g_tool.check_files_not_exist(project_path)
+    g_tool.files.assert_not_exist(project_path)
 
     dir_root = Dir(project_path)
     dir_assets = dir_root.add_subdir('assets')
@@ -132,7 +132,7 @@ void f_main(void)
 /src/faur_gen/
 """)
 
-    g_tool.shell(f'cd {dir_root.path} && git init && git add .')
+    g_tool.run_shell(f'cd {dir_root.path} && git init && git add .')
     g_tool.out.note('To build and run:')
     g_tool.out.note(f'cd {dir_make.path} && make -j run')
 
@@ -147,7 +147,7 @@ class Dir:
         return Dir(f'{self.path}/{Name}')
 
     def write_file(self, Name, Content):
-        g_tool.write_text(f'{self.path}/{Name}', Content)
+        g_tool.files.write_text(f'{self.path}/{Name}', Content)
 
 if __name__ == '__main__':
     main()

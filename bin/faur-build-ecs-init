@@ -24,8 +24,8 @@ from utils.tool import Tool
 g_tool = Tool('Init.c ...')
 
 def main():
-    init_c = g_tool.get_arg('Init.c')
-    headers = g_tool.get_arg('...')
+    init_c = g_tool.args.get('Init.c')
+    headers = g_tool.args.get('...')
 
     externs = []
     components = []
@@ -44,7 +44,7 @@ def main():
     ]
 
     for h in headers:
-        for l in g_tool.read_text_lines(h):
+        for l in g_tool.files.read_text_lines(h):
             for r in rules:
                 m = r.pattern.match(l)
 
@@ -101,7 +101,7 @@ void f_ecs__populate(void)
 }}
 """
 
-    g_tool.write_text(init_c, content)
+    g_tool.files.write_text(init_c, content)
 
 if __name__ == '__main__':
     main()

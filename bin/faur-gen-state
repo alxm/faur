@@ -22,14 +22,14 @@ from utils.tool import Tool
 g_tool = Tool('StateName')
 
 def main():
-    state_name = g_tool.get_arg('StateName').lower()
+    state_name = g_tool.args.get('StateName').lower()
 
     state_c = f't_{state_name}.c'
     state_h = f't_{state_name}.h'
 
-    g_tool.check_files_not_exist(state_c, state_h)
+    g_tool.files.assert_not_exist(state_c, state_h)
 
-    g_tool.write_text(state_c,
+    g_tool.files.write_text(state_c,
 f"""\
 #include "t_{state_name}.h"
 
@@ -57,7 +57,7 @@ void t_{state_name}(void)
 }}
 """)
 
-    g_tool.write_text(state_h,
+    g_tool.files.write_text(state_h,
 f"""\
 #pragma once
 

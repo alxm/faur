@@ -64,10 +64,10 @@ g_formats = {
 g_tool = Tool('Image.file GenFile.c/.h VarName ColorKeyHex')
 
 def main():
-    image_file = g_tool.get_arg('Image.file')
-    target_file = g_tool.get_arg('GenFile.c/.h')
-    var_name = g_tool.sanitize_c_var(g_tool.get_arg('VarName'))
-    color_key = g_tool.get_arg('ColorKeyHex')
+    image_file = g_tool.args.get('Image.file')
+    target_file = g_tool.args.get('GenFile.c/.h')
+    var_name = g_tool.sanitize_c_var(g_tool.args.get('VarName'))
+    color_key = g_tool.args.get('ColorKeyHex')
 
     if not re.match('^0[xX][0-9a-fA-F]{6}$', color_key):
         g_tool.usage(f'ColorKeyHex {color_key} not a 0xRRGGBB hex')
@@ -87,7 +87,7 @@ def main():
     else:
         g_tool.usage('GenFile must be a .c or .h file')
 
-    g_tool.write_text(target_file, content)
+    g_tool.files.write_text(target_file, content)
 
 def process_h(VarName):
     content = f"""\
