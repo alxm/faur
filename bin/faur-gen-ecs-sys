@@ -22,14 +22,14 @@ from utils.tool import Tool
 g_tool = Tool('SystemName')
 
 def main():
-    sys_name = g_tool.get_arg('SystemName').lower()
+    sys_name = g_tool.args.get('SystemName').lower()
 
     sys_c = f's_{sys_name}.c'
     sys_h = f's_{sys_name}.h'
 
-    g_tool.check_files_not_exist(sys_c, sys_h)
+    g_tool.files.assert_not_exist(sys_c, sys_h)
 
-    g_tool.write_text(sys_c,
+    g_tool.files.write_text(sys_c,
 f"""\
 #include "s_{sys_name}.h"
 
@@ -47,7 +47,7 @@ F_SYSTEM(
 );
 """)
 
-    g_tool.write_text(sys_h,
+    g_tool.files.write_text(sys_h,
 f"""\
 #pragma once
 

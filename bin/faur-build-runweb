@@ -39,10 +39,10 @@ def main():
 
         g_tool.out.note(f'Web server running at http://{host}:{port}')
 
-        g_tool.shell('firefox -new-window http://{host}:{port}/{file}'
+        g_tool.run_shell('firefox -new-window http://{host}:{port}/{file}'
             .format(host = host,
                     port = port,
-                    file = g_tool.get_arg('File')))
+                    file = g_tool.args.get('File')))
 
         input('\nPress ENTER to exit web server\n\n')
 

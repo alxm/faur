@@ -24,10 +24,10 @@ from utils.tool import Tool
 g_tool = Tool('File.bin File.h OriginalPath CVarPrefix')
 
 def main():
-    bin_file = g_tool.get_arg('File.bin')
-    h_file = g_tool.get_arg('File.h')
-    original_path = g_tool.get_arg('OriginalPath')
-    cvar_prefix = g_tool.get_arg('CVarPrefix')
+    bin_file = g_tool.args.get('File.bin')
+    h_file = g_tool.args.get('File.h')
+    original_path = g_tool.args.get('OriginalPath')
+    cvar_prefix = g_tool.args.get('CVarPrefix')
 
     if os.path.isdir(bin_file):
         content = process_dir(bin_file, cvar_prefix, original_path)
@@ -36,10 +36,10 @@ def main():
     else:
         g_tool.out.error(f'{bin_file} is an invalid file')
 
-    g_tool.write_text(h_file, content)
+    g_tool.files.write_text(h_file, content)
 
 def process_dir(BinFile, CVarPrefix, OriginalPath):
-    entries = g_tool.list_dir(BinFile)
+    entries = g_tool.files.list_dir(BinFile)
 
     content = """\
 //
@@ -65,7 +65,7 @@ static const FEmbeddedDir {prefix}{var} = {{
     return content
 
 def process_file(BinFile, CVarPrefix, OriginalPath):
-    bin_bytes = g_tool.read_bytes(BinFile)
+    bin_bytes = g_tool.files.read_bytes(BinFile)
 
     content = """\
 //

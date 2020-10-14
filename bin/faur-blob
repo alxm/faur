@@ -24,9 +24,9 @@ from utils.tool import Tool
 g_tool = Tool('DstBlobFile RootDir ...')
 
 def main():
-    blob = Blob(g_tool.get_arg('RootDir'), g_tool.get_arg('...'))
+    blob = Blob(g_tool.args.get('RootDir'), g_tool.args.get('...'))
 
-    g_tool.write_bytes(g_tool.get_arg('DstBlobFile'), blob.buffer)
+    g_tool.files.write_bytes(g_tool.args.get('DstBlobFile'), blob.buffer)
 
 class Blob:
     def __init__(self, RootDir, Files):
@@ -60,7 +60,7 @@ class Blob:
     def scan_file(self, File):
         if File not in self.offsets:
             file_path_full = self.path_full(File)
-            g_tool.check_files_exist(file_path_full)
+            g_tool.files.assert_exist(file_path_full)
 
             f = BlobFile(File, os.path.isdir(file_path_full))
 
@@ -68,7 +68,7 @@ class Blob:
             self.files.append(f)
 
             if f.is_dir:
-                for f in g_tool.list_dir(file_path_full):
+                for f in g_tool.files.list_dir(file_path_full):
                     self.scan_file(f'{File}/{f}')
 
     def path_full(self, File):
@@ -103,7 +103,7 @@ class Blob:
     def write_file(self, File):
         self.offsets[File.path_partial] = len(self.buffer)
 
-        file_buffer = g_tool.read_bytes(self.path_full(File.path_partial))
+        file_buffer = g_tool.files.read_bytes(self.path_full(File.path_partial))
 
         self.write_uint8(1)
         self.write_stringz(File.path_partial)
@@ -114,7 +114,7 @@ class Blob:
     def write_dir(self, File):
         self.offsets[File.path_partial] = len(self.buffer)
 
-        dir_entries = g_tool.list_dir(self.path_full(File.path_partial))
+        dir_entries = g_tool.files.list_dir(self.path_full(File.path_partial))
 
         self.write_uint8(2)
         self.write_stringz(File.path_partial)

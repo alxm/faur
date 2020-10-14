@@ -51,13 +51,14 @@ category/f_sample.c
 g_tool = Tool('Folder Name')
 
 def main():
-    pack_folder = g_tool.get_arg('Folder').strip('./').lower().replace(' ', '_')
-    pack_name = g_tool.get_arg('Name').lower().replace(' ', '_')
+    folder = g_tool.args.get('Folder')
+    pack_folder = folder.strip('./').lower().replace(' ', '_')
+    pack_name = g_tool.args.get('Name').lower().replace(' ', '_')
 
     if len(pack_folder) < 1:
-        g_tool.out.error(f'Invalid path {g_tool.get_arg("Folder")}')
+        g_tool.out.error(f'Invalid path {folder}')
 
-    pack_path = f'{g_tool.dir_src}/{pack_folder}'
+    pack_path = f'{g_tool.files.dir_src}/{pack_folder}'
 
     if not os.path.exists(pack_path):
         os.makedirs(pack_path)
@@ -68,7 +69,7 @@ def main():
     pack_ph = f'{pack_path}/f_{pack_name}.p.h'
     pack_vh = f'{pack_path}/f_{pack_name}.v.h'
 
-    g_tool.check_files_not_exist(pack_c, pack_ph, pack_vh)
+    g_tool.files.assert_not_exist(pack_c, pack_ph, pack_vh)
 
     author = '<your username>'
 
@@ -105,7 +106,7 @@ def main():
 
     root_prefix = '../' * (1 + pack_folder.count('/'))
 
-    g_tool.write_text(pack_c,
+    g_tool.files.write_text(pack_c,
 f"""\
 {license_header}
 
@@ -133,7 +134,7 @@ const FPack f_pack__{pack_name} = {{
 }};
 """)
 
-    g_tool.write_text(pack_ph,
+    g_tool.files.write_text(pack_ph,
 f"""\
 {license_header}
 
@@ -145,7 +146,7 @@ f"""\
 #endif // {header_guard_p}
 """)
 
-    g_tool.write_text(pack_vh,
+    g_tool.files.write_text(pack_vh,
 f"""\
 {license_header}
 
