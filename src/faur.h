@@ -34,6 +34,7 @@ F_EXTERN_C_START
 #include "data/f_hash.p.h"
 #include "data/f_listit.p.h"
 #include "data/f_list.p.h"
+#include "data/f_pool.p.h"
 #include "ecs/f_collection.p.h"
 #include "ecs/f_component.p.h"
 #include "ecs/f_ecs.p.h"
