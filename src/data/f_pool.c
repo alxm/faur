@@ -18,22 +18,27 @@
 #include "f_pool.v.h"
 #include <faur.v.h>
 
-#define F__SLAB_OBJ_NUM 8
+#define F__ENTRIES_NUM 8
 
-typedef union FPoolHeader {
-    union FPoolHeader* nextFree; // Next free object memory in a pool slab
-    FPool* pool; // Pool this object belongs to
-} FPoolHeader;
+typedef union FPoolEntryHeader FPoolEntryHeader;
+typedef struct FPoolSlab FPoolSlab;
 
-typedef struct FPoolSlab {
-    struct FPoolSlab* nextSlab; // Next slab in a pool's slab list
-    FMaxMemAlignType buffer[]; // FPool->objSize * F__SLAB_OBJ_NUM bytes
-} FPoolSlab;
+union FPoolEntryHeader {
+    FPoolEntryHeader* nextFreeEntry; // Next free entry in a slab
+    FPool* parentPool; // Pool this active entry belongs to
+    FMaxMemAlignType alignment; // Used to prompt max alignment padding
+};
+
+struct FPoolSlab {
+    FPoolSlab* nextSlab; // Next slab in a pool's slab list
+    FPoolEntryHeader buffer[]; // Memory space for objects
+};
 
 struct FPool {
-    unsigned objSize; // Size of each individual object in a slab
-    struct FPoolSlab* slabList; // All slabs used by this pool
-    union FPoolHeader* freeList; // Pointer to a free obj memory in a slab
+    unsigned objSize; // Size of a user object within a pool entry
+    unsigned entrySize; // Size of each pool entry in a slab
+    FPoolSlab* slabList; // Keeps track of all allocated slabs
+    FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
 
 static void f_pool__init(void)
@@ -52,26 +57,79 @@ const FPack f_pack__pool = {
     f_pool__uninit
 };
 
+static void slab_new(FPool* Pool)
+{
+    FPoolSlab* s = f_mem_malloc(
+                    sizeof(FPoolSlab) + Pool->entrySize * F__ENTRIES_NUM);
+
+    s->nextSlab = Pool->slabList;
+
+    Pool->slabList = s;
+    Pool->freeEntryList = s->buffer;
+
+    FPoolEntryHeader* entry;
+    FPoolEntryHeader* lastEntry = s->buffer;
+
+    for(unsigned e = 1; e < F__ENTRIES_NUM; e++) {
+        entry = (FPoolEntryHeader*)((uintptr_t)s->buffer + e * Pool->entrySize);
+
+        lastEntry->nextFreeEntry = entry;
+        lastEntry = entry;
+    }
+
+    lastEntry->nextFreeEntry = NULL;
+}
+
 FPool* f_pool_new(unsigned Size)
 {
-    F_UNUSED(Size);
+    FPool* p = f_mem_malloc(sizeof(FPool));
 
-    return NULL;
+    p->objSize = Size;
+    p->entrySize = (unsigned)(sizeof(FPoolEntryHeader)
+                                + ((Size + sizeof(FMaxMemAlignType) - 1)
+                                        & ~(sizeof(FMaxMemAlignType) - 1)));
+    p->slabList = NULL;
+    p->freeEntryList = NULL;
+
+    return p;
 }
 
 void f_pool_free(FPool* Pool)
 {
-    F_UNUSED(Pool);
+    for(FPoolSlab* slab = Pool->slabList; slab != NULL; ) {
+        FPoolSlab* nextSlab = slab->nextSlab;
+
+        f_mem_free(slab);
+
+        slab = nextSlab;
+    }
+
+    f_mem_free(Pool);
 }
 
 void* f_pool_alloc(FPool* Pool)
 {
-    F_UNUSED(Pool);
+    if(Pool->freeEntryList == NULL) {
+        slab_new(Pool);
+    }
 
-    return NULL;
+    FPoolEntryHeader* entry = Pool->freeEntryList;
+
+    Pool->freeEntryList = entry->nextFreeEntry;
+    entry->parentPool = Pool;
+
+    void* userBuffer = entry + 1;
+
+    memset(userBuffer, 0, Pool->objSize);
+
+    return userBuffer;
 }
 
 void f_pool_release(void* Pointer)
 {
-    F_UNUSED(Pointer);
+    FPoolEntryHeader* entry = (FPoolEntryHeader*)Pointer - 1;
+    FPool* pool = entry->parentPool;
+
+    entry->nextFreeEntry = pool->freeEntryList;
+    pool->freeEntryList = entry;
 }
