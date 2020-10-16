@@ -35,8 +35,8 @@ struct FPoolSlab {
 };
 
 struct FPool {
-    unsigned objSize; // Size of a user object within a pool entry
-    unsigned entrySize; // Size of each pool entry in a slab
+    size_t objSize; // Size of a user object within a pool entry
+    size_t entrySize; // Size of each pool entry in a slab
     FPoolSlab* slabList; // Keeps track of all allocated slabs
     FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
@@ -80,14 +80,14 @@ static void slab_new(FPool* Pool)
     lastEntry->nextFreeEntry = NULL;
 }
 
-FPool* f_pool_new(unsigned Size)
+FPool* f_pool_new(size_t Size)
 {
     FPool* p = f_mem_malloc(sizeof(FPool));
 
     p->objSize = Size;
-    p->entrySize = (unsigned)(sizeof(FPoolEntryHeader)
-                                + ((Size + sizeof(FMaxMemAlignType) - 1)
-                                        & ~(sizeof(FMaxMemAlignType) - 1)));
+    p->entrySize = sizeof(FPoolEntryHeader)
+                    + ((Size + sizeof(FMaxMemAlignType) - 1)
+                            & ~(sizeof(FMaxMemAlignType) - 1));
     p->slabList = NULL;
     p->freeEntryList = NULL;
 

@@ -22,7 +22,7 @@
 
 typedef struct FPool FPool;
 
-extern FPool* f_pool_new(unsigned Size);
+extern FPool* f_pool_new(size_t Size);
 extern void f_pool_free(FPool* Pool);
 
 extern void* f_pool_alloc(FPool* Pool);
