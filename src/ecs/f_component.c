@@ -22,11 +22,15 @@ FComponent* const* f_component__array; // [f_component__num]
 unsigned f_component__num;
 FHash* f_component__index; // FHash<const char*, FComponent*>
 
+static FPool** g_pools;
+
 void f_component__init(FComponent* const* Components, size_t ComponentsNum)
 {
     f_component__array = Components;
     f_component__num = (unsigned)ComponentsNum;
     f_component__index = f_hash_newStr(256, false);
+
+    g_pools = f_mem_malloc(ComponentsNum * sizeof(FPool*));
 
     for(unsigned c = f_component__num; c--; ) {
         FComponent* com = f_component__array[c];
@@ -35,11 +39,18 @@ void f_component__init(FComponent* const* Components, size_t ComponentsNum)
         com->bitId = c;
 
         f_hash_add(f_component__index, com->stringId, com);
+
+        g_pools[c] = f_pool_new(com->size);
     }
 }
 
 void f_component__uninit(void)
 {
+    for(unsigned c = f_component__num; c--; ) {
+        f_pool_free(g_pools[c]);
+    }
+
+    f_mem_free(g_pools);
     f_hash_free(f_component__index);
 }
 
@@ -99,7 +110,7 @@ void f_component__dataFree(const FComponent* Component, void* Buffer)
 
 FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data)
 {
-    FComponentInstance* c = f_mem_mallocz(Component->size);
+    FComponentInstance* c = f_pool_alloc(g_pools[Component->bitId]);
 
     c->component = Component;
     c->entity = Entity;
@@ -121,5 +132,5 @@ void f_component__instanceFree(FComponentInstance* Instance)
         Instance->component->free(Instance->buffer);
     }
 
-    f_mem_free(Instance);
+    f_pool_release(Instance);
 }
