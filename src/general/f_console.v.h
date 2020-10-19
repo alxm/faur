@@ -23,6 +23,12 @@
 #include "../general/f_init.v.h"
 #include "../general/f_out.v.h"
 
+typedef struct {
+    FOutSource source;
+    FOutType type;
+    char* text;
+} FConsoleLine;
+
 extern const FPack f_pack__console_0;
 extern const FPack f_pack__console_1;
 

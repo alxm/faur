@@ -24,12 +24,6 @@
 
 #include <unistd.h>
 
-typedef struct {
-    FOutSource source;
-    FOutType type;
-    char* text;
-} FLine;
-
 typedef enum {
     F_CONSOLE__STATE_INVALID = -1,
     F_CONSOLE__STATE_BASIC,
@@ -42,9 +36,9 @@ static unsigned g_linesPerScreen;
 static FButton* g_toggle;
 static bool g_show;
 
-static FLine* line_new(FOutSource Source, FOutType Type, const char* Text)
+static FConsoleLine* line_new(FOutSource Source, FOutType Type, const char* Text)
 {
-    FLine* line = f_mem_malloc(sizeof(FLine));
+    FConsoleLine* line = f_pool__alloc(F_POOL__CONSOLE);
 
     line->source = Source;
     line->type = Type;
@@ -53,10 +47,10 @@ static FLine* line_new(FOutSource Source, FOutType Type, const char* Text)
     return line;
 }
 
-static void line_free(FLine* Line)
+static void line_free(FConsoleLine* Line)
 {
     f_mem_free(Line->text);
-    f_mem_free(Line);
+    f_pool_release(Line);
 }
 
 static void f_console__init0(void)
@@ -188,7 +182,7 @@ void f_console__draw(void)
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
         f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
 
-        F_LIST_ITERATE(g_lines, FLine*, l) {
+        F_LIST_ITERATE(g_lines, FConsoleLine*, l) {
             f_color_fillBlitSet(false);
             f_sprite_blit(f_gfx__g_console_19x7,
                           (unsigned)l->source,
