@@ -25,6 +25,13 @@ typedef struct {
     size_t size;
 } FPathInfo;
 
+struct FPath {
+    FPathInfo info;
+    char* full;
+    char* dirsPart;
+    char* namePart;
+};
+
 extern size_t f_path__sizeGet(const FPath* Path);
 
 extern void f_path__flagsSet(FPath* Path, FPathFlags Flags);

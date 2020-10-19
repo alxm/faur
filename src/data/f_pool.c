@@ -50,6 +50,7 @@ static const FPoolInit g_poolsInit[F_POOL__NUM] = {
     [F_POOL__CONSOLE] = {sizeof(FConsoleLine)},
     [F_POOL__LIST] = {sizeof(FList)},
     [F_POOL__LISTNODE] = {sizeof(FListNode)},
+    [F_POOL__PATH] = {sizeof(FPath)},
 };
 
 static FPool* g_pools[F_POOL__NUM];
