@@ -18,18 +18,9 @@
 #include "f_block.v.h"
 #include <faur.v.h>
 
-struct FBlock {
-    char* text; // own content
-    FList* blocks; // FList<FBlock*>, all blocks indented under this block
-    FHash* index; // FHash<const char*, FList<const FBlock*>> indexed by text
-    const FBlock** array; // the blocks indexed by line # relative to parent
-    unsigned arrayLen; // number of blocks under parent
-    int references; // added when merged into another parent block
-};
-
 static FBlock* blockNew(const char* Content)
 {
-    FBlock* block = f_mem_mallocz(sizeof(FBlock));
+    FBlock* block = f_pool__alloc(F_POOL__BLOCK);
 
     block->text = f_str_dup(Content);
 
@@ -152,7 +143,7 @@ void f_block_free(FBlock* Block)
     }
 
     f_mem_free(Block->text);
-    f_mem_free(Block);
+    f_pool_release(Block);
 }
 
 void f_block__refInc(FBlock* Block)
