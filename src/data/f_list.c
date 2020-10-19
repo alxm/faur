@@ -41,7 +41,7 @@ const FList f__list_empty = {
 
 FList* f_list_new(void)
 {
-    FList* list = f_mem_malloc(sizeof(FList));
+    FList* list = f_pool__alloc(F_POOL__LIST);
 
     list->sentinel.content = NULL;
     list->sentinel.list = list;
@@ -66,12 +66,12 @@ void f_list_freeEx(FList* List, FFree* Free)
 
     f_list_clearEx(List, Free);
 
-    f_mem_free(List);
+    f_pool_release(List);
 }
 
 FListNode* f_list_addFirst(FList* List, void* Content)
 {
-    FListNode* n = f_mem_malloc(sizeof(FListNode));
+    FListNode* n = f_pool__alloc(F_POOL__LISTNODE);
 
     n->content = Content;
     n->list = List;
@@ -88,7 +88,7 @@ FListNode* f_list_addFirst(FList* List, void* Content)
 
 FListNode* f_list_addLast(FList* List, void* Content)
 {
-    FListNode* n = f_mem_malloc(sizeof(FListNode));
+    FListNode* n = f_pool__alloc(F_POOL__LISTNODE);
 
     n->content = Content;
     n->list = List;
@@ -190,7 +190,7 @@ static inline void* removeNode(FListNode* Node)
 
     Node->list->items--;
 
-    f_mem_free(Node);
+    f_pool_release(Node);
 
     return v;
 }
@@ -276,12 +276,12 @@ void f_list_clearEx(FList* List, FFree* Free)
 
             // Check if the Free callback already self-removed from the list
             if(next->prev == current) {
-                f_mem_free(current);
+                f_pool_release(current);
             }
         }
     } else {
         F__ITERATE_SAFE(List, current, next) {
-            f_mem_free(current);
+            f_pool_release(current);
         }
     }
 

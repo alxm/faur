@@ -41,14 +41,31 @@ struct FPool {
     FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
 
+typedef struct {
+    size_t typeSize;
+} FPoolInit;
+
+static const FPoolInit g_poolsInit[F_POOL__NUM] = {
+    [F_POOL__LIST] = {sizeof(FList)},
+    [F_POOL__LISTNODE] = {sizeof(FListNode)},
+};
+
+static FPool* g_pools[F_POOL__NUM];
+
 static void f_pool__init(void)
 {
-    //
+    for(int p = F_POOL__NUM; p--; ) {
+        const FPoolInit* init = &g_poolsInit[p];
+
+        g_pools[p] = f_pool_new(init->typeSize);
+    }
 }
 
 static void f_pool__uninit(void)
 {
-    //
+    for(int p = F_POOL__NUM; p--; ) {
+        f_pool_free(g_pools[p]);
+    }
 }
 
 const FPack f_pack__pool = {
@@ -132,4 +149,9 @@ void f_pool_release(void* Pointer)
 
     entry->nextFreeEntry = pool->freeEntryList;
     pool->freeEntryList = entry;
+}
+
+void* f_pool__alloc(FPoolId Pool)
+{
+    return f_pool_alloc(g_pools[Pool]);
 }

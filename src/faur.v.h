@@ -24,6 +24,7 @@ F_EXTERN_C_START
 #include "data/f_block.v.h"
 #include "data/f_hash.v.h"
 #include "data/f_list.v.h"
+#include "data/f_pool.v.h"
 #include "ecs/f_collection.v.h"
 #include "ecs/f_component.v.h"
 #include "ecs/f_ecs.v.h"

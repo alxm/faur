@@ -20,8 +20,17 @@
 
 #include "f_pool.p.h"
 
+typedef enum {
+    F_POOL__INVALID = -1,
+    F_POOL__LIST,
+    F_POOL__LISTNODE,
+    F_POOL__NUM
+} FPoolId;
+
 #include "../general/f_init.v.h"
 
 extern const FPack f_pack__pool;
+
+extern void* f_pool__alloc(FPoolId Pool);
 
 #endif // F_INC_DATA_POOL_V_H
