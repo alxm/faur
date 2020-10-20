@@ -28,6 +28,10 @@ typedef enum {
     F_POOL__LISTNODE,
     F_POOL__PATH,
     F_POOL__SPRITE,
+    F_POOL__STACK_ALIGN,
+    F_POOL__STACK_COLOR,
+    F_POOL__STACK_FONT,
+    F_POOL__STACK_SCREEN,
     F_POOL__TIMER,
     F_POOL__NUM
 } FPoolId;

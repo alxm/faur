@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,21 +25,14 @@
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
 #define F__LINE_SPACING 1
 
-typedef struct {
-    const FFont* font;
-    int x, startX, y;
-    int lineHeight;
-    int wrapWidth, currentLineWidth;
-} FFontState;
-
 static FFont* g_defaultFonts[F_FONT__ID_NUM];
 static FFontState g_state;
-static FList* g_stateStack;
+static FList* g_stack;
 static char g_buffer[512];
 
 static void f_font__init(void)
 {
-    g_stateStack = f_list_new();
+    g_stack = f_list_new();
 
     g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__g_font_6x8;
 
@@ -56,7 +49,7 @@ static void f_font__uninit(void)
         f_font_free(g_defaultFonts[f]);
     }
 
-    f_list_freeEx(g_stateStack, f_mem_free);
+    f_list_freeEx(g_stack, f_pool_release);
 }
 
 const FPack f_pack__font = {
@@ -84,14 +77,14 @@ void f_font_free(FFont* Font)
 
 void f_font_push(void)
 {
-    f_list_push(g_stateStack, f_mem_dup(&g_state, sizeof(FFontState)));
+    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_FONT, &g_state));
 
     f_font_reset();
 }
 
 void f_font_pop(void)
 {
-    FFontState* state = f_list_pop(g_stateStack);
+    FFontState* state = f_list_pop(g_stack);
 
     #if F_CONFIG_DEBUG
         if(state == NULL) {
@@ -100,7 +93,7 @@ void f_font_pop(void)
     #endif
 
     g_state = *state;
-    f_mem_free(state);
+    f_pool_release(state);
 }
 
 void f_font_reset(void)

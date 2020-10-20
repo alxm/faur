@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,12 +25,12 @@ FColorState f__color;
 FColorPixel f_color__key;
 FColorPixel f_color__limit;
 
-static FList* g_stateStack;
+static FList* g_stack;
 static FPalette* g_palette;
 
 static void f_color__init(void)
 {
-    g_stateStack = f_list_new();
+    g_stack = f_list_new();
     g_palette = f_palette_newFromSprite(f_gfx__g_palette);
 
     f_color_reset();
@@ -41,7 +41,7 @@ static void f_color__init(void)
 
 static void f_color__uninit(void)
 {
-    f_list_freeEx(g_stateStack, f_mem_free);
+    f_list_freeEx(g_stack, f_pool_release);
     f_palette_free(g_palette);
 }
 
@@ -53,14 +53,14 @@ const FPack f_pack__color = {
 
 void f_color_push(void)
 {
-    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FColorState)));
+    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_COLOR, &f__color));
 
     f_color_reset();
 }
 
 void f_color_pop(void)
 {
-    FColorState* state = f_list_pop(g_stateStack);
+    FColorState* state = f_list_pop(g_stack);
 
     #if F_CONFIG_DEBUG
         if(state == NULL) {
@@ -69,7 +69,7 @@ void f_color_pop(void)
     #endif
 
     f__color = *state;
-    f_mem_free(state);
+    f_pool_release(state);
 
     f_color_blendSet(f__color.blend);
     f_color_colorSetRgba(
