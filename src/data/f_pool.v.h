@@ -27,6 +27,7 @@ typedef enum {
     F_POOL__LIST,
     F_POOL__LISTNODE,
     F_POOL__PATH,
+    F_POOL__SPRITE,
     F_POOL__NUM
 } FPoolId;
 

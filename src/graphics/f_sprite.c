@@ -64,7 +64,7 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
                  Y);
     }
 
-    FSprite* s = f_mem_malloc(sizeof(FSprite));
+    FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
     f_pixels__init(
         &s->pixels, FrameWidth, FrameHeight, framesNum, F_PIXELS__ALLOC);
@@ -123,7 +123,7 @@ FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
         F__FATAL("f_sprite_newBlank: Frames == 0");
     }
 
-    FSprite* s = f_mem_malloc(sizeof(FSprite));
+    FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
     f_pixels__init(&s->pixels, Width, Height, Frames, F_PIXELS__ALLOC);
 
@@ -140,7 +140,7 @@ FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
 
 FSprite* f_sprite_dup(const FSprite* Sprite)
 {
-    FSprite* s = f_mem_malloc(sizeof(FSprite));
+    FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
     #if !F_CONFIG_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
@@ -173,7 +173,7 @@ void f_sprite_free(FSprite* Sprite)
     f_platform_api__textureFree(Sprite->texture);
     f_pixels__free(&Sprite->pixels);
 
-    f_mem_free(Sprite);
+    f_pool_release(Sprite);
 }
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
