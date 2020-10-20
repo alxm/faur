@@ -24,16 +24,6 @@ typedef enum {
     F_TIMER__EXPIRED = F_FLAGS_BIT(2),
 } FTimerFlags;
 
-struct FTimer {
-    FTimerFlags flags;
-    unsigned periodMs;
-    FFixu period;
-    FFixu start;
-    FFixu diff;
-    unsigned expiredCount;
-    FListNode* runningListNode;
-};
-
 FFixu g_ticksNow;
 static FList* g_runningTimers; // FList<FTimer*>
 
@@ -98,7 +88,7 @@ void f_timer__tick(void)
 
 FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 {
-    FTimer* t = f_mem_mallocz(sizeof(FTimer));
+    FTimer* t = f_pool__alloc(F_POOL__TIMER);
 
     t->periodMs = PeriodMs;
     t->period = f_time_msToTicks(PeriodMs);
@@ -112,7 +102,7 @@ FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 
 FTimer* f_timer_dup(const FTimer* Timer)
 {
-    FTimer* t = f_mem_dup(Timer, sizeof(FTimer));
+    FTimer* t = f_pool__dup(F_POOL__TIMER, Timer);
 
     F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
 
@@ -132,7 +122,7 @@ void f_timer_free(FTimer* Timer)
         f_list_removeNode(Timer->runningListNode);
     }
 
-    f_mem_free(Timer);
+    f_pool_release(Timer);
 }
 
 unsigned f_timer_elapsedGet(const FTimer* Timer)

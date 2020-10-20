@@ -52,6 +52,7 @@ static const FPoolInit g_poolsInit[F_POOL__NUM] = {
     [F_POOL__LISTNODE] = {sizeof(FListNode)},
     [F_POOL__PATH] = {sizeof(FPath)},
     [F_POOL__SPRITE] = {sizeof(FSprite)},
+    [F_POOL__TIMER] = {sizeof(FTimer)},
 };
 
 static FPool* g_pools[F_POOL__NUM];
@@ -158,4 +159,13 @@ void f_pool_release(void* Pointer)
 void* f_pool__alloc(FPoolId Pool)
 {
     return f_pool_alloc(g_pools[Pool]);
+}
+
+void* f_pool__dup(FPoolId Pool, const void* Buffer)
+{
+    void* copy = f_pool__alloc(Pool);
+
+    memcpy(copy, Buffer, g_poolsInit[Pool].typeSize);
+
+    return copy;
 }

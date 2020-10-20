@@ -28,6 +28,7 @@ typedef enum {
     F_POOL__LISTNODE,
     F_POOL__PATH,
     F_POOL__SPRITE,
+    F_POOL__TIMER,
     F_POOL__NUM
 } FPoolId;
 
@@ -36,5 +37,6 @@ typedef enum {
 extern const FPack f_pack__pool;
 
 extern void* f_pool__alloc(FPoolId Pool);
+extern void* f_pool__dup(FPoolId Pool, const void* Buffer);
 
 #endif // F_INC_DATA_POOL_V_H
