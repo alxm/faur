@@ -21,7 +21,7 @@
 #if F_CONFIG_SOUND_ENABLED
 FSample* f_sample_new(const char* Path)
 {
-    FSample* s = f_mem_mallocz(sizeof(FSample));
+    FSample* s = f_pool__alloc(F_POOL__SAMPLE);
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         s->platform = f_platform_api__soundSampleNewFromFile(Path);
@@ -50,7 +50,7 @@ void f_sample_free(FSample* Sample)
     f_platform_api__soundSampleFree(Sample->platform);
 
     if(Sample->size == 0) {
-        f_mem_free(Sample);
+        f_pool_release(Sample);
     } else {
         Sample->platform = NULL;
     }

@@ -51,6 +51,7 @@ static const FPoolInit g_poolsInit[F_POOL__NUM] = {
     [F_POOL__LIST] = {sizeof(FList)},
     [F_POOL__LISTNODE] = {sizeof(FListNode)},
     [F_POOL__PATH] = {sizeof(FPath)},
+    [F_POOL__SAMPLE] = {sizeof(FSample)},
     [F_POOL__SPRITE] = {sizeof(FSprite)},
     [F_POOL__STACK_ALIGN] = {sizeof(FAlign)},
     [F_POOL__STACK_COLOR] = {sizeof(FColorState)},
