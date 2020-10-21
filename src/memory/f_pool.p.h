@@ -26,6 +26,6 @@ extern FPool* f_pool_new(size_t Size);
 extern void f_pool_free(FPool* Pool);
 
 extern void* f_pool_alloc(FPool* Pool);
-extern void f_pool_release(void* Pointer);
+extern void f_pool_release(void* Buffer);
 
 #endif // F_INC_DATA_POOL_P_H

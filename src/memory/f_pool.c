@@ -152,9 +152,13 @@ void* f_pool_alloc(FPool* Pool)
     return userBuffer;
 }
 
-void f_pool_release(void* Pointer)
+void f_pool_release(void* Buffer)
 {
-    FPoolEntryHeader* entry = (FPoolEntryHeader*)Pointer - 1;
+    if(Buffer == NULL) {
+        return;
+    }
+
+    FPoolEntryHeader* entry = (FPoolEntryHeader*)Buffer - 1;
     FPool* pool = entry->parentPool;
 
     entry->nextFreeEntry = pool->freeEntryList;
