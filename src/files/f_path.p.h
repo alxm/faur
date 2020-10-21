@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,20 +22,18 @@
 
 typedef struct FPath FPath;
 
-typedef enum {
-    F_PATH_FILE = F_FLAGS_BIT(0),
-    F_PATH_DIR = F_FLAGS_BIT(1),
-    F_PATH_OTHER = F_FLAGS_BIT(2),
-    F_PATH_EMBEDDED = F_FLAGS_BIT(3),
-    F_PATH_REAL = F_FLAGS_BIT(4),
-} FPathFlags;
+#define F_PATH_FILE F_FLAGS_BIT(0)
+#define F_PATH_DIR F_FLAGS_BIT(1)
+#define F_PATH_OTHER F_FLAGS_BIT(2)
+#define F_PATH_EMBEDDED F_FLAGS_BIT(3)
+#define F_PATH_REAL F_FLAGS_BIT(4)
 
 extern FPath* f_path_new(const char* Path);
 extern FPath* f_path_newf(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_path_free(FPath* Path);
 
-extern bool f_path_exists(const char* Path, FPathFlags Flags);
-extern bool f_path_test(const FPath* Path, FPathFlags Flags);
+extern bool f_path_exists(const char* Path, unsigned Flags);
+extern bool f_path_test(const FPath* Path, unsigned Flags);
 
 extern const char* f_path_getFull(const FPath* Path);
 extern const char* f_path_getDirs(const FPath* Path);

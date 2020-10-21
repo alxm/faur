@@ -81,14 +81,14 @@ void f_path_free(FPath* Path)
     f_pool_release(Path);
 }
 
-bool f_path_exists(const char* Path, FPathFlags Flags)
+bool f_path_exists(const char* Path, unsigned Flags)
 {
     FPathInfo info;
 
     return getPathInfo(Path, &info) && F_FLAGS_TEST_ALL(info.flags, Flags);
 }
 
-bool f_path_test(const FPath* Path, FPathFlags Flags)
+bool f_path_test(const FPath* Path, unsigned Flags)
 {
     return F_FLAGS_TEST_ALL(Path->info.flags, Flags);
 }
@@ -98,7 +98,7 @@ size_t f_path__sizeGet(const FPath* Path)
     return Path->info.size;
 }
 
-void f_path__flagsSet(FPath* Path, FPathFlags Flags)
+void f_path__flagsSet(FPath* Path, unsigned Flags)
 {
     F_FLAGS_SET(Path->info.flags, Flags);
 }

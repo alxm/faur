@@ -29,7 +29,7 @@ struct FFile {
     unsigned lineBufferSize;
     unsigned lineNumber;
     #if F_CONFIG_DEBUG
-        FFileMode mode;
+        unsigned mode;
     #endif
     bool eof;
 };
@@ -68,7 +68,7 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
     return ret;
 }
 
-FFile* f_file_new(const char* Path, FFileMode Mode)
+FFile* f_file_new(const char* Path, unsigned Mode)
 {
     #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ALL(Mode, F_FILE_READ | F_FILE_WRITE)

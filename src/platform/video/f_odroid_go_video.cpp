@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -46,8 +46,7 @@ void f_platform_api__screenInit(void)
                 * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
                     * sizeof(FColorPixel)));
 
-    f_pixels__init(
-        &g_pixels, g_screenSize.x, g_screenSize.y, 1, (FPixelsFlags)0);
+    f_pixels__init(&g_pixels, g_screenSize.x, g_screenSize.y, 1, 0);
     f_pixels__bufferSet(
         &g_pixels, g_screenBuffer, g_screenSize.x, g_screenSize.y);
 }

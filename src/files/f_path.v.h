@@ -21,7 +21,7 @@
 #include "f_path.p.h"
 
 typedef struct {
-    FPathFlags flags;
+    unsigned flags;
     size_t size;
 } FPathInfo;
 
@@ -34,6 +34,6 @@ struct FPath {
 
 extern size_t f_path__sizeGet(const FPath* Path);
 
-extern void f_path__flagsSet(FPath* Path, FPathFlags Flags);
+extern void f_path__flagsSet(FPath* Path, unsigned Flags);
 
 #endif // F_INC_FILES_PATH_V_H

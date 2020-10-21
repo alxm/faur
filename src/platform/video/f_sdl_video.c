@@ -187,7 +187,7 @@ void f_platform_api__screenInit(void)
             "Screen resolution %dx%d, zoom x%d", g_size.x, g_size.y, g_zoom);
     }
 
-    FPixelsFlags pFlags = 0;
+    unsigned pFlags = 0;
 
     #if F__ALLOCATE_LOGICAL_BUFFER
         pFlags |= F_PIXELS__ALLOC;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,18 +22,16 @@
 
 typedef struct FFile FFile;
 
-typedef enum {
-    F_FILE_READ = F_FLAGS_BIT(0),
-    F_FILE_WRITE = F_FLAGS_BIT(1),
-    F_FILE_BINARY = F_FLAGS_BIT(2),
-} FFileMode;
+#define F_FILE_READ F_FLAGS_BIT(0)
+#define F_FILE_WRITE F_FLAGS_BIT(1)
+#define F_FILE_BINARY F_FLAGS_BIT(2)
 
 #include "../files/f_path.p.h"
 
 extern bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size);
 extern bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size);
 
-extern FFile* f_file_new(const char* Path, FFileMode Mode);
+extern FFile* f_file_new(const char* Path, unsigned Mode);
 extern void f_file_free(FFile* File);
 
 extern const FPath* f_file_pathGet(const FFile* File);

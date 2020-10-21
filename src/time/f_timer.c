@@ -18,11 +18,9 @@
 #include "f_timer.v.h"
 #include <faur.v.h>
 
-typedef enum {
-    F_TIMER__REPEAT = F_FLAGS_BIT(0),
-    F_TIMER__RUNNING = F_FLAGS_BIT(1),
-    F_TIMER__EXPIRED = F_FLAGS_BIT(2),
-} FTimerFlags;
+#define F_TIMER__REPEAT F_FLAGS_BIT(0)
+#define F_TIMER__RUNNING F_FLAGS_BIT(1)
+#define F_TIMER__EXPIRED F_FLAGS_BIT(2)
 
 FFixu g_ticksNow;
 static FList* g_runningTimers; // FList<FTimer*>

@@ -20,19 +20,17 @@
 
 #include "../general/f_system_includes.h"
 
-typedef enum {
-    F_CHANNEL_PLAY_NORMAL = 0,
-    F_CHANNEL_PLAY_LOOP = F_FLAGS_BIT(0),
-    F_CHANNEL_PLAY_RESTART = F_FLAGS_BIT(1),
-    F_CHANNEL_PLAY_YIELD = F_FLAGS_BIT(2),
-} FChannelFlags;
+#define F_CHANNEL_PLAY_NORMAL 0
+#define F_CHANNEL_PLAY_LOOP F_FLAGS_BIT(0)
+#define F_CHANNEL_PLAY_RESTART F_FLAGS_BIT(1)
+#define F_CHANNEL_PLAY_YIELD F_FLAGS_BIT(2)
 
 #include "../sound/f_sample.p.h"
 
 #define F_CHANNEL_ANY -1
 
 extern int f_channel_new(void);
-extern void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags);
+extern void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags);
 extern void f_channel_playStop(int Channel);
 extern bool f_channel_playGet(int Channel);
 
