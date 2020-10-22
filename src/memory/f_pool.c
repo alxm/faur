@@ -18,7 +18,13 @@
 #include "f_pool.v.h"
 #include <faur.v.h>
 
-#define F__ENTRIES_NUM 8
+#if F_CONFIG_TRAIT_LOW_MEM
+    #define F__ENTRIES_NUM_START 4
+    #define F__ENTRIES_NUM_MAX 8
+#else
+    #define F__ENTRIES_NUM_START 8
+    #define F__ENTRIES_NUM_MAX 1024
+#endif
 
 typedef union FPoolEntryHeader FPoolEntryHeader;
 typedef struct FPoolSlab FPoolSlab;
@@ -37,6 +43,7 @@ struct FPoolSlab {
 struct FPool {
     size_t objSize; // Size of a user object within a pool entry
     size_t entrySize; // Size of each pool entry in a slab
+    unsigned numEntriesPerSlab; // Grows with usage
     FPoolSlab* slabList; // Keeps track of all allocated slabs
     FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
@@ -86,8 +93,9 @@ const FPack f_pack__pool = {
 
 static void slab_new(FPool* Pool)
 {
-    FPoolSlab* s = f_mem_malloc(
-                    sizeof(FPoolSlab) + Pool->entrySize * F__ENTRIES_NUM);
+    FPoolSlab* s =
+        f_mem_malloc(
+            sizeof(FPoolSlab) + Pool->entrySize * Pool->numEntriesPerSlab);
 
     s->nextSlab = Pool->slabList;
 
@@ -97,7 +105,7 @@ static void slab_new(FPool* Pool)
     FPoolEntryHeader* entry;
     FPoolEntryHeader* lastEntry = s->buffer;
 
-    for(unsigned e = 1; e < F__ENTRIES_NUM; e++) {
+    for(unsigned e = 1; e < Pool->numEntriesPerSlab; e++) {
         entry = (FPoolEntryHeader*)((uintptr_t)s->buffer + e * Pool->entrySize);
 
         lastEntry->nextFreeEntry = entry;
@@ -105,24 +113,30 @@ static void slab_new(FPool* Pool)
     }
 
     lastEntry->nextFreeEntry = NULL;
+
+    Pool->numEntriesPerSlab =
+        f_math_minu(Pool->numEntriesPerSlab * 2, F__ENTRIES_NUM_MAX);
 }
 
 FPool* f_pool_new(size_t Size)
 {
-    FPool* p = f_mem_malloc(sizeof(FPool));
+    FPool* p = f_mem_mallocz(sizeof(FPool));
 
     p->objSize = Size;
     p->entrySize = sizeof(FPoolEntryHeader)
                     + ((Size + sizeof(FMaxMemAlignType) - 1)
                             & ~(sizeof(FMaxMemAlignType) - 1));
-    p->slabList = NULL;
-    p->freeEntryList = NULL;
+    p->numEntriesPerSlab = F__ENTRIES_NUM_START;
 
     return p;
 }
 
 void f_pool_free(FPool* Pool)
 {
+    if(Pool == NULL) {
+        return;
+    }
+
     for(FPoolSlab* slab = Pool->slabList; slab != NULL; ) {
         FPoolSlab* nextSlab = slab->nextSlab;
 
