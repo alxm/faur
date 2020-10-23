@@ -58,7 +58,7 @@ void f_list_free(FList* List)
     f_list_freeEx(List, NULL);
 }
 
-void f_list_freeEx(FList* List, FFree* Free)
+void f_list_freeEx(FList* List, FCallFree* Free)
 {
     if(List == NULL) {
         return;
@@ -268,7 +268,7 @@ void f_list_clear(FList* List)
     f_list_clearEx(List, NULL);
 }
 
-void f_list_clearEx(FList* List, FFree* Free)
+void f_list_clearEx(FList* List, FCallFree* Free)
 {
     if(Free) {
         F__ITERATE_SAFE(List, current, next) {
@@ -354,7 +354,7 @@ static inline void addHeadToMerged(FListNode** MergedTail, FListNode** SortedHea
     *SortedHead = nextSortedHead;
 }
 
-static FListNode* sort(FListNode* Start, unsigned Length, FListCompare* Compare)
+static FListNode* sort(FListNode* Start, unsigned Length, FCallListCompare* Compare)
 {
     if(Length == 1) {
         return Start;
@@ -401,7 +401,7 @@ static FListNode* sort(FListNode* Start, unsigned Length, FListCompare* Compare)
     return mergedHead.next;
 }
 
-void f_list_sort(FList* List, FListCompare* Compare)
+void f_list_sort(FList* List, FCallListCompare* Compare)
 {
     if(List->items < 2) {
         return;

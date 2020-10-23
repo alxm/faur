@@ -20,13 +20,13 @@
 
 #include "f_init.p.h"
 
-typedef void FPackInit(void);
-typedef void FPackUninit(void);
+typedef void FCallPackInit(void);
+typedef void FCallPackUninit(void);
 
 typedef struct {
     const char* name;
-    FPackInit* init;
-    FPackUninit* uninit;
+    FCallPackInit* init;
+    FCallPackUninit* uninit;
 } FPack;
 
 extern void f_init__init(void);

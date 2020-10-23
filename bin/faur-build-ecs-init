@@ -40,7 +40,7 @@ def main():
     rules = [
         Rule(components, 'extern FComponent (c(_[a-zA-Z0-9]+)+);'),
         Rule(systems, 'extern FSystem (s(_[a-zA-Z0-9]+)+);'),
-        Rule(entities, 'extern FEntityInit (e(_[a-zA-Z0-9]+)+);'),
+        Rule(entities, 'extern FCallEntityInit (e(_[a-zA-Z0-9]+)+);'),
     ]
 
     for h in headers:

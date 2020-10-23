@@ -23,15 +23,15 @@
 typedef struct FHash FHash;
 typedef struct FHashEntry FHashEntry;
 
-typedef unsigned FHashFunction(const void* Key);
-typedef bool FHashEqual(const void* KeyA, const void* KeyB);
+typedef unsigned FCallHashFunction(const void* Key);
+typedef bool FCallHashEqual(const void* KeyA, const void* KeyB);
 
 #include "../data/f_listit.p.h"
 
-extern FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree, unsigned NumSlots);
+extern FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFree* KeyFree, unsigned NumSlots);
 extern FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString);
 extern void f_hash_free(FHash* Hash);
-extern void f_hash_freeEx(FHash* Hash, FFree* Free);
+extern void f_hash_freeEx(FHash* Hash, FCallFree* Free);
 
 extern void f_hash_add(FHash* Hash, const void* Key, void* Content);
 extern void* f_hash_update(FHash* Hash, const void* Key, void* NewContent);

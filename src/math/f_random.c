@@ -19,8 +19,8 @@
 #include <faur.v.h>
 #include <time.h>
 
-static FRandomPrng* g_rand;
-static FRandomPrngSeed* g_srand;
+static FCallRandomPrng* g_rand;
+static FCallRandomPrngSeed* g_srand;
 static unsigned g_seed;
 
 static void f_random__init(void)
@@ -34,7 +34,7 @@ const FPack f_pack__random = {
     NULL,
 };
 
-void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)
+void f_random_generatorSet(FCallRandomPrng* Rand, FCallRandomPrngSeed* Srand)
 {
     g_rand = Rand;
     g_srand = Srand;

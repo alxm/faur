@@ -26,7 +26,7 @@ static FTemplate* templateNew(const char* Id, const FBlock* Block)
                     sizeof(FTemplate) + sizeof(void*) * (f_component__num - 1));
 
     if(f_sym_test(Id)) {
-        t->init = (FEntityInit*)f_sym_address(Id);
+        t->init = (FCallEntityInit*)f_sym_address(Id);
     }
 
     t->componentsOwn = f_list_new();
@@ -110,7 +110,7 @@ void f_template__init(void)
 
 void f_template__uninit(void)
 {
-    f_hash_freeEx(g_templates, (FFree*)templateFree);
+    f_hash_freeEx(g_templates, (FCallFree*)templateFree);
 }
 
 static void process_file(const char* FilePath, FList* Blocks)
@@ -152,13 +152,13 @@ void f_template_load(const char* Dir)
     FList* blocks = f_list_new();
 
     process_dir(Dir, blocks);
-    f_list_sort(blocks, (FListCompare*)cmp_blocks);
+    f_list_sort(blocks, (FCallListCompare*)cmp_blocks);
 
     F_LIST_ITERATE(blocks, const FBlock*, b) {
         templateNew(f_block_lineGetString(b, 0), b);
     }
 
-    f_list_freeEx(blocks, (FFree*)f_block_free);
+    f_list_freeEx(blocks, (FCallFree*)f_block_free);
 }
 
 const FTemplate* f_template__get(const char* Id)

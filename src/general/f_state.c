@@ -22,7 +22,7 @@
 
 typedef struct {
     const char* name;
-    FState* handler;
+    FCallState* handler;
     FStateStage stage;
 } FStateStackEntry;
 
@@ -31,7 +31,7 @@ static FList* g_pending; // FList<FStateStackEntry*/NULL>
 static bool g_exiting;
 static const FEvent* g_blockEvent;
 
-static FStateCallback *g_tickPre, *g_tickPost, *g_drawPre, *g_drawPost;
+static FCallState *g_tickPre, *g_tickPost, *g_drawPre, *g_drawPost;
 
 #if F_CONFIG_DEBUG
 static const char* g_stageNames[F__STATE_STAGE_NUM] = {
@@ -42,7 +42,7 @@ static const char* g_stageNames[F__STATE_STAGE_NUM] = {
 };
 #endif
 
-static void pending_push(FState* Handler, const char* Name)
+static void pending_push(FCallState* Handler, const char* Name)
 {
     FStateStackEntry* e = f_mem_malloc(sizeof(FStateStackEntry));
 
@@ -149,7 +149,7 @@ const FPack f_pack__state = {
     f_state__uninit,
 };
 
-void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost)
+void f_state_callbacks(FCallState* TickPre, FCallState* TickPost, FCallState* DrawPre, FCallState* DrawPost)
 {
     g_tickPre = TickPre;
     g_tickPost = TickPost;
@@ -157,7 +157,7 @@ void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FState
     g_drawPost = DrawPost;
 }
 
-void f_state_push(FState* Handler, const char* Name)
+void f_state_push(FCallState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_DEBUG
@@ -191,7 +191,7 @@ void f_state_pop(void)
     pending_pop();
 }
 
-void f_state_popUntil(FState* Handler, const char* Name)
+void f_state_popUntil(FCallState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_DEBUG
@@ -226,7 +226,7 @@ void f_state_popUntil(FState* Handler, const char* Name)
     }
 }
 
-void f_state_replace(FState* Handler, const char* Name)
+void f_state_replace(FCallState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_DEBUG
@@ -267,7 +267,7 @@ void f_state_exit(void)
     }
 }
 
-FState* f_state_currentGet(void)
+FCallState* f_state_currentGet(void)
 {
     FStateStackEntry* current = f_list_peek(g_stack);
 

@@ -218,8 +218,8 @@ void f_blob_free(FBlob* Blob)
         return;
     }
 
-    f_list_freeEx(Blob->files, (FFree*)f_embed__fileFree);
-    f_list_freeEx(Blob->dirs, (FFree*)f_embed__dirFree);
+    f_list_freeEx(Blob->files, (FCallFree*)f_embed__fileFree);
+    f_list_freeEx(Blob->dirs, (FCallFree*)f_embed__dirFree);
 
     f_mem_freea(Blob->buffer);
     f_mem_free(Blob);

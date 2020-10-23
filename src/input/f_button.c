@@ -153,7 +153,7 @@ void f_button_free(FButton* Button)
     f_list_removeNode(Button->listNode);
 
     if(!Button->isClone) {
-        f_list_freeEx(Button->combos, (FFree*)f_list_free);
+        f_list_freeEx(Button->combos, (FCallFree*)f_list_free);
         f_list_free(Button->platformInputs);
     }
 

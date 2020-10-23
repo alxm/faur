@@ -22,7 +22,7 @@
 
 #include "../ecs/f_entity.p.h"
 
-typedef void FEntityInit(FEntity* Entity, const void* CallerContext);
+typedef void FCallEntityInit(FEntity* Entity, const void* CallerContext);
 
 extern void f_template_load(const char* Dir);
 

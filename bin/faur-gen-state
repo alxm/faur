@@ -63,7 +63,7 @@ f"""\
 
 #include <faur.h>
 
-extern FState t_{state_name};
+extern FCallState t_{state_name};
 """)
 
 if __name__ == '__main__':

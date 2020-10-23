@@ -25,31 +25,31 @@ typedef struct FComponent FComponent;
 #include "../data/f_block.p.h"
 #include "../ecs/f_entity.p.h"
 
-typedef void FComponentDataInit(void* Data, const FBlock* Config);
-typedef void FComponentDataFree(void* Data);
+typedef void FCallComponentDataInit(void* Data, const FBlock* Config);
+typedef void FCallComponentDataFree(void* Data);
 
-typedef void FComponentInstanceInit(void* Self, const void* Data);
-typedef void FComponentInstanceFree(void* Self);
+typedef void FCallComponentInstanceInit(void* Self, const void* Data);
+typedef void FCallComponentInstanceFree(void* Self);
 
 struct FComponent {
     size_t size; // total size of FComponentInstance + user data that follows
     size_t dataSize; // size of template data buffer
     const char* stringId; // unique string ID
-    FComponentInstanceInit* init; // sets component buffer default values
-    FComponentInstanceFree* free; // does not free the actual component buffer
-    FComponentDataInit* dataInit; // init template buffer with FBlock
-    FComponentDataFree* dataFree; // does not free the template buffer
+    FCallComponentInstanceInit* init; // sets component buffer default values
+    FCallComponentInstanceFree* free; // does not free the actual comp buffer
+    FCallComponentDataInit* dataInit; // init template buffer with FBlock
+    FCallComponentDataFree* dataFree; // does not free the template buffer
     unsigned bitId; // unique number ID
 };
 
 #define F_COMPONENT(Name, DataSize, DataInit, DataFree, InstanceSize, InstanceInit, InstanceFree) \
     FComponent Name = {                                                                           \
         .size = InstanceSize,                                                                     \
-        .init = (FComponentInstanceInit*)InstanceInit,                                            \
-        .free = (FComponentInstanceFree*)InstanceFree,                                            \
+        .init = (FCallComponentInstanceInit*)InstanceInit,                                        \
+        .free = (FCallComponentInstanceFree*)InstanceFree,                                        \
         .dataSize = DataSize,                                                                     \
-        .dataInit = (FComponentDataInit*)DataInit,                                                \
-        .dataFree = (FComponentDataFree*)DataFree,                                                \
+        .dataInit = (FCallComponentDataInit*)DataInit,                                            \
+        .dataFree = (FCallComponentDataFree*)DataFree,                                            \
         .stringId = F_STRINGIFY(Name),                                                            \
     }
 

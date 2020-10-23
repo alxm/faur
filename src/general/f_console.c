@@ -87,7 +87,7 @@ static void f_console__uninit1(void)
     g_state = F_CONSOLE__STATE_INVALID;
 
     f_sprite_free((FSprite*)f_gfx__g_console_19x7);
-    f_list_freeEx(g_lines, (FFree*)line_free);
+    f_list_freeEx(g_lines, (FCallFree*)line_free);
     f_button_free(g_toggle);
 }
 

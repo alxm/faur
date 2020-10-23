@@ -59,7 +59,7 @@ void f_menu_free(FMenu* Menu)
     f_menu_freeEx(Menu, NULL);
 }
 
-void f_menu_freeEx(FMenu* Menu, FFree* ItemFree)
+void f_menu_freeEx(FMenu* Menu, FCallFree* ItemFree)
 {
     if(Menu == NULL) {
         return;

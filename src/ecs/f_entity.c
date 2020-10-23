@@ -84,7 +84,7 @@ void f_entity__uninit(void)
     f_entity__ignoreRefDec = true;
 
     for(int i = F_LIST__NUM; i--; ) {
-        f_list_freeEx(g_lists[i], (FFree*)f_entity__free);
+        f_list_freeEx(g_lists[i], (FCallFree*)f_entity__free);
     }
 
     f_pool_free(g_pool);
@@ -145,7 +145,7 @@ void f_entity__tick(void)
 
     f_list_clear(g_lists[F_LIST__NEW]);
     f_list_clear(g_lists[F_LIST__RESTORE]);
-    f_list_clearEx(g_lists[F_LIST__FREE], (FFree*)f_entity__free);
+    f_list_clearEx(g_lists[F_LIST__FREE], (FCallFree*)f_entity__free);
 }
 
 void f_entity__flushFromSystems(void)
@@ -157,8 +157,8 @@ void f_entity__flushFromSystems(void)
             }
         #endif
 
-        f_list_clearEx(e->systemNodesActive, (FFree*)f_list_removeNode);
-        f_list_clearEx(e->systemNodesEither, (FFree*)f_list_removeNode);
+        f_list_clearEx(e->systemNodesActive, (FCallFree*)f_list_removeNode);
+        f_list_clearEx(e->systemNodesEither, (FCallFree*)f_list_removeNode);
 
         listAddTo(e, canDelete(e) ? F_LIST__FREE : F_LIST__DEFAULT);
     }
@@ -175,7 +175,7 @@ void f_entity__flushFromSystemsActive(FEntity* Entity)
     #endif
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
-    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
+    f_list_clearEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVE_INACTIVE)) {
         f_entity_removedSet(Entity);
@@ -261,8 +261,8 @@ void f_entity__free(FEntity* Entity)
 
     f_list_free(Entity->matchingSystemsActive);
     f_list_free(Entity->matchingSystemsRest);
-    f_list_freeEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
-    f_list_freeEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
+    f_list_freeEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
+    f_list_freeEx(Entity->systemNodesEither, (FCallFree*)f_list_removeNode);
 
     for(unsigned c = f_component__num; c--; ) {
         f_component__instanceFree(Entity->componentsTable[c]);
@@ -389,7 +389,7 @@ void f_entity_refDec(FEntity* Entity)
     if(f_entity__ignoreRefDec) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only FEntity API that may be called by
-        // components' FComponentInstanceFree callbacks.
+        // components' FCallComponentInstanceFree callbacks.
         return;
     }
 

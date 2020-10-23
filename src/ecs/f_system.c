@@ -60,7 +60,7 @@ void f_system__uninit(void)
 void f_system_run(const FSystem* System)
 {
     if(System->compare) {
-        f_list_sort(System->entities, (FListCompare*)System->compare);
+        f_list_sort(System->entities, (FCallListCompare*)System->compare);
     }
 
     if(System->onlyActiveEntities) {

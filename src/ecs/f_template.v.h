@@ -26,7 +26,7 @@ typedef struct FTemplate FTemplate;
 
 struct FTemplate {
     const FTemplate* parent; // Template chain
-    FEntityInit* init; // Optional, runs after components init and parent init
+    FCallEntityInit* init; // Optional, runs after comps init and parent init
     FList* componentsOwn; // FList<const FComponent*> this template only
     FList* componentsAll; // FList<const FComponent*> this template or parent
     FBitfield* componentsBits; // Set if this template or parent has component

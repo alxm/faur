@@ -19,12 +19,12 @@
 #include <faur.v.h>
 
 #if F_CONFIG_RENDER_SOFTWARE
-typedef void (*FDrawPixel)(int X, int Y);
-typedef void (*FDrawHLine)(int X1, int X2, int Y);
-typedef void (*FDrawVLine)(int X, int Y1, int Y2);
-typedef void (*FDrawLine)(int X1, int Y1, int X2, int Y2);
-typedef void (*FDrawRectangle)(int X, int Y, int Width, int Height);
-typedef void (*FDrawCircle)(int X, int Y, int Radius);
+typedef void (*FCallDrawPixel)(int X, int Y);
+typedef void (*FCallDrawHLine)(int X1, int X2, int Y);
+typedef void (*FCallDrawVLine)(int X, int Y1, int Y2);
+typedef void (*FCallDrawLine)(int X1, int Y1, int X2, int Y2);
+typedef void (*FCallDrawRectangle)(int X, int Y, int Width, int Height);
+typedef void (*FCallDrawCircle)(int X, int Y, int Radius);
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -265,12 +265,12 @@ do {                                                                        \
     },
 
 static const struct {
-    FDrawPixel pixel;
-    FDrawHLine hline;
-    FDrawVLine vline;
-    FDrawLine line;
-    FDrawRectangle rectangle[2]; // [Fill]
-    FDrawCircle circle[2][2]; // [Clip][Fill]
+    FCallDrawPixel pixel;
+    FCallDrawHLine hline;
+    FCallDrawVLine vline;
+    FCallDrawLine line;
+    FCallDrawRectangle rectangle[2]; // [Fill]
+    FCallDrawCircle circle[2][2]; // [Clip][Fill]
 } g_draw[F_COLOR_BLEND_NUM] = {
     F__INIT_BLEND(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
