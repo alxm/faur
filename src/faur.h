@@ -72,6 +72,7 @@ F_EXTERN_C_START
 #include "math/f_random.p.h"
 #include "math/f_vec.p.h"
 #include "memory/f_mem.p.h"
+#include "memory/f_pool.p.h"
 #include "platform/video/f_gamebuino_video.p.h"
 #include "sound/f_channel.p.h"
 #include "sound/f_music.p.h"

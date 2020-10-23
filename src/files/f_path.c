@@ -18,13 +18,6 @@
 #include "f_path.v.h"
 #include <faur.v.h>
 
-struct FPath {
-    FPathInfo info;
-    char* full;
-    char* dirsPart;
-    char* namePart;
-};
-
 static inline bool getPathInfo(const char* Path, FPathInfo* Info)
 {
     return f_platform_api__fileStat(Path, Info) || f_embed__stat(Path, Info);
@@ -32,7 +25,7 @@ static inline bool getPathInfo(const char* Path, FPathInfo* Info)
 
 FPath* f_path_new(const char* Path)
 {
-    FPath* p = f_mem_malloc(sizeof(FPath));
+    FPath* p = f_pool__alloc(F_POOL__PATH);
 
     if(!getPathInfo(Path, &p->info)) {
         p->info.flags = 0;
@@ -85,17 +78,17 @@ void f_path_free(FPath* Path)
     f_mem_free(Path->full);
     f_mem_free(Path->dirsPart);
     f_mem_free(Path->namePart);
-    f_mem_free(Path);
+    f_pool_release(Path);
 }
 
-bool f_path_exists(const char* Path, FPathFlags Flags)
+bool f_path_exists(const char* Path, unsigned Flags)
 {
     FPathInfo info;
 
     return getPathInfo(Path, &info) && F_FLAGS_TEST_ALL(info.flags, Flags);
 }
 
-bool f_path_test(const FPath* Path, FPathFlags Flags)
+bool f_path_test(const FPath* Path, unsigned Flags)
 {
     return F_FLAGS_TEST_ALL(Path->info.flags, Flags);
 }
@@ -105,7 +98,7 @@ size_t f_path__sizeGet(const FPath* Path)
     return Path->info.size;
 }
 
-void f_path__flagsSet(FPath* Path, FPathFlags Flags)
+void f_path__flagsSet(FPath* Path, unsigned Flags)
 {
     F_FLAGS_SET(Path->info.flags, Flags);
 }

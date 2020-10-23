@@ -28,6 +28,7 @@ typedef enum {
     F_LIST__NUM
 } FEntityList;
 
+static FPool* g_pool; // To allocate entities from
 static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
 static unsigned g_activeNum; // Number of active entities this frame
 static unsigned g_activeNumPermanent; // Number of always-active entities
@@ -69,6 +70,10 @@ static inline void listMoveTo(FEntity* Entity, FEntityList List)
 
 void f_entity__init(void)
 {
+    g_pool = f_pool_new(
+                sizeof(FEntity)
+                    + sizeof(FComponentInstance*) * (f_component__num - 1));
+
     for(int i = F_LIST__NUM; i--; ) {
         g_lists[i] = f_list_new();
     }
@@ -81,6 +86,8 @@ void f_entity__uninit(void)
     for(int i = F_LIST__NUM; i--; ) {
         f_list_freeEx(g_lists[i], (FFree*)f_entity__free);
     }
+
+    f_pool_free(g_pool);
 }
 
 void f_entity__tick(void)
@@ -197,9 +204,7 @@ unsigned f_entity__numGetActive(void)
 
 FEntity* f_entity_new(const char* Template, const void* Context)
 {
-    FEntity* e = f_mem_mallocz(
-                    sizeof(FEntity)
-                        + sizeof(FComponentInstance*) * (f_component__num - 1));
+    FEntity* e = f_pool_alloc(g_pool);
 
     listAddTo(e, F_LIST__NEW);
 
@@ -277,7 +282,7 @@ void f_entity__free(FEntity* Entity)
         g_activeNumPermanent--;
     }
 
-    f_mem_free(Entity);
+    f_pool_release(Entity);
 }
 
 void f_entity__freeEx(FEntity* Entity)

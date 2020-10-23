@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,13 @@ typedef enum {
     F_FONT__ID_KEYED,
     F_FONT__ID_NUM
 } FFontId;
+
+typedef struct {
+    const FFont* font;
+    int x, startX, y;
+    int lineHeight;
+    int wrapWidth, currentLineWidth;
+} FFontState;
 
 #include "../general/f_init.v.h"
 

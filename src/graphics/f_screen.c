@@ -57,7 +57,7 @@ static void f_screen__init(void)
 
 static void f_screen__uninit(void)
 {
-    f_list_freeEx(g_stack, f_mem_free);
+    f_list_freeEx(g_stack, f_pool_release);
 
     #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
         f_button_free(g_fullScreenButton);
@@ -152,7 +152,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
         }
     #endif
 
-    f_list_push(g_stack, f_mem_dup(&f__screen, sizeof(FScreen)));
+    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
 
     f__screen.pixels = &Sprite->pixels;
     f__screen.sprite = Sprite;
@@ -183,7 +183,7 @@ void f_screen_pop(void)
     #endif
 
     f__screen = *screen;
-    f_mem_free(screen);
+    f_pool_release(screen);
 
     #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenTextureSet(f__screen.texture);

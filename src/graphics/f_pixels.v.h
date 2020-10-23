@@ -26,23 +26,21 @@ typedef struct FPixels FPixels;
 #include "../graphics/f_color.v.h"
 #include "../math/f_fix.v.h"
 
-typedef enum {
-    F_PIXELS__ALLOC = F_FLAGS_BIT(0),
-    F_PIXELS__DYNAMIC = F_FLAGS_BIT(1),
-    F_PIXELS__CONST = F_FLAGS_BIT(2),
-} FPixelsFlags;
+#define F_PIXELS__ALLOC F_FLAGS_BIT(0)
+#define F_PIXELS__DYNAMIC F_FLAGS_BIT(1)
+#define F_PIXELS__CONST F_FLAGS_BIT(2)
 
 struct FPixels {
     FVecInt size;
     unsigned framesNum;
     unsigned bufferLen;
     unsigned bufferSize;
-    FPixelsFlags flags;
+    unsigned flags;
     FColorPixel* buffer; // [w * h * framesNum]
 };
 
-extern FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags);
-extern void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags Flags);
+extern FPixels* f_pixels__new(int W, int H, unsigned Frames, unsigned Flags);
+extern void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, unsigned Flags);
 extern void f_pixels__free(FPixels* Pixels);
 
 extern void f_pixels__copy(FPixels* Dst, const FPixels* Src);

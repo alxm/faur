@@ -25,14 +25,12 @@
 #include "../ecs/f_system.v.h"
 #include "../ecs/f_template.v.h"
 
-typedef enum {
-    F_ENTITY__ACTIVE_REMOVED = F_FLAGS_BIT(0), // kicked by active-only system
-    F_ENTITY__ACTIVE_PERMANENT = F_FLAGS_BIT(1), // always report as active
-    F_ENTITY__DEBUG = F_FLAGS_BIT(2), // print debug messages for this entity
-    F_ENTITY__REMOVED = F_FLAGS_BIT(3), // marked for removal, may have refs
-    F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
-    F_ENTITY__ALLOC_STRING_ID = F_FLAGS_BIT(5), // free string ID if set
-} FEntityFlags;
+#define F_ENTITY__ACTIVE_REMOVED F_FLAGS_BIT(0) // kicked by active-only system
+#define F_ENTITY__ACTIVE_PERMANENT F_FLAGS_BIT(1) // always report as active
+#define F_ENTITY__DEBUG F_FLAGS_BIT(2) // print debug messages for this entity
+#define F_ENTITY__REMOVED F_FLAGS_BIT(3) // marked for removal, may have refs
+#define F_ENTITY__REMOVE_INACTIVE F_FLAGS_BIT(4) // mark for removal if kicked
+#define F_ENTITY__ALLOC_STRING_ID F_FLAGS_BIT(5) // free string ID if set
 
 struct FEntity {
     char* id; // specified name for debugging
@@ -48,7 +46,7 @@ struct FEntity {
     unsigned lastActive; // frame when f_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
-    FEntityFlags flags; // various properties
+    unsigned flags; // various properties
     FComponentInstance* componentsTable[1]; // [f_component__num] Buffer/NULL
 };
 

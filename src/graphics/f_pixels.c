@@ -18,7 +18,7 @@
 #include "f_pixels.v.h"
 #include <faur.v.h>
 
-FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
+FPixels* f_pixels__new(int W, int H, unsigned Frames, unsigned Flags)
 {
     #if F_CONFIG_DEBUG
         if(Frames == 0) {
@@ -33,7 +33,7 @@ FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
     return p;
 }
 
-void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags Flags)
+void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, unsigned Flags)
 {
     #if F_CONFIG_DEBUG
         if(Frames == 0) {

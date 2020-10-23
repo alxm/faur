@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ static void f_align__init(void)
 
 static void f_align__uninit(void)
 {
-    f_list_freeEx(g_stack, f_mem_free);
+    f_list_freeEx(g_stack, f_pool_release);
 }
 
 const FPack f_pack__align = {
@@ -42,7 +42,7 @@ const FPack f_pack__align = {
 
 void f_align_push(void)
 {
-    f_list_push(g_stack, f_mem_dup(&f__align, sizeof(FAlign)));
+    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_ALIGN, &f__align));
 
     f_align_reset();
 }
@@ -58,7 +58,7 @@ void f_align_pop(void)
     #endif
 
     f__align = *align;
-    f_mem_free(align);
+    f_pool_release(align);
 }
 
 void f_align_reset(void)

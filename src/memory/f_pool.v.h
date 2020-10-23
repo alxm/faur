@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018, 2020 Alex Margarit <alex@alxm.org>
+    Copyright 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,27 +15,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GENERAL_CONSOLE_V_H
-#define F_INC_GENERAL_CONSOLE_V_H
+#ifndef F_INC_DATA_POOL_V_H
+#define F_INC_DATA_POOL_V_H
 
-#include "f_console.p.h"
+#include "f_pool.p.h"
+
+typedef enum {
+    F_POOL__INVALID = -1,
+    F_POOL__BLOCK,
+    F_POOL__CONSOLE,
+    F_POOL__LIST,
+    F_POOL__LISTNODE,
+    F_POOL__PATH,
+    F_POOL__SAMPLE,
+    F_POOL__SPRITE,
+    F_POOL__STACK_ALIGN,
+    F_POOL__STACK_COLOR,
+    F_POOL__STACK_FONT,
+    F_POOL__STACK_SCREEN,
+    F_POOL__TIMER,
+    F_POOL__NUM
+} FPoolId;
 
 #include "../general/f_init.v.h"
-#include "../general/f_out.v.h"
 
-typedef struct {
-    FOutSource source;
-    FOutType type;
-    char* text;
-} FConsoleLine;
+extern const FPack f_pack__pool;
 
-extern const FPack f_pack__console_0;
-extern const FPack f_pack__console_1;
+extern void* f_pool__alloc(FPoolId Pool);
+extern void* f_pool__dup(FPoolId Pool, const void* Buffer);
 
-extern void f_console__tick(void);
-extern void f_console__draw(void);
-
-extern bool f_console__isInitialized(void);
-extern void f_console__write(FOutSource Source, FOutType Type, const char* Text);
-
-#endif // F_INC_GENERAL_CONSOLE_V_H
+#endif // F_INC_DATA_POOL_V_H

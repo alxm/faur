@@ -19,6 +19,7 @@
 #include <faur.v.h>
 
 static const FPack* g_packs[] = {
+    &f_pack__pool,
     &f_pack__console_0,
     &f_pack__embed,
     &f_pack__platform,

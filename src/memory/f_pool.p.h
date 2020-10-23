@@ -1,5 +1,5 @@
 /*
-    Copyright 2018, 2020 Alex Margarit <alex@alxm.org>
+    Copyright 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_FILES_PATH_V_H
-#define F_INC_FILES_PATH_V_H
+#ifndef F_INC_DATA_POOL_P_H
+#define F_INC_DATA_POOL_P_H
 
-#include "f_path.p.h"
+#include "../general/f_system_includes.h"
 
-typedef struct {
-    unsigned flags;
-    size_t size;
-} FPathInfo;
+typedef struct FPool FPool;
 
-struct FPath {
-    FPathInfo info;
-    char* full;
-    char* dirsPart;
-    char* namePart;
-};
+extern FPool* f_pool_new(size_t Size);
+extern void f_pool_free(FPool* Pool);
 
-extern size_t f_path__sizeGet(const FPath* Path);
+extern void* f_pool_alloc(FPool* Pool);
+extern void f_pool_release(void* Buffer);
 
-extern void f_path__flagsSet(FPath* Path, unsigned Flags);
-
-#endif // F_INC_FILES_PATH_V_H
+#endif // F_INC_DATA_POOL_P_H

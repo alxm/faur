@@ -20,6 +20,18 @@
 
 #include "f_timer.p.h"
 
+#include "../data/f_list.v.h"
+
+struct FTimer {
+    unsigned flags;
+    unsigned periodMs;
+    FFixu period;
+    FFixu start;
+    FFixu diff;
+    unsigned expiredCount;
+    FListNode* runningListNode;
+};
+
 #include "../general/f_init.v.h"
 
 extern const FPack f_pack__timer;

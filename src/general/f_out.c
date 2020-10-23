@@ -27,10 +27,6 @@
 #endif
 
 typedef enum {
-    F_OUT__FLAG_OVERWRITE = F_FLAGS_BIT(0),
-} FOutFlags;
-
-typedef enum {
     F_COLOR__INVALID = -1,
     F_COLOR__BLACK = 30,
     F_COLOR__RED = 31,

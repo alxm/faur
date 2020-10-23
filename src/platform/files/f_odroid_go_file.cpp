@@ -39,7 +39,7 @@ bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
             size = f.size();
         }
 
-        Info->flags = (FPathFlags)flags;
+        Info->flags = flags;
         Info->size = size;
 
         return true;

@@ -30,7 +30,7 @@ bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
     struct stat info;
 
     if(stat(Path, &info) == 0) {
-        FPathFlags flags = F_PATH_REAL;
+        unsigned flags = F_PATH_REAL;
         size_t size = 0;
 
         if(S_ISREG(info.st_mode)) {
@@ -90,7 +90,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode)
+FPlatformFile* f_platform_api__fileNew(const FPath* Path, unsigned Mode)
 {
     int index = 0;
     char mode[4];

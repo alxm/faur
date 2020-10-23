@@ -56,6 +56,7 @@ F_EXTERN_C_START
 #include "math/f_fix.v.h"
 #include "math/f_random.v.h"
 #include "memory/f_mem.v.h"
+#include "memory/f_pool.v.h"
 #include "platform/f_platform.v.h"
 #include "platform/graphics/f_software_blit.v.h"
 #include "platform/video/f_sdl_video.v.h"

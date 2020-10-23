@@ -20,6 +20,17 @@
 
 #include "f_block.p.h"
 
+#include "../data/f_hash.v.h"
+
+struct FBlock {
+    char* text; // own content
+    FList* blocks; // FList<FBlock*>, all blocks indented under this block
+    FHash* index; // FHash<const char*, FList<const FBlock*>> indexed by text
+    const FBlock** array; // the blocks indexed by line # relative to parent
+    unsigned arrayLen; // number of blocks under parent
+    int references; // added when merged into another parent block
+};
+
 extern void f_block__refInc(FBlock* Block);
 extern void f_block__merge(FBlock* Dst, const FBlock* Src);
 

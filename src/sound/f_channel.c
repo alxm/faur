@@ -24,7 +24,7 @@ int f_channel_new(void)
     return f_platform_api__soundSampleChannelGet();
 }
 
-void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags)
+void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
 {
     if(f_platform_api__soundMuteGet()) {
         return;
@@ -61,7 +61,7 @@ int f_channel_new(void)
     return -1;
 }
 
-void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags)
+void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
 {
     F_UNUSED(Channel);
     F_UNUSED(Sample);
