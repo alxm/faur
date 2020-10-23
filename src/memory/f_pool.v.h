@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_DATA_POOL_V_H
-#define F_INC_DATA_POOL_V_H
+#ifndef F_INC_MEMORY_POOL_V_H
+#define F_INC_MEMORY_POOL_V_H
 
 #include "f_pool.p.h"
 
@@ -44,4 +44,4 @@ extern const FPack f_pack__pool;
 extern void* f_pool__alloc(FPoolId Pool);
 extern void* f_pool__dup(FPoolId Pool, const void* Buffer);
 
-#endif // F_INC_DATA_POOL_V_H
+#endif // F_INC_MEMORY_POOL_V_H
