@@ -6,7 +6,7 @@
 
 Features include 2D graphics, sound, inputs, state management, ECS model, and utilities to help with data, files, math, strings, time, and more.
 
-Faur builds natively on Linux, and can be [cross-compiled](#cross-compile-for-other-platforms) for Web, Windows, and a variety of embedded devices.
+Faur builds native on Linux and can be [cross-compiled](#cross-compile-for-other-platforms) for Web, Windows, and a variety of embedded devices. The build system uses GNU Make and Python 3.
 
 ## Dependencies & Path Setup
 
@@ -144,7 +144,7 @@ Platform | Toolchain | Run-time Libraries
 ***Desktop***
 Linux, FreeBSD | OS build tools | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
 Windows | MinGW-w64 | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
-Web | Emscripten | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
+Web (Wasm) | Emscripten | SDL 2.0, SDL_mixer 2.0, libpng 1.6, zlib 1.2
 ***Embedded Linux***
 GP2X, Wiz | Open2x SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
 Caanoo | GPH SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
