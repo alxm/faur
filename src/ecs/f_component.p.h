@@ -32,8 +32,8 @@ typedef void FCallComponentInstanceInit(void* Self, const void* Data);
 typedef void FCallComponentInstanceFree(void* Self);
 
 struct FComponent {
-    size_t size; // total size of FComponentInstance + user data that follows
-    size_t dataSize; // size of template data buffer
+    unsigned size; // total size of FComponentInstance + user data that follows
+    unsigned dataSize; // size of template data buffer
     const char* stringId; // unique string ID
     FCallComponentInstanceInit* init; // sets component buffer default values
     FCallComponentInstanceFree* free; // does not free the actual comp buffer
@@ -44,10 +44,10 @@ struct FComponent {
 
 #define F_COMPONENT(Name, DataSize, DataInit, DataFree, InstanceSize, InstanceInit, InstanceFree) \
     FComponent Name = {                                                                           \
-        .size = InstanceSize,                                                                     \
+        .size = (unsigned)InstanceSize,                                                           \
         .init = (FCallComponentInstanceInit*)InstanceInit,                                        \
         .free = (FCallComponentInstanceFree*)InstanceFree,                                        \
-        .dataSize = DataSize,                                                                     \
+        .dataSize = (unsigned)DataSize,                                                           \
         .dataInit = (FCallComponentDataInit*)DataInit,                                            \
         .dataFree = (FCallComponentDataFree*)DataFree,                                            \
         .stringId = F_STRINGIFY(Name),                                                            \
