@@ -60,7 +60,7 @@ hello/
 F_CONFIG_APP_AUTHOR := <author>
 F_CONFIG_APP_NAME := hello
 
-include $(FAUR_PATH)/make/dev.mk
+include $(FAUR_PATH)/make/default.mk
 ```
 
 #### hello/src/main.c
@@ -153,7 +153,7 @@ Open Pandora | Pandora SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2, zlib 1.2
 Gamebuino META | Arduino SAMD | Gamebuino META 1.3
 Odroid-GO | Arduino ESP32 | Odroid-GO 1.0
 
-The default toolchain paths are in `faur/make/global/defs.mk` and they can be overridden in `~/.config/faur/sdk.mk`. To build for a different target, edit the application Makefile and replace `$(FAUR_PATH)/make/dev.mk` with another file from `$(FAUR_PATH)/make`.
+The default toolchain paths are in `faur/make/global/defs.mk` and they can be overridden in `~/.config/faur/sdk.mk`. To build for a different target, edit the application Makefile and replace `include $(FAUR_PATH)/make/default.mk` with another file from `$(FAUR_PATH)/make`.
 
 ## License
 
