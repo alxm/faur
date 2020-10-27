@@ -22,11 +22,11 @@
 
 typedef struct FList FList;
 typedef struct FListNode FListNode;
-typedef int FListCompare(const void* A, const void* B);
+typedef int FCallListCompare(const void* A, const void* B);
 
 extern FList* f_list_new(void);
 extern void f_list_free(FList* List);
-extern void f_list_freeEx(FList* List, FFree* Free);
+extern void f_list_freeEx(FList* List, FCallFree* Free);
 
 extern FListNode* f_list_addFirst(FList* List, void* Content);
 extern FListNode* f_list_addLast(FList* List, void* Content);
@@ -48,13 +48,13 @@ extern void* f_list_removeRandom(FList* List);
 extern void f_list_removeNode(FListNode* Node);
 
 extern void f_list_clear(FList* List);
-extern void f_list_clearEx(FList* List, FFree* Free);
+extern void f_list_clearEx(FList* List, FCallFree* Free);
 
 extern FList* f_list_dup(const FList* List);
 extern void** f_list_toArray(const FList* List);
 
 extern void f_list_reverse(FList* List);
-extern void f_list_sort(FList* List, FListCompare* Compare);
+extern void f_list_sort(FList* List, FCallListCompare* Compare);
 
 extern unsigned f_list_sizeGet(const FList* List);
 extern bool f_list_sizeIsEmpty(const FList* List);

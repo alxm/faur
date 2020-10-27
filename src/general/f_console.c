@@ -87,7 +87,7 @@ static void f_console__uninit1(void)
     g_state = F_CONSOLE__STATE_INVALID;
 
     f_sprite_free((FSprite*)f_gfx__g_console_19x7);
-    f_list_freeEx(g_lines, (FFree*)line_free);
+    f_list_freeEx(g_lines, (FCallFree*)line_free);
     f_button_free(g_toggle);
 }
 
@@ -149,6 +149,11 @@ void f_console__draw(void)
     f_color_fillBlitSet(true);
 
     {
+        f_color_blendSet(F_COLOR_BLEND_ALPHA_50);
+        f_draw_rectangle(
+            0, 0, f_screen_sizeGetWidth(), 2 + f_font_lineHeightGet() * 2);
+
+        f_color_blendSet(F_COLOR_BLEND_SOLID);
         f_font_coordsSet(2, 2);
 
         f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
@@ -179,7 +184,8 @@ void f_console__draw(void)
     {
         int tagWidth = f_sprite_sizeGetWidth(f_gfx__g_console_19x7);
 
-        f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
+        f_font_coordsSet(
+            1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY() + 2);
         f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
 
         F_LIST_ITERATE(g_lines, FConsoleLine*, l) {
@@ -202,7 +208,8 @@ void f_console__draw(void)
 
     {
         f_align_set(F_ALIGN_X_RIGHT, F_ALIGN_Y_TOP);
-        f_font_coordsSet(f__screen.pixels->size.x - 1, 2);
+        f_font_coordsSet(
+            f__screen.pixels->size.x - 1, 2 + 2 * f_font_lineHeightGet() + 2);
 
         f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
         f_font_printf("%u tick fps\n", f_fps_rateTickGet());

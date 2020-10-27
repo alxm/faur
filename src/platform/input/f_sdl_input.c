@@ -58,7 +58,7 @@ struct FPlatformController {
         SDL_JoystickID id;
         SDL_GameController* controller;
         SDL_JoystickGUID guid;
-        FControllerBind* bindCallback;
+        FCallControllerBind* bindCallback;
         bool removed;
     #endif
     bool claimed;
@@ -808,7 +808,7 @@ void f_platform_sdl_input__uninit(void)
     f_list_free(g_forwardButtonsQueue[0]);
     f_list_free(g_forwardButtonsQueue[1]);
 
-    f_list_freeEx(g_controllers, (FFree*)controllerFree);
+    f_list_freeEx(g_controllers, (FCallFree*)controllerFree);
 
     #if F_CONFIG_LIB_SDL == 2
         f_list_freeEx(g_futureControllers, f_mem_free);
@@ -1186,7 +1186,7 @@ bool f_platform_api__inputTouchTapGet(void)
     return g_mouse.tap;
 }
 
-FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback)
+FPlatformController* f_platform_api__inputControllerClaim(FCallControllerBind* Callback)
 {
     FPlatformController* controller = NULL;
 

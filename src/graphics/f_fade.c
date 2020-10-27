@@ -34,7 +34,7 @@ static struct {
     FSprite* oldScreen;
     union {
         FColorPixel color;
-        FFadeCallback* callback;
+        FCallFade* callback;
     } u;
 } g_fade = {
     .op = F__FADE_INVALID,
@@ -101,7 +101,7 @@ void f_fade_startScreens(unsigned DurationMs)
 }
 #endif
 
-void f_fade_startCustom(FFadeCallback* Callback, unsigned DurationMs)
+void f_fade_startCustom(FCallFade* Callback, unsigned DurationMs)
 {
     newFade(F__FADE_CUSTOM, DurationMs);
 

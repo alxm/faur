@@ -52,7 +52,7 @@
         "." F_STRINGIFY(F_CONFIG_APP_VERSION_MINOR) \
         "." F_STRINGIFY(F_CONFIG_APP_VERSION_MICRO)
 
-typedef void FFree(void* Self);
+typedef void FCallFree(void* Self);
 
 typedef volatile int FEvent;
 

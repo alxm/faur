@@ -114,7 +114,7 @@ extern FVecInt f_platform_api__inputTouchCoordsGet(void);
 extern FVecInt f_platform_api__inputTouchDeltaGet(void);
 extern bool f_platform_api__inputTouchTapGet(void);
 
-extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback);
+extern FPlatformController* f_platform_api__inputControllerClaim(FCallControllerBind* Callback);
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
 extern bool f_platform_api__fileStat(const char* Path, FPathInfo* Info);

@@ -36,8 +36,8 @@ typedef struct {
     FSpriteWord* spans[]; // [framesNum]
 } FTexture;
 
-typedef void (*FBlitter)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
-typedef void (*FBlitterEx)(const FPixels* Pixels, unsigned Frame, int TopY, int BottomY);
+typedef void (*FCallBlitter)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
+typedef void (*FCallBlitterEx)(const FPixels* Pixels, unsigned Frame, int TopY, int BottomY);
 
 static FScanlineEdge g_edges[2];
 
@@ -247,7 +247,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     [Index][1][1][1] = f_blit__##Name##FlatKeyedDoClip, \
 
 // [Blend][Fill][ColorKey][Clip]
-static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
+static const FCallBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     F__INIT_BLEND(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
     #if F__OPTIMIZE_ALPHA
@@ -272,7 +272,7 @@ static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     [Index][1][1] = f_blitEx__##Name##FlatKeyed, \
 
 // [Blend][Fill][ColorKey]
-static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
+static const FCallBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
     F__INIT_BLEND_EX(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA, alpha)
     #if F__OPTIMIZE_ALPHA

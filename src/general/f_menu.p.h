@@ -35,7 +35,7 @@ typedef enum {
 
 extern FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel);
 extern void f_menu_free(FMenu* Menu);
-extern void f_menu_freeEx(FMenu* Menu, FFree* ItemFree);
+extern void f_menu_freeEx(FMenu* Menu, FCallFree* ItemFree);
 
 extern void f_menu_soundSet(FMenu* Menu, FSample* Accept, FSample* Cancel, FSample* Browse);
 extern void f_menu_itemAdd(FMenu* Menu, void* Item);

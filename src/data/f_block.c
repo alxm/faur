@@ -137,8 +137,8 @@ void f_block_free(FBlock* Block)
     }
 
     if(Block->blocks) {
-        f_list_freeEx(Block->blocks, (FFree*)f_block_free);
-        f_hash_freeEx(Block->index, (FFree*)f_list_free);
+        f_list_freeEx(Block->blocks, (FCallFree*)f_block_free);
+        f_hash_freeEx(Block->index, (FCallFree*)f_list_free);
         f_mem_free(Block->array);
     }
 

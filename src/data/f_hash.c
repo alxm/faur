@@ -19,9 +19,9 @@
 #include <faur.v.h>
 
 struct FHash {
-    FHashFunction* function;
-    FHashEqual* keyEqual;
-    FFree* keyFree;
+    FCallHashFunction* function;
+    FCallHashEqual* keyEqual;
+    FCallFree* keyFree;
     unsigned numSlots;
     FList* entries;
     FHashEntry* slots[]; // [numSlots]
@@ -93,7 +93,7 @@ static unsigned func_djb2(const char* Key)
     return h;
 }
 
-FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree, unsigned NumSlots)
+FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFree* KeyFree, unsigned NumSlots)
 {
     #if F_CONFIG_DEBUG
         if(NumSlots == 0) {
@@ -124,8 +124,8 @@ FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree,
 
 FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString)
 {
-    return f_hash_new((FHashFunction*)func_djb2,
-                      (FHashEqual*)f_str_equal,
+    return f_hash_new((FCallHashFunction*)func_djb2,
+                      (FCallHashEqual*)f_str_equal,
                       FreeKeyString ? f_mem_free : NULL,
                       NumSlots);
 }
@@ -135,7 +135,7 @@ void f_hash_free(FHash* Hash)
     f_hash_freeEx(Hash, NULL);
 }
 
-void f_hash_freeEx(FHash* Hash, FFree* Free)
+void f_hash_freeEx(FHash* Hash, FCallFree* Free)
 {
     if(Hash == NULL) {
         return;

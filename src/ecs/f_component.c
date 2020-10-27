@@ -35,7 +35,8 @@ void f_component__init(FComponent* const* Components, size_t ComponentsNum)
     for(unsigned c = f_component__num; c--; ) {
         FComponent* com = f_component__array[c];
 
-        com->size += sizeof(FComponentInstance) - sizeof(FMaxMemAlignType);
+        com->size +=
+            (unsigned)(sizeof(FComponentInstance) - sizeof(FMaxMemAlignType));
         com->bitId = c;
 
         f_hash_add(f_component__index, com->stringId, com);

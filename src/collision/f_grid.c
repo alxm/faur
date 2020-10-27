@@ -89,13 +89,13 @@ FGridItem* f_grid_itemNew(void)
 void f_grid_itemFree(FGridItem* Item)
 {
     // Remove item from any lists it is in
-    f_list_freeEx(Item, (FFree*)f_list_removeNode);
+    f_list_freeEx(Item, (FCallFree*)f_list_removeNode);
 }
 
 void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVecFix Coords)
 {
     // remove item from all the cells it was previously in
-    f_list_clearEx(Item, (FFree*)f_list_removeNode);
+    f_list_clearEx(Item, (FCallFree*)f_list_removeNode);
 
     // center cell coords
     int cellX = f_fix_toInt(Coords.x >> Grid->shift);

@@ -20,15 +20,15 @@
 
 #include "../general/f_system_includes.h"
 
-typedef void FState(void);
-typedef void FStateCallback(void);
+typedef void FCallState(void);
+typedef void FCallStatePrePost(void);
 
-extern void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost);
+extern void f_state_callbacks(FCallStatePrePost* TickPre, FCallStatePrePost* TickPost, FCallStatePrePost* DrawPre, FCallStatePrePost* DrawPost);
 
-extern void f_state_push(FState* Handler, const char* Name);
+extern void f_state_push(FCallState* Handler, const char* Name);
 extern void f_state_pop(void);
-extern void f_state_popUntil(FState* Handler, const char* Name);
-extern void f_state_replace(FState* Handler, const char* Name);
+extern void f_state_popUntil(FCallState* Handler, const char* Name);
+extern void f_state_replace(FCallState* Handler, const char* Name);
 
 #ifndef FAUR_IMPLEMENT
     #define f_state_push(Handler) f_state_push(Handler, #Handler)
@@ -38,7 +38,7 @@ extern void f_state_replace(FState* Handler, const char* Name);
 
 extern void f_state_exit(void);
 
-extern FState* f_state_currentGet(void);
+extern FCallState* f_state_currentGet(void);
 extern bool f_state_currentChanged(void);
 
 extern bool f_state_blockGet(void);

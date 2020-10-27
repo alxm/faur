@@ -41,30 +41,26 @@ struct FPoolSlab {
 };
 
 struct FPool {
-    size_t objSize; // Size of a user object within a pool entry
-    size_t entrySize; // Size of each pool entry in a slab
+    unsigned objSize; // Size of a user object within a pool entry
+    unsigned entrySize; // Size of each pool entry in a slab
     unsigned numEntriesPerSlab; // Grows with usage
     FPoolSlab* slabList; // Keeps track of all allocated slabs
     FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
 
-typedef struct {
-    size_t typeSize;
-} FPoolInit;
-
-static const FPoolInit g_poolsInit[F_POOL__NUM] = {
-    [F_POOL__BLOCK] = {sizeof(FBlock)},
-    [F_POOL__CONSOLE] = {sizeof(FConsoleLine)},
-    [F_POOL__LIST] = {sizeof(FList)},
-    [F_POOL__LISTNODE] = {sizeof(FListNode)},
-    [F_POOL__PATH] = {sizeof(FPath)},
-    [F_POOL__SAMPLE] = {sizeof(FSample)},
-    [F_POOL__SPRITE] = {sizeof(FSprite)},
-    [F_POOL__STACK_ALIGN] = {sizeof(FAlign)},
-    [F_POOL__STACK_COLOR] = {sizeof(FColorState)},
-    [F_POOL__STACK_FONT] = {sizeof(FFontState)},
-    [F_POOL__STACK_SCREEN] = {sizeof(FScreen)},
-    [F_POOL__TIMER] = {sizeof(FTimer)},
+static const unsigned g_sizes[F_POOL__NUM] = {
+    [F_POOL__BLOCK] = sizeof(FBlock),
+    [F_POOL__CONSOLE] = sizeof(FConsoleLine),
+    [F_POOL__LIST] = sizeof(FList),
+    [F_POOL__LISTNODE] = sizeof(FListNode),
+    [F_POOL__PATH] = sizeof(FPath),
+    [F_POOL__SAMPLE] = sizeof(FSample),
+    [F_POOL__SPRITE] = sizeof(FSprite),
+    [F_POOL__STACK_ALIGN] = sizeof(FAlign),
+    [F_POOL__STACK_COLOR] = sizeof(FColorState),
+    [F_POOL__STACK_FONT] = sizeof(FFontState),
+    [F_POOL__STACK_SCREEN] = sizeof(FScreen),
+    [F_POOL__TIMER] = sizeof(FTimer),
 };
 
 static FPool* g_pools[F_POOL__NUM];
@@ -72,9 +68,7 @@ static FPool* g_pools[F_POOL__NUM];
 static void f_pool__init(void)
 {
     for(int p = F_POOL__NUM; p--; ) {
-        const FPoolInit* init = &g_poolsInit[p];
-
-        g_pools[p] = f_pool_new(init->typeSize);
+        g_pools[p] = f_pool_new(g_sizes[p]);
     }
 }
 
@@ -122,10 +116,10 @@ FPool* f_pool_new(size_t Size)
 {
     FPool* p = f_mem_mallocz(sizeof(FPool));
 
-    p->objSize = Size;
-    p->entrySize = sizeof(FPoolEntryHeader)
-                    + ((Size + sizeof(FMaxMemAlignType) - 1)
-                            & ~(sizeof(FMaxMemAlignType) - 1));
+    p->objSize = (unsigned)Size;
+    p->entrySize = (unsigned)(sizeof(FPoolEntryHeader)
+                                + ((Size + sizeof(FMaxMemAlignType) - 1)
+                                        & ~(sizeof(FMaxMemAlignType) - 1)));
     p->numEntriesPerSlab = F__ENTRIES_NUM_START;
 
     return p;
@@ -188,7 +182,7 @@ void* f_pool__dup(FPoolId Pool, const void* Buffer)
 {
     void* copy = f_pool__alloc(Pool);
 
-    memcpy(copy, Buffer, g_poolsInit[Pool].typeSize);
+    memcpy(copy, Buffer, g_sizes[Pool]);
 
     return copy;
 }

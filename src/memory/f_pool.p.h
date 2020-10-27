@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_DATA_POOL_P_H
-#define F_INC_DATA_POOL_P_H
+#ifndef F_INC_MEMORY_POOL_P_H
+#define F_INC_MEMORY_POOL_P_H
 
 #include "../general/f_system_includes.h"
 
@@ -28,4 +28,4 @@ extern void f_pool_free(FPool* Pool);
 extern void* f_pool_alloc(FPool* Pool);
 extern void f_pool_release(void* Buffer);
 
-#endif // F_INC_DATA_POOL_P_H
+#endif // F_INC_MEMORY_POOL_P_H

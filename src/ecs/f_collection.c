@@ -33,7 +33,7 @@ FCollection* f_collection_new(void)
 void f_collection_free(FCollection* Collection)
 {
     f_entity__ignoreRefDec = true;
-    f_list_freeEx(Collection, (FFree*)f_entity__freeEx);
+    f_list_freeEx(Collection, (FCallFree*)f_entity__freeEx);
     f_entity__ignoreRefDec = false;
 
     if(f__collection == Collection) {
@@ -43,7 +43,7 @@ void f_collection_free(FCollection* Collection)
 
 void f_collection_clear(FCollection* Collection)
 {
-    f_list_clearEx(Collection, (FFree*)f_entity_removedSet);
+    f_list_clearEx(Collection, (FCallFree*)f_entity_removedSet);
 }
 
 void f_collection_muteInc(FCollection* Collection)

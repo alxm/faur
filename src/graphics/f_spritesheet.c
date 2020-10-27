@@ -73,7 +73,7 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
 
 void f_spritesheet_free(FSpriteSheet* Sheet)
 {
-    f_hash_freeEx(Sheet, (FFree*)f_sprite_free);
+    f_hash_freeEx(Sheet, (FCallFree*)f_sprite_free);
 }
 
 const FSprite* f_spritesheet_get(const FSpriteSheet* Sheet, const char* Id)

@@ -22,7 +22,7 @@
 
 #include "../general/f_state.p.h"
 
-extern FState f_main;
+extern FCallState f_main;
 
 extern int f_main_argsNumGet(void);
 extern const char* f_main_argsGet(int ArgNum);

@@ -58,18 +58,18 @@ FSpriteLayers* f_spritelayers_new(void)
 void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites)
 {
     if(FreeSprites) {
-        f_list_freeEx(Layers, (FFree*)layer_freeEx);
+        f_list_freeEx(Layers, (FCallFree*)layer_freeEx);
     } else {
-        f_list_freeEx(Layers, (FFree*)layer_free);
+        f_list_freeEx(Layers, (FCallFree*)layer_free);
     }
 }
 
 void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites)
 {
     if(FreeSprites) {
-        f_list_clearEx(Layers, (FFree*)layer_freeEx);
+        f_list_clearEx(Layers, (FCallFree*)layer_freeEx);
     } else {
-        f_list_clearEx(Layers, (FFree*)layer_free);
+        f_list_clearEx(Layers, (FCallFree*)layer_free);
     }
 }
 

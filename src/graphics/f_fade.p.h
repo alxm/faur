@@ -22,13 +22,13 @@
 
 #include "../math/f_fix.p.h"
 
-typedef void FFadeCallback(FFix ZeroToOne);
+typedef void FCallFade(FFix ZeroToOne);
 
 extern const FEvent* f_fade_eventGet(void);
 
 extern void f_fade_startColorTo(unsigned DurationMs);
 extern void f_fade_startColorFrom(unsigned DurationMs);
 extern void f_fade_startScreens(unsigned DurationMs);
-extern void f_fade_startCustom(FFadeCallback* Callback, unsigned DurationMs);
+extern void f_fade_startCustom(FCallFade* Callback, unsigned DurationMs);
 
 #endif // F_INC_GRAPHICS_FADE_P_H

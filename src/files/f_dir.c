@@ -90,7 +90,7 @@ static FList* dirRealOpen(FPath* Path)
         }
     }
 
-    f_list_sort(files, (FListCompare*)dirSort);
+    f_list_sort(files, (FCallListCompare*)dirSort);
 
     closedir(dir);
 
@@ -142,7 +142,7 @@ void f_dir_free(FDir* Dir)
         return;
     }
 
-    f_list_freeEx(Dir->files, (FFree*)f_path_free);
+    f_list_freeEx(Dir->files, (FCallFree*)f_path_free);
     f_path_free(Dir->path);
 
     f_mem_free(Dir);

@@ -18,7 +18,7 @@
 #include "f_controller.v.h"
 #include <faur.v.h>
 
-FController* f_controller_new(FControllerBind* Callback)
+FController* f_controller_new(FCallControllerBind* Callback)
 {
     return f_platform_api__inputControllerClaim(Callback);
 }

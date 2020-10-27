@@ -20,10 +20,10 @@
 
 #include "../general/f_system_includes.h"
 
-typedef int FRandomPrng(void);
-typedef void FRandomPrngSeed(unsigned Seed);
+typedef int FCallRandomPrng(void);
+typedef void FCallRandomPrngSeed(unsigned Seed);
 
-extern void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand);
+extern void f_random_generatorSet(FCallRandomPrng* Rand, FCallRandomPrngSeed* Srand);
 extern void f_random_generatorReset(void);
 
 extern unsigned f_random_seedGet(void);

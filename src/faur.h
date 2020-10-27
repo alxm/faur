@@ -77,7 +77,6 @@ F_EXTERN_C_START
 #include "sound/f_channel.p.h"
 #include "sound/f_music.p.h"
 #include "sound/f_sample.p.h"
-#include "strings/f_strbuilder.p.h"
 #include "strings/f_str.p.h"
 #include "time/f_time.p.h"
 #include "time/f_timer.p.h"

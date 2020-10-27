@@ -51,7 +51,7 @@ f"""\
 F_CONFIG_APP_AUTHOR := {author}
 F_CONFIG_APP_NAME := {project_name}
 
-include $(FAUR_PATH)/make/dev.mk
+include $(FAUR_PATH)/make/default.mk
 """)
 
     dir_source.write_file('main.c',

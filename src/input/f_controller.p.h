@@ -21,9 +21,9 @@
 #include "../general/f_system_includes.h"
 
 typedef void FController;
-typedef void FControllerBind(const FController* Controller);
+typedef void FCallControllerBind(const FController* Controller);
 
-extern FController* f_controller_new(FControllerBind* Callback);
+extern FController* f_controller_new(FCallControllerBind* Callback);
 extern void f_controller_free(FController* Controller);
 
 #endif // F_INC_INPUTS_CONTROLLER_P_H
