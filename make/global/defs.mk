@@ -37,11 +37,6 @@ F_DIR_ROOT_FROM_MAKE := ../..
 F_DIR_ROOT_FROM_BIN := ../../../..
 
 #
-# May already have been set by parent make before changing dir
-#
-F_DIR_ROOT ?= $(realpath $(F_DIR_ROOT_FROM_MAKE))
-
-#
 # Custom SDK paths and Geany C tags
 #
 F_FAUR_FILE_SDK_MK := $(F_FAUR_DIR_CONFIG)/sdk.mk
