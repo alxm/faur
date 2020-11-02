@@ -5,7 +5,7 @@ F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_B
 F_BUILD_DIR_ARDUINO_BUILD := $(F_BUILD_DIR)/arduino-build
 F_BUILD_DIR_ARDUINO_CACHE := $(F_BUILD_DIR)/arduino-cache
 
-F_BUILD_FILE_INO := $(F_CONFIG_DIR_SRC).ino
+F_BUILD_FILE_INO := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)/$(F_CONFIG_DIR_SRC).ino
 
 F_ARDUINO_BUILDER := \
     $(F_SDK_ARDUINO_DIR_INSTALL)/arduino-builder \
@@ -25,7 +25,7 @@ F_ARDUINO_BUILDER := \
         -prefs=build.warn_data_percentage=75 \
         -prefs=compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" \
         -prefs=compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" \
-        $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)/$(F_BUILD_FILE_INO)
+        $(F_BUILD_FILE_INO)
 
 F_ARDUINO_UPLOAD := \
     $(F_SDK_ARDUINO_DIR_INSTALL)/arduino \
@@ -36,12 +36,14 @@ F_ARDUINO_UPLOAD := \
         --port $(F_CONFIG_BUILD_ARDUINO_PORT) \
         --pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
         --pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
-        $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)/$(F_BUILD_FILE_INO)
+        $(F_BUILD_FILE_INO)
 
-all : dirs
+F_MAKE_ALL := dirs $(F_BUILD_FILE_INO)
+
+all : $(F_MAKE_ALL)
 	$(F_ARDUINO_BUILDER)
 
-run : dirs
+run : $(F_MAKE_ALL)
 	$(F_ARDUINO_UPLOAD)
 
 clean :
@@ -50,3 +52,6 @@ clean :
 dirs :
 	@ mkdir -p $(F_BUILD_DIR_ARDUINO_BUILD)
 	@ mkdir -p $(F_BUILD_DIR_ARDUINO_CACHE)
+
+$(F_BUILD_FILE_INO) :
+	echo "//" > $@

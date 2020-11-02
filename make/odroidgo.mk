@@ -33,5 +33,5 @@ run : dirs
 		--flash_size detect \
 		0xe000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/partitions/boot_app0.bin \
 		0x1000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/sdk/bin/bootloader_qio_80m.bin \
-		0x10000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(F_BUILD_FILE_INO).bin \
-		0x8000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(F_BUILD_FILE_INO).partitions.bin
+		0x10000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).bin \
+		0x8000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).partitions.bin
