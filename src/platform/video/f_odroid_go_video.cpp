@@ -62,15 +62,6 @@ void f_platform_api__screenClear(void)
 
 void f_platform_api__screenShow(void)
 {
-    // Convert to big-endian for LCD screen
-    uint16_t* pixels = g_screenBuffer;
-
-    for(int i = F__SCREEN_SIZE; i--; ) {
-        uint16_t p = *pixels;
-
-        *pixels++ = (p << 8) | (p >> 8);
-    }
-
     #if F_CONFIG_SCREEN_ZOOM > 1
         FColorPixel* dst = g_scaledBuffer;
         const FColorPixel* src = g_screenBuffer;
