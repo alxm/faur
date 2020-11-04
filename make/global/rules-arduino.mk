@@ -36,6 +36,8 @@ F_ARDUINO_UPLOAD := \
         --port $(F_CONFIG_BUILD_ARDUINO_PORT) \
         --pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
         --pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
+        --pref compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" \
+        --pref compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" \
         $(F_BUILD_FILE_INO)
 
 F_MAKE_ALL := dirs $(F_BUILD_FILE_INO)
