@@ -72,6 +72,16 @@ FPixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }
+
+int f_platform_api__screenZoomGet(void)
+{
+    return F_CONFIG_SCREEN_ZOOM;
+}
+
+bool f_platform_api__screenFullscreenGet(void)
+{
+    return F_CONFIG_SCREEN_FULLSCREEN;
+}
 #else // !F_CONFIG_SYSTEM_GAMEBUINO
 static FColorPixel g_buffer[F__NEOPIXELS_W * F__NEOPIXELS_H] = {0};
 static FPixels g_lights = {

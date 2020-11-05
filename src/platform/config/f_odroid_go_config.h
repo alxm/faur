@@ -34,7 +34,6 @@
     #define F_CONFIG_COLOR_SPRITE_KEY 0xFF00FF
 
     #define F_CONFIG_DEBUG 0
-    #define F_CONFIG_DEBUG_CONSOLE 1
     #define F_CONFIG_DEBUG_FATAL_SPIN 1
 
     #define F_CONFIG_FILES_PREFIX "/"

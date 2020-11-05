@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_DEBUG_CONSOLE
+#if !F_CONFIG_DEBUG_NO_CONSOLE
 #include "../generated/media/g_console_19x7.png.h"
 
 #include <unistd.h>
@@ -289,7 +289,7 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F_CONFIG_DEBUG_CONSOLE
+#else // F_CONFIG_DEBUG_NO_CONSOLE
 const FPack f_pack__console_0;
 const FPack f_pack__console_1;
 
@@ -317,4 +317,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     F_UNUSED(Type);
     F_UNUSED(Text);
 }
-#endif // !F_CONFIG_DEBUG_CONSOLE
+#endif // F_CONFIG_DEBUG_NO_CONSOLE
