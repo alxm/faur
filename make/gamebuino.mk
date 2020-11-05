@@ -21,4 +21,18 @@ F_CONFIG_TRAIT_LOW_MEM := 1
 F_CONFIG_TRAIT_NO_SEEDING := 1
 
 include $(FAUR_PATH)/make/global/config.mk
+
+#
+# Gamebuino_META lib config
+#
+F_CONFIG_BUILD_FLAGS_SHARED += \
+    -DFOLDER_NAME=\"$(F_CONFIG_APP_NAME)\" \
+    -DDISPLAY_MODE=DISPLAY_MODE_RGB565 \
+    -DSOUND_CHANNELS=1 \
+    -DSOUND_FRE=22050 \
+
+ifneq ($(F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT), 0)
+    F_CONFIG_BUILD_FLAGS_SHARED += -DHOME_MENU_NO_EXIT=1
+endif
+
 include $(FAUR_PATH)/make/global/rules-arduino.mk
