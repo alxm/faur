@@ -40,20 +40,21 @@ F_ARDUINO_UPLOAD := \
         --pref compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
         $(F_BUILD_FILE_INO)
 
-F_MAKE_ALL := dirs $(F_BUILD_FILE_INO)
+F_MAKE_ALL += arduino_build
+F_MAKE_PREREQS := arduino_dirs $(F_BUILD_FILE_INO) $(F_BUILD_FILES_GEN_C)
 
-all : $(F_MAKE_ALL)
-	$(F_ARDUINO_BUILDER)
-
-run : $(F_MAKE_ALL)
-	$(F_ARDUINO_UPLOAD)
-
-clean :
-	rm -rf $(F_BUILD_DIR)
-
-dirs :
+#
+# Action targets
+#
+arduino_dirs :
 	@ mkdir -p $(F_BUILD_DIR_ARDUINO_BUILD)
 	@ mkdir -p $(F_BUILD_DIR_ARDUINO_CACHE)
 
 $(F_BUILD_FILE_INO) :
 	echo "//" > $@
+
+arduino_build : $(F_MAKE_PREREQS)
+	$(F_ARDUINO_BUILDER)
+
+run : $(F_MAKE_PREREQS)
+	$(F_ARDUINO_UPLOAD)

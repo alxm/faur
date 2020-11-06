@@ -35,4 +35,4 @@ ifneq ($(F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT), 0)
     F_CONFIG_BUILD_FLAGS_SHARED += -DHOME_MENU_NO_EXIT=1
 endif
 
-include $(FAUR_PATH)/make/global/rules-arduino.mk
+include $(FAUR_PATH)/make/global/rules.mk

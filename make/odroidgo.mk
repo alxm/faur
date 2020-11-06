@@ -17,7 +17,7 @@ F_CONFIG_SYSTEM_ODROID_GO := 1
 F_CONFIG_TRAIT_CUSTOM_MAIN := 1
 
 include $(FAUR_PATH)/make/global/config.mk
-include $(FAUR_PATH)/make/global/rules-arduino.mk
+include $(FAUR_PATH)/make/global/rules.mk
 
 run : dirs
 	$(F_SDK_ARDUINO_DIR_15)/packages/esp32/tools/esptool_py/2.6.1/esptool.py \
