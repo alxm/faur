@@ -137,7 +137,7 @@ $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 #
 # So application C files can use these generated headers
 #
-$(F_BUILD_FILES_SRC_O) : $(F_BUILD_FILES_GFX_H) $(F_BUILD_FILES_SFX_H)
+$(F_BUILD_FILES_SRC_O) : $(F_MAKE_PREREQS)
 
 #
 # Faur lib

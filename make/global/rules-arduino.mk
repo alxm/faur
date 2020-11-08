@@ -41,7 +41,7 @@ F_ARDUINO_UPLOAD := \
         $(F_BUILD_FILE_INO)
 
 F_MAKE_ALL += arduino_build
-F_MAKE_PREREQS := arduino_dirs $(F_BUILD_FILE_INO) $(F_BUILD_FILES_GEN_C)
+F_MAKE_PREREQS += arduino_dirs $(F_BUILD_FILE_INO)
 
 #
 # Action targets

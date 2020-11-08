@@ -28,13 +28,12 @@ class Args:
         optional_num = 0
         has_tail = False
         arg_names = self.arg_names
-        flag_names = self.flag_names
 
         arg_values = [a.strip() for a in Argv]
         arg_values = [a for a in arg_values if len(a) > 0]
 
         for value in arg_values:
-            if value in flag_names:
+            if value in self.flag_names:
                 self.flag_db[value] = True
                 arg_values = arg_values[1 : ]
             else:

@@ -21,10 +21,10 @@ import os
 
 from utils.tool import Tool
 
-g_tool = Tool('file.c GenDir CVarPrefix ...')
+g_tool = Tool('File.c GenDir CVarPrefix ...')
 
 def main():
-    c_file = g_tool.args.get('file.c')
+    c_file = g_tool.args.get('File.c')
     gen_dir = g_tool.args.get('GenDir')
     cvar_prefix = g_tool.args.get('CVarPrefix')
     h_files = g_tool.args.get('...')
@@ -54,14 +54,12 @@ def main():
 //
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_ENABLED
 {}
 
 void f_embed__populate(void)
 {{
 {}
 }}
-#endif // F_CONFIG_FILES_EMBED_ENABLED
 """.format(g_tool.get_cmd(),
            '\n'.join(includes),
            '\n'.join(embed_calls)))
