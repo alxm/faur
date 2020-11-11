@@ -44,7 +44,7 @@ F_MAKE_ALL += arduino_build
 F_MAKE_PREREQS += arduino_dirs $(F_BUILD_FILE_INO)
 
 #
-# Action targets
+# Arduino files and paths
 #
 arduino_dirs :
 	@ mkdir -p $(F_BUILD_DIR_ARDUINO_BUILD)
@@ -56,5 +56,13 @@ $(F_BUILD_FILE_INO) :
 arduino_build : $(F_MAKE_PREREQS)
 	$(F_ARDUINO_BUILDER)
 
+#
+# Action targets
+#
 run : $(F_MAKE_PREREQS)
 	$(F_ARDUINO_UPLOAD)
+
+#
+# Not file targets
+#
+.PHONY :  arduino_build arduino_dirs run

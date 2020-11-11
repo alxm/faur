@@ -182,3 +182,8 @@ valgrind : all
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
 	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
+
+#
+# Not file targets
+#
+.PHONY :  copystatic run valgrind

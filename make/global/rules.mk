@@ -73,16 +73,6 @@ F_MAKE_ALL :=
 F_MAKE_PREREQS := $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H)
 
 #
-# Turn off default suffix rules
-#
-.SUFFIXES :
-
-#
-# Not file targets
-#
-.PHONY : all clean cleangen copystatic run valgrind $(F_CONFIG_BUILD_MAKE_CLEAN)
-
-#
 # Declare default target first
 #
 all : all_build
@@ -152,8 +142,20 @@ $(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-
 #
 # Action targets
 #
-clean : $(F_CONFIG_BUILD_MAKE_CLEAN)
+clean :
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :
 	rm -rf $(F_BUILD_DIR_GEN)
+
+cleanall : clean cleangen
+
+#
+# Turn off Make default suffix rules
+#
+.SUFFIXES :
+
+#
+# Not file targets
+#
+.PHONY : all all_build clean cleanall cleangen
