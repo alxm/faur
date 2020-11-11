@@ -13,7 +13,7 @@ F_ARDUINO_BUILDER := \
         -verbose \
         -warnings=all \
         -jobs $(F_MAKE_PARALLEL_JOBS) \
-        -fqbn=$(F_CONFIG_BUILD_ARDUINO_BOARD) \
+        -fqbn=$(F_CONFIG_SYSTEM_ARDUINO_BOARD) \
         -hardware $(F_SDK_ARDUINO_DIR_INSTALL)/hardware \
         -hardware $(F_SDK_ARDUINO_DIR_15)/packages \
         -tools $(F_SDK_ARDUINO_DIR_INSTALL)/tools-builder \
@@ -32,8 +32,8 @@ F_ARDUINO_UPLOAD := \
         --upload \
         --verbose \
         --verbose-upload \
-        --board $(F_CONFIG_BUILD_ARDUINO_BOARD) \
-        --port $(F_CONFIG_BUILD_ARDUINO_PORT) \
+        --board $(F_CONFIG_SYSTEM_ARDUINO_BOARD) \
+        --port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
         --pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
         --pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
         --pref compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
