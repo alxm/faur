@@ -18,7 +18,7 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-#include <faur_media/g_palette.png.h>
+#include <faur_v/faur_gfx/g_palette.png.h>
 
 FColorState f__color;
 
