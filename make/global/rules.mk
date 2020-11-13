@@ -9,8 +9,12 @@ F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_B
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
 F_BUILD_DIR_GEN := $(F_BUILD_DIR_SRC)/faur_gen
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
+F_BUILD_DIR_GEN_FAUR := $(F_BUILD_DIR_GEN)/faur
+F_BUILD_DIR_GEN_FAUR_MEDIA := $(F_BUILD_DIR_GEN_FAUR)/faur_media
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
 F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
+
+F_CONFIG_BUILD_FLAGS_SHARED += -I$(F_BUILD_DIR_GEN_FAUR)
 
 #
 # Generated ECS init code
@@ -47,6 +51,10 @@ F_BUILD_FILES_GFX_H := $(F_CONFIG_PATH_GFX:%=$(F_BUILD_DIR_GEN_GFX)/%.h)
 F_BUILD_FILES_SFX_C := $(F_CONFIG_PATH_SFX:%=$(F_BUILD_DIR_GEN_SFX)/%.c)
 F_BUILD_FILES_SFX_H := $(F_CONFIG_PATH_SFX:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
+F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
+F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h)
+F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_H:%.h=%.c)
+
 #
 # All generated source code
 #
@@ -55,6 +63,7 @@ F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
+    $(F_BUILD_FILES_FAUR_GFX_C) \
 
 F_BUILD_FILES_GEN_H := \
     $(F_BUILD_FILES_GFX_H) \
@@ -127,6 +136,14 @@ $(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-bu
 $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
+$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+
+$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 #
 # Files that bundle up the generated code

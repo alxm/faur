@@ -18,8 +18,8 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
-#include "../generated/media/g_font_6x8.png.h"
-#include "../generated/media/g_font_keyed_6x8.png.h"
+#include <faur_media/g_font_6x8.png.h>
+#include <faur_media/g_font_keyed_6x8.png.h>
 
 #define F__CHAR_START 32
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)

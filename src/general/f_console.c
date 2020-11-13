@@ -20,7 +20,7 @@
 #include <faur.v.h>
 
 #if !F_CONFIG_DEBUG_NO_CONSOLE
-#include "../generated/media/g_console_19x7.png.h"
+#include <faur_media/g_console_19x7.png.h>
 
 #include <unistd.h>
 
