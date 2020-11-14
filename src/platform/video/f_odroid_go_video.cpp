@@ -57,7 +57,7 @@ void f_platform_api__screenUninit(void)
 
 void f_platform_api__screenClear(void)
 {
-    GO.lcd.fillScreen(f__color.pixel);
+    GO.lcd.fillScreen(f__color_flipEndianness(f__color.pixel));
 }
 
 void f_platform_api__screenShow(void)
