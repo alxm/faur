@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_DEBUG_NO_CONSOLE
+#if F_CONFIG_CONSOLE_ENABLED
 #include <faur_v/faur_gfx/g_console_19x7.png.h>
 
 #include <unistd.h>
@@ -73,11 +73,8 @@ static void f_console__init1(void)
 
     g_toggle = f_button_new();
     f_button_bindKey(g_toggle, F_KEY_F10);
-    f_button_bindCombo(g_toggle,
-                       NULL,
-                       F_BUTTON_A, F_BUTTON_B, F_BUTTON_X, F_BUTTON_Y,
-                       F_BUTTON_L, F_BUTTON_R,
-                       F_BUTTON_INVALID);
+    f_button_bindCombo(
+        g_toggle, NULL, F_CONFIG_CONSOLE_TOGGLE, F_BUTTON_INVALID);
 
     g_state = F_CONSOLE__STATE_FULL;
 }
@@ -289,7 +286,7 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // F_CONFIG_DEBUG_NO_CONSOLE
+#else // !F_CONFIG_CONSOLE_ENABLED
 const FPack f_pack__console_0;
 const FPack f_pack__console_1;
 
@@ -317,4 +314,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     F_UNUSED(Type);
     F_UNUSED(Text);
 }
-#endif // F_CONFIG_DEBUG_NO_CONSOLE
+#endif // !F_CONFIG_CONSOLE_ENABLED
