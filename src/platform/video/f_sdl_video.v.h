@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
-#define F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
+#ifndef F_INC_PLATFORM_VIDEO_SDL_VIDEO_V_H
+#define F_INC_PLATFORM_VIDEO_SDL_VIDEO_V_H
 
 #include "f_sdl_video.p.h"
 
@@ -44,4 +44,4 @@ extern void f_platform_sdl_video__uninit(void);
 extern int f_platform_sdl_video__pixelBlendToSdlBlend(void);
 extern uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void);
 
-#endif // F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
+#endif // F_INC_PLATFORM_VIDEO_SDL_VIDEO_V_H

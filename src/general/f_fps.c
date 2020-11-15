@@ -29,7 +29,7 @@ static const struct {
 #if F_CONFIG_TRAIT_LOW_MEM
     #define F__HISTORY_LEN 1
 #else
-    #define F__HISTORY_LEN 128
+    #define F__HISTORY_LEN F_CONFIG_FPS_RATE_TICK
 #endif
 
 static struct {

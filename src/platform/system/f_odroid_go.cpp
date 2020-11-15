@@ -26,10 +26,12 @@ extern "C" {
 #include <SD.h>
 
 #define F__SD_PIN 22
+#define F__SPEAKER_PIN 25
 
 void setup(void)
 {
     GO.begin();
+    digitalWrite(F__SPEAKER_PIN, LOW);
 
     if(!SD.begin(F__SD_PIN)) {
         f_out__error("SD.begin(%d) failed", F__SD_PIN);

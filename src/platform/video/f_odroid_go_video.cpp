@@ -24,14 +24,14 @@ extern "C" {
 #if F_CONFIG_SYSTEM_ODROID_GO
 #include <odroid_go.h>
 
-#define F__SCREEN_SIZE \
-    (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT)
-
 static FPixels g_pixels;
 static FColorPixel* g_screenBuffer;
-static FColorPixel* g_scaledBuffer;
 static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
                                      F_CONFIG_SCREEN_SIZE_HEIGHT};
+
+#if F_CONFIG_SCREEN_ZOOM > 1
+static FColorPixel* g_scaledBuffer;
+#endif
 
 void f_platform_api__screenInit(void)
 {
@@ -40,11 +40,13 @@ void f_platform_api__screenInit(void)
             (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT
                 * sizeof(FColorPixel)));
 
-    g_scaledBuffer =
-        (FColorPixel*)f_mem_malloc(
-            (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
-                * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
-                    * sizeof(FColorPixel)));
+    #if F_CONFIG_SCREEN_ZOOM > 1
+        g_scaledBuffer =
+            (FColorPixel*)f_mem_malloc(
+                (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
+                    * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
+                        * sizeof(FColorPixel)));
+    #endif
 
     f_pixels__init(&g_pixels, g_screenSize.x, g_screenSize.y, 1, 0);
     f_pixels__bufferSet(
@@ -57,56 +59,51 @@ void f_platform_api__screenUninit(void)
 
 void f_platform_api__screenClear(void)
 {
-    GO.lcd.fillScreen(f__color.pixel);
+    GO.lcd.fillScreen(f__color_flipEndianness(f__color.pixel));
 }
 
 void f_platform_api__screenShow(void)
 {
-    #if F_CONFIG_DEBUG
-        f_font_printf("%u", f_fps_rateDrawGetMax());
-    #endif
+    #if F_CONFIG_SCREEN_ZOOM > 1
+        FColorPixel* dst = g_scaledBuffer;
+        const FColorPixel* src = g_screenBuffer;
 
-    // Convert to little-endian
-    uint16_t* pixels = g_screenBuffer;
+        for(int y = F_CONFIG_SCREEN_SIZE_HEIGHT; y--; ) {
+            const FColorPixel* firstLine = dst;
 
-    for(int i = F__SCREEN_SIZE; i--; ) {
-        uint16_t p = *pixels;
+            for(int x = F_CONFIG_SCREEN_SIZE_WIDTH; x--; ) {
+                for(int z = F_CONFIG_SCREEN_ZOOM; z--; ) {
+                    *dst++ = *src;
+                }
 
-        *pixels++ = (p << 8) | (p >> 8);
-    }
-
-    FColorPixel* dst = g_scaledBuffer;
-    const FColorPixel* src = g_screenBuffer;
-
-    for(int y = F_CONFIG_SCREEN_SIZE_HEIGHT; y--; ) {
-        const FColorPixel* firstLine = dst;
-
-        for(int x = F_CONFIG_SCREEN_SIZE_WIDTH; x--; ) {
-            for(int z = F_CONFIG_SCREEN_ZOOM; z--; ) {
-                *dst++ = *src;
+                src++;
             }
 
-            src++;
+            for(int z = F_CONFIG_SCREEN_ZOOM - 1; z--; ) {
+                memcpy(dst,
+                       firstLine,
+                       F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
+                        * sizeof(FColorPixel));
+
+                dst += F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM;
+            }
         }
 
-        for(int z = F_CONFIG_SCREEN_ZOOM - 1; z--; ) {
-            memcpy(dst,
-                   firstLine,
-                   F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
-                    * sizeof(FColorPixel));
-
-            dst += F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM;
-        }
-    }
-
-    GO.lcd.drawBitmap(
-        (F_CONFIG_SCREEN_HARDWARE_WIDTH
-            - F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM) / 2,
-        (F_CONFIG_SCREEN_HARDWARE_HEIGHT
-            - F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM) / 2,
-        F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM,
-        F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM,
-        g_scaledBuffer);
+        GO.lcd.pushRect(
+            (F_CONFIG_SCREEN_HARDWARE_WIDTH
+                - F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM) / 2,
+            (F_CONFIG_SCREEN_HARDWARE_HEIGHT
+                - F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM) / 2,
+            F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM,
+            F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM,
+            g_scaledBuffer);
+    #else
+        GO.lcd.pushRect(0,
+                        0,
+                        F_CONFIG_SCREEN_SIZE_WIDTH,
+                        F_CONFIG_SCREEN_SIZE_HEIGHT,
+                        g_screenBuffer);
+    #endif
 }
 
 bool f_platform_api__screenVsyncGet(void)
@@ -122,5 +119,15 @@ FVecInt f_platform_api__screenSizeGet(void)
 FPixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
+}
+
+int f_platform_api__screenZoomGet(void)
+{
+    return F_CONFIG_SCREEN_ZOOM;
+}
+
+bool f_platform_api__screenFullscreenGet(void)
+{
+    return F_CONFIG_SCREEN_FULLSCREEN;
 }
 #endif // F_CONFIG_SYSTEM_ODROID_GO

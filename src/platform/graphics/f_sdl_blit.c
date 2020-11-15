@@ -57,8 +57,9 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
                 for(unsigned i = totalBufferLen; i--; ) {
                     if(original[i] != f_color__key) {
                         // Set full alpha for non-transparent pixel
-                        buffer[i] |= (FColorPixel)
-                            ((1 << F__PX_BITS_A) - 1) << F__PX_SHIFT_A;
+                        buffer[i] |=
+                            (FColorPixel)
+                                (((1u << F__PX_BITS_A) - 1u) << F__PX_SHIFT_A);
                     }
                 }
             } break;
@@ -86,7 +87,8 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
                     int alpha = f_color_pixelToRgbAny(original[i]);
 
                     buffer[i] =
-                        original[i] | ((FColorPixel)alpha << F__PX_SHIFT_A);
+                        (FColorPixel)
+                            (original[i] | ((unsigned)alpha << F__PX_SHIFT_A));
                 }
             } break;
         }

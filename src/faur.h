@@ -82,4 +82,8 @@ F_EXTERN_C_START
 #include "time/f_timer.p.h"
 F_EXTERN_C_END
 
+#ifndef F_INC_FAUR_V_H
+#include <faur_v/include.h>
+#endif
+
 #endif // F_INC_FAUR_H

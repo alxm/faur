@@ -24,20 +24,21 @@
 #define F__C_ARGB (1 << 29)
 #define F__C_ABGR (1 << 28)
 
-#define F__C_16   (1 << 20)
-#define F__C_32   (1 << 19)
+#define F__C_565  (1 << 20)
+#define F__C_5551 (1 << 19)
+#define F__C_8888 (1 << 18)
 
-#define F__C_565  (F__C_16 | (1 << 15))
-#define F__C_5551 (F__C_16 | (1 << 14))
-#define F__C_8888 (F__C_32 | (1 << 13))
+#define F__C_16 (1 << 10)
+#define F__C_32 (1 << 9)
 
-#define F__C_FORMAT(Order, Layout) (Order | Layout)
+#define F__C_ENDIAN (1 << 0)
 
-#define F_COLOR_FORMAT_RGB_565   F__C_FORMAT(F__C_RGBA, F__C_565)
-#define F_COLOR_FORMAT_RGBA_5551 F__C_FORMAT(F__C_RGBA, F__C_5551)
-#define F_COLOR_FORMAT_RGBA_8888 F__C_FORMAT(F__C_RGBA, F__C_8888)
-#define F_COLOR_FORMAT_ARGB_8888 F__C_FORMAT(F__C_ARGB, F__C_8888)
-#define F_COLOR_FORMAT_ABGR_8888 F__C_FORMAT(F__C_ABGR, F__C_8888)
+#define F_COLOR_FORMAT_RGB_565   (F__C_RGBA | F__C_565 | F__C_16)
+#define F_COLOR_FORMAT_RGB_565_B (F__C_RGBA | F__C_565 | F__C_16 | F__C_ENDIAN)
+#define F_COLOR_FORMAT_RGBA_5551 (F__C_RGBA | F__C_5551 | F__C_16)
+#define F_COLOR_FORMAT_RGBA_8888 (F__C_RGBA | F__C_8888 | F__C_32)
+#define F_COLOR_FORMAT_ARGB_8888 (F__C_ARGB | F__C_8888 | F__C_32)
+#define F_COLOR_FORMAT_ABGR_8888 (F__C_ABGR | F__C_8888 | F__C_32)
 
 #if F_CONFIG_SCREEN_FORMAT & F__C_16
     #define F_COLOR_BPP 16
@@ -55,17 +56,17 @@ typedef struct {
 
 #include "../graphics/f_palette.p.h"
 
-#if (F_CONFIG_SCREEN_FORMAT & F__C_565) == F__C_565
+#if F_CONFIG_SCREEN_FORMAT & F__C_565
     #define F__PX_BITS_R 5
     #define F__PX_BITS_G 6
     #define F__PX_BITS_B 5
     #define F__PX_BITS_A 0
-#elif (F_CONFIG_SCREEN_FORMAT & F__C_5551) == F__C_5551
+#elif F_CONFIG_SCREEN_FORMAT & F__C_5551
     #define F__PX_BITS_R 5
     #define F__PX_BITS_G 5
     #define F__PX_BITS_B 5
     #define F__PX_BITS_A 1
-#elif (F_CONFIG_SCREEN_FORMAT & F__C_8888) == F__C_8888
+#elif F_CONFIG_SCREEN_FORMAT & F__C_8888
     #define F__PX_BITS_R 8
     #define F__PX_BITS_G 8
     #define F__PX_BITS_B 8
@@ -103,12 +104,29 @@ typedef struct {
     #define F_COLOR_ALPHA_MAX 255
 #endif
 
+#if F_CONFIG_SCREEN_FORMAT & F__C_ENDIAN
+static inline FColorPixel f__color_flipEndianness(FColorPixel Pixel)
+{
+    #if F_CONFIG_SCREEN_FORMAT & F__C_16
+        return (FColorPixel)((Pixel << 8) | (Pixel >> 8));
+    #else
+        #error Invalid F_CONFIG_SCREEN_FORMAT value
+    #endif
+}
+#endif
+
 static inline FColorPixel f_color_pixelFromRgb3(int Red, int Green, int Blue)
 {
-    return (FColorPixel)
+    FColorPixel p = (FColorPixel)
         (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
          ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
          ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
+
+    #if F_CONFIG_SCREEN_FORMAT & F__C_ENDIAN
+        p = f__color_flipEndianness(p);
+    #endif
+
+    return p;
 }
 
 static inline FColorPixel f_color_pixelFromRgb(FColorRgb Rgb)
@@ -130,6 +148,10 @@ static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
 
 static inline FColorRgb f_color_pixelToRgb(FColorPixel Pixel)
 {
+    #if F_CONFIG_SCREEN_FORMAT & F__C_ENDIAN
+        Pixel = f__color_flipEndianness(Pixel);
+    #endif
+
     FColorRgb rgb = {
         (int)((Pixel >> F__PX_SHIFT_R) << F__PX_PACK_R) & 0xff,
         (int)((Pixel >> F__PX_SHIFT_G) << F__PX_PACK_G) & 0xff,
@@ -141,6 +163,10 @@ static inline FColorRgb f_color_pixelToRgb(FColorPixel Pixel)
 
 static inline int f_color_pixelToRgbAny(FColorPixel Pixel)
 {
+    #if F_CONFIG_SCREEN_FORMAT & F__C_ENDIAN
+        Pixel = f__color_flipEndianness(Pixel);
+    #endif
+
     return (int)((Pixel >> F__PX_SHIFT_B) << F__PX_PACK_B) & 0xff;
 }
 

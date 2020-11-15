@@ -18,6 +18,13 @@
 #include "f_platform.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_SYSTEM_ARDUINO
+    //
+    // Arduino build system workaround
+    //
+    #include <faur_v/include.c>
+#endif
+
 static void f_platform__init(void)
 {
     #if F_CONFIG_SYSTEM_EMSCRIPTEN

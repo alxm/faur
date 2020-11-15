@@ -26,6 +26,7 @@ extern "C" {
 
 struct FPlatformButton {
     Button* odroidButton;
+    uint8_t analogPressVal;
     bool pressed;
 };
 
@@ -33,6 +34,18 @@ static FPlatformButton g_buttons[F_BUTTON_NUM];
 
 void f_platform_odroid_go_input__init(void)
 {
+    g_buttons[F_BUTTON_UP].odroidButton = &GO.JOY_Y;
+    g_buttons[F_BUTTON_UP].analogPressVal = DPAD_V_FULL;
+
+    g_buttons[F_BUTTON_DOWN].odroidButton = &GO.JOY_Y;
+    g_buttons[F_BUTTON_DOWN].analogPressVal = DPAD_V_HALF;
+
+    g_buttons[F_BUTTON_LEFT].odroidButton = &GO.JOY_X;
+    g_buttons[F_BUTTON_LEFT].analogPressVal = DPAD_V_FULL;
+
+    g_buttons[F_BUTTON_RIGHT].odroidButton = &GO.JOY_X;
+    g_buttons[F_BUTTON_RIGHT].analogPressVal = DPAD_V_HALF;
+
     g_buttons[F_BUTTON_A].odroidButton = &GO.BtnB;
     g_buttons[F_BUTTON_B].odroidButton = &GO.BtnA;
     g_buttons[F_BUTTON_START].odroidButton = &GO.BtnStart;
@@ -44,16 +57,14 @@ void f_platform_odroid_go_input__init(void)
 
 void f_platform_api__inputPoll(void)
 {
-    g_buttons[F_BUTTON_UP].pressed = GO.JOY_Y.isAxisPressed() == 2;
-    g_buttons[F_BUTTON_DOWN].pressed = GO.JOY_Y.isAxisPressed() == 1;
-    g_buttons[F_BUTTON_LEFT].pressed = GO.JOY_X.isAxisPressed() == 2;
-    g_buttons[F_BUTTON_RIGHT].pressed = GO.JOY_X.isAxisPressed() == 1;
-
     for(int b = F_BUTTON_NUM; b--; ) {
         Button* button = g_buttons[b].odroidButton;
 
-        if(button) {
-            g_buttons[b].pressed = button->isPressed() == 1;
+        if(button != NULL) {
+            g_buttons[b].pressed =
+                (g_buttons[b].analogPressVal != 0)
+                    ? (button->isAxisPressed() == g_buttons[b].analogPressVal)
+                    : (button->isPressed() == 1);
         }
     }
 }
@@ -62,7 +73,7 @@ const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController*
 {
     F_UNUSED(Controller);
 
-    return &g_buttons[Id];
+    return g_buttons[Id].odroidButton == NULL ? NULL : &g_buttons[Id];
 }
 
 bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)

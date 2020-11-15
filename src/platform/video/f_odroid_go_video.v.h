@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_GRAPHICS_ODROID_GO_VIDEO_V_H
-#define F_INC_PLATFORM_GRAPHICS_ODROID_GO_VIDEO_V_H
+#ifndef F_INC_PLATFORM_VIDEO_ODROID_GO_VIDEO_V_H
+#define F_INC_PLATFORM_VIDEO_ODROID_GO_VIDEO_V_H
 
 #include "f_odroid_go_video.p.h"
 
-#endif // F_INC_PLATFORM_GRAPHICS_ODROID_GO_VIDEO_V_H
+#endif // F_INC_PLATFORM_VIDEO_ODROID_GO_VIDEO_V_H
