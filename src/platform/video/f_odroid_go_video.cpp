@@ -24,14 +24,14 @@ extern "C" {
 #if F_CONFIG_SYSTEM_ODROID_GO
 #include <odroid_go.h>
 
-#define F__SCREEN_SIZE \
-    (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT)
-
 static FPixels g_pixels;
 static FColorPixel* g_screenBuffer;
-static FColorPixel* g_scaledBuffer;
 static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
                                      F_CONFIG_SCREEN_SIZE_HEIGHT};
+
+#if F_CONFIG_SCREEN_ZOOM > 1
+static FColorPixel* g_scaledBuffer;
+#endif
 
 void f_platform_api__screenInit(void)
 {
@@ -40,11 +40,13 @@ void f_platform_api__screenInit(void)
             (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT
                 * sizeof(FColorPixel)));
 
-    g_scaledBuffer =
-        (FColorPixel*)f_mem_malloc(
-            (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
-                * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
-                    * sizeof(FColorPixel)));
+    #if F_CONFIG_SCREEN_ZOOM > 1
+        g_scaledBuffer =
+            (FColorPixel*)f_mem_malloc(
+                (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
+                    * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
+                        * sizeof(FColorPixel)));
+    #endif
 
     f_pixels__init(&g_pixels, g_screenSize.x, g_screenSize.y, 1, 0);
     f_pixels__bufferSet(
