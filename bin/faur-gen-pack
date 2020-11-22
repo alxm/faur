@@ -20,7 +20,7 @@
 import os
 import time
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 """
 category/f_sample.p.h

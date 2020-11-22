@@ -19,7 +19,7 @@
 
 import subprocess
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 g_tool = Tool('Sound.wav GenFile.c/.h VarName')
 

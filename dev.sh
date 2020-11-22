@@ -2,9 +2,9 @@
 # . dev.sh
 
 geany -i \
-    .gitignore \
-    .travis.yml \
-    media/CC-* media/*.html \
-    `find bin make src -type f -not -path "*__pycache__*"` \
-    * \
-    &
+    `find . -type f -not \( \
+           -path "./.git/*" \
+        -o -path "*/__pycache__/*" \
+        -o -name "*.gif" \
+        -o -name "*.png" \
+    \)` &

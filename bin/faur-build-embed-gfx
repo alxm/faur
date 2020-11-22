@@ -21,7 +21,7 @@ import re
 
 from PIL import Image
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 def format_rgb565(Pixel):
     r, g, b = Pixel

@@ -19,7 +19,7 @@
 
 import re
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 g_tool = Tool('Init.c ...')
 

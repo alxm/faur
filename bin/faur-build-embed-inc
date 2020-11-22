@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 g_tool = Tool('File.c/.h ...', '--include-c --include-h')
 
