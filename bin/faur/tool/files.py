@@ -42,16 +42,16 @@ class Files:
     def assert_exist(self, *Paths):
         for f in Paths:
             if not os.path.exists(f):
-                self.out.error(f'{f} does not exist')
+                self.__tool.out.error(f'{f} does not exist')
 
     def assert_not_exist(self, *Paths):
         for f in Paths:
             if os.path.exists(f):
-                self.out.error(f'{f} already exists')
+                self.__tool.out.error(f'{f} already exists')
 
     def list_dir(self, Path):
         if not os.path.isdir(Path):
-            self.out.error(f'{Path} is not a dir')
+            self.__tool.out.error(f'{Path} is not a dir')
 
         entries = os.listdir(Path)
         entries.sort()
