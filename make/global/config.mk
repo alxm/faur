@@ -11,8 +11,8 @@ F_CONFIG_APP_VERSION_MICRO ?= 0
 #
 # Project dirs
 #
-F_CONFIG_DIR_ASSETS ?= assets
 F_CONFIG_DIR_BUILD ?= build
+F_CONFIG_DIR_MEDIA ?= media
 F_CONFIG_DIR_SCREENSHOTS ?= screenshots
 F_CONFIG_DIR_SRC ?= src
 

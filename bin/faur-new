@@ -34,9 +34,9 @@ def main():
     g_tool.files.assert_not_exist(project_path)
 
     dir_root = Dir(project_path)
-    dir_assets = dir_root.add_subdir('assets')
     dir_build = dir_root.add_subdir('build')
     dir_make = dir_build.add_subdir('make')
+    dir_media = dir_root.add_subdir('media')
     dir_source = dir_root.add_subdir('src')
 
     author = '<author>'

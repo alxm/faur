@@ -39,11 +39,10 @@ make run
 
 You can move the square on screen with the arrow keys or with a game controller.
 
-### Generated Files
+### *Hello, World* Project Files
 
 ```sh
 hello/
-├── assets/
 ├── build/
 │   └── make/
 │       └── Makefile
