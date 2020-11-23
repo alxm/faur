@@ -6,27 +6,24 @@
 
 Features include 2D graphics, sound, inputs, state management, ECS model, and utilities to help with data, files, math, strings, time, and more.
 
-Faur builds native on Linux and can be [cross-compiled](#cross-compile-for-other-platforms) for Web, Windows, and a variety of embedded devices. The build system uses GNU Make and Python 3.
+Faur builds native on Linux and [cross-compiles](#cross-compile-for-other-platforms) for Web, Windows, and some embedded devices. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
 ## Dependencies & Path Setup
 
 ```sh
 # Required
-sudo apt install build-essential git python3
+sudo apt install build-essential git python3 python3-pil
 sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 
 # Optional
-sudo apt install python3-pil ffmpeg
-sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev
+sudo apt install ffmpeg libsdl1.2-dev libsdl-mixer1.2-dev
 
 # Clone repo to ~/faur
 cd ~
 git clone git://github.com/alxm/faur.git
 
-# Set FAUR_PATH environment var
+# Set FAUR_PATH environment var and add tools to PATH
 export FAUR_PATH="$HOME/faur"
-
-# Add Faur's tools to $PATH
 export PATH="$PATH:$FAUR_PATH/bin"
 ```
 
