@@ -93,7 +93,7 @@ F_MAKE_ALL += \
     $(F_BUILD_LINK_BIN_MEDIA) \
     $(F_BUILD_LINK_BIN_SCREENSHOTS) \
 
-ifdef F_CONFIG_PATH_STATIC_COPY
+ifdef F_CONFIG_FILES_COPY_STATIC
     F_MAKE_ALL += copystatic
 endif
 
@@ -161,7 +161,7 @@ valgrind : all
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
 
 #
 # Not file targets

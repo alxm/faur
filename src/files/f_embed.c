@@ -18,7 +18,7 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_ENABLED
+#if F_CONFIG_FILES_EMBED_PATHS_ENABLED
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
@@ -125,7 +125,7 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
 
     return false;
 }
-#else // !F_CONFIG_FILES_EMBED_ENABLED
+#else // !F_CONFIG_FILES_EMBED_PATHS_ENABLED
 const FPack f_pack__embed;
 
 bool f_embed__stat(const char* Path, FPathInfo* Info)
@@ -149,4 +149,4 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 
     return NULL;
 }
-#endif // !F_CONFIG_FILES_EMBED_ENABLED
+#endif // !F_CONFIG_FILES_EMBED_PATHS_ENABLED
