@@ -98,7 +98,7 @@ typedef struct {
 #define F__PX_PACK_G (8 - F__PX_BITS_G)
 #define F__PX_PACK_B (8 - F__PX_BITS_B)
 
-#if F_CONFIG_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER_SOFTWARE
     #define F_COLOR_ALPHA_MAX 256
 #else
     #define F_COLOR_ALPHA_MAX 255

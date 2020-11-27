@@ -18,7 +18,7 @@
 #include "f_software_draw.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER_SOFTWARE
 typedef void (*FCallDrawPixel)(int X, int Y);
 typedef void (*FCallDrawHLine)(int X1, int X2, int Y);
 typedef void (*FCallDrawVLine)(int X, int Y1, int Y2);
@@ -393,4 +393,4 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
-#endif // F_CONFIG_RENDER_SOFTWARE
+#endif // F_CONFIG_SCREEN_RENDER_SOFTWARE

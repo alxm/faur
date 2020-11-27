@@ -18,7 +18,7 @@
 #include "f_sprite.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_RENDER_SOFTWARE
+#if !F_CONFIG_SCREEN_RENDER_SOFTWARE
 static inline void lazyInitTextures(FSprite* Sprite)
 {
     if(Sprite->texture == NULL) {
@@ -142,7 +142,7 @@ FSprite* f_sprite_dup(const FSprite* Sprite)
 {
     FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
     #endif
 
@@ -160,7 +160,7 @@ void f_sprite_free(FSprite* Sprite)
     }
 
     if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-        #if !F_CONFIG_RENDER_SOFTWARE
+        #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
             f_platform_api__textureFree(Sprite->texture);
 
             // Sprite may be re-used later
@@ -178,7 +178,7 @@ void f_sprite_free(FSprite* Sprite)
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
     #endif
 
@@ -203,7 +203,7 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
     #endif
 
@@ -241,7 +241,7 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
         }
     }
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__textureFree(Sprite->texture);
 
         Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
@@ -271,7 +271,7 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
         }
     }
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__textureFree(Sprite->texture);
 
         Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
@@ -308,7 +308,7 @@ FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }
 
-#if F_CONFIG_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER_SOFTWARE
 void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame)
 {
     f_platform_api__textureUpdate(Sprite->texture, &Sprite->pixels, Frame);
