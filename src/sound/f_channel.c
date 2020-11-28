@@ -38,7 +38,9 @@ void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
         return;
     }
 
-    f_sample__lazyInit((FSample*)Sample);
+    #if F_CONFIG_FILES_EMBED_OBJ_SAMPLE_LAZY_INIT
+        f_sample__lazyInit((FSample*)Sample);
+    #endif
 
     f_platform_api__soundSamplePlay(
         Sample->platform,

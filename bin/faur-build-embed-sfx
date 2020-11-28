@@ -78,7 +78,7 @@ def process_c(VarName, WavFile):
 #include <faur.v.h>
 
 #ifndef F__GEN_SFX_CONST
-    #if F_CONFIG_LIB_SDL
+    #if F_CONFIG_FILES_EMBED_OBJ_SAMPLE_LAZY_INIT
         #define F__GEN_SFX_CONST
     #else
         #define F__GEN_SFX_CONST const
@@ -98,7 +98,7 @@ static const uint8_t f__sfx_buffer__{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {
 static F__GEN_SFX_CONST FSample f__sfx_sample__{VarName} = {{
     F__GEN_BUFFER_SIZE__{VarName},
     f__sfx_buffer__{VarName},
-    #if F_CONFIG_LIB_SDL
+    #if F_CONFIG_FILES_EMBED_OBJ_SAMPLE_LAZY_INIT
         NULL,
     #else
         (FPlatformSample*)&f__sfx_sample__{VarName},

@@ -30,14 +30,6 @@ bool f_platform_api__soundMuteGet(void)
     return false;
 }
 
-FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, size_t Size)
-{
-    F_UNUSED(Data);
-    F_UNUSED(Size);
-
-    return NULL;
-}
-
 void f_platform_api__soundSampleFree(FPlatformSample* Sample)
 {
     F_UNUSED(Sample);
