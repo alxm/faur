@@ -33,14 +33,15 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 					{} +)
 
 #
-# Project root-relative paths, and the file that implements f_embed__populate
+# Project root-relative paths
 #
-ifneq ($(F_CONFIG_FILES_EMBED_PATHS),)
-    F_BUILD_FILES_EMBED_BIN := $(shell find $(F_CONFIG_FILES_EMBED_PATHS:%=$(F_DIR_ROOT_FROM_MAKE)/%))
-    F_BUILD_FILES_EMBED_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
-    F_BUILD_FILES_EMBED_TARGET := $(F_BUILD_FILES_EMBED_NAMES:%=$(F_BUILD_DIR_GEN_EMBED)/%)
-endif
+F_BUILD_FILES_EMBED_BIN := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
+F_BUILD_FILES_EMBED_TARGET := $(F_BUILD_FILES_EMBED_NAMES:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 
+#
+# The file that implements f_embed__populate
+#
 F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
 #
