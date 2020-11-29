@@ -53,6 +53,7 @@ extern void f_listintr_removeItem(FListIntr* List, void* Item);
 extern void f_listintr_removeNode(FListIntrNode* Node);
 
 extern bool f_listintr_sizeIsEmpty(const FListIntr* List);
+extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
 extern FListIntrIt f__listintrit_new(FListIntr* List);
 extern bool f__listintrit_getNext(FListIntrIt* Iterator, void* UserPtrAddress);

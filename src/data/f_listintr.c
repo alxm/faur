@@ -33,8 +33,8 @@ void f_listintr_init(FListIntr* List, size_t NodeOffset)
 
 void f_listintr_initNode(FListIntrNode* Node)
 {
-    Node->prev = NULL;
-    Node->next = NULL;
+    Node->prev = Node;
+    Node->next = Node;
 }
 
 void f_listintr_clear(FListIntr* List)
@@ -74,19 +74,25 @@ void f_listintr_removeItem(FListIntr* List, void* Item)
 
 void f_listintr_removeNode(FListIntrNode* Node)
 {
-    if(Node->prev == NULL) {
+    if(Node->next == Node) {
         return;
     }
 
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
 
-    Node->prev = NULL;
+    Node->prev = Node;
+    Node->next = Node;
 }
 
 bool f_listintr_sizeIsEmpty(const FListIntr* List)
 {
     return List->root.next == &List->root;
+}
+
+bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
+{
+    return Node->next != Node;
 }
 
 FListIntrIt f__listintrit_new(FListIntr* List)
