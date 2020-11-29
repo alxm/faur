@@ -18,22 +18,6 @@
 #include "f_input.v.h"
 #include <faur.v.h>
 
-static void f_input__init(void)
-{
-    f_input_button__init();
-}
-
-static void f_input__uninit(void)
-{
-    f_input_button__uninit();
-}
-
-const FPack f_pack__input = {
-    "Input",
-    f_input__init,
-    f_input__uninit,
-};
-
 void f_input__tick(void)
 {
     f_platform_api__inputPoll();

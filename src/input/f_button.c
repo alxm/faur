@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 struct FButton {
-    FListNode* listNode;
+    FListIntrNode listNode;
     const char* name; // friendly name
     FList* platformInputs; // FList<FPlatformButton*>
     FList* combos; // FList<FList<FPlatformButton*>>
@@ -108,23 +108,14 @@ static const char* g_buttonNames[F_BUTTON_NUM] = {
 
 static const char* g_defaultName = "FButton";
 
-static FList* g_buttons; // FList<FButton*>
-
-void f_input_button__init(void)
-{
-    g_buttons = f_list_new();
-}
-
-void f_input_button__uninit(void)
-{
-    f_list_free(g_buttons);
-}
+static FListIntr g_buttons = F_LISTINTR_NEW(g_buttons, FButton, listNode);
 
 FButton* f_button_new(void)
 {
     FButton* b = f_mem_mallocz(sizeof(FButton));
 
-    b->listNode = f_list_addLast(g_buttons, b);
+    f_listintr_addLast(&g_buttons, b);
+
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
 
@@ -135,7 +126,8 @@ FButton* f_button_dup(const FButton* Button)
 {
     FButton* b = f_mem_dup(Button, sizeof(FButton));
 
-    b->listNode = f_list_addLast(g_buttons, b);
+    f_listintr_addLast(&g_buttons, b);
+
     b->autoRepeat = NULL;
     b->isClone = true;
     b->waitForRelease = false;
@@ -150,7 +142,7 @@ void f_button_free(FButton* Button)
         return;
     }
 
-    f_list_removeNode(Button->listNode);
+    f_listintr_removeNode(&Button->listNode);
 
     if(!Button->isClone) {
         f_list_freeEx(Button->combos, (FCallFree*)f_list_free);
@@ -271,7 +263,7 @@ void f_button_pressClear(FButton* Button)
 
 void f_input_button__tick(void)
 {
-    F_LIST_ITERATE(g_buttons, FButton*, b) {
+    F_LISTINTR_ITERATE(&g_buttons, FButton*, b) {
         bool pressed = false;
 
         F_LIST_ITERATE(b->platformInputs, const FPlatformButton*, pb) {
