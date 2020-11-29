@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,21 +20,17 @@
 
 #include "f_timer.p.h"
 
-#include "../data/f_list.v.h"
+#include "../data/f_listintr.v.h"
 
 struct FTimer {
+    FListIntrNode listNode;
     unsigned flags;
     unsigned periodMs;
     FFixu period;
     FFixu start;
     FFixu diff;
     unsigned expiredCount;
-    FListNode* runningListNode;
 };
-
-#include "../general/f_init.v.h"
-
-extern const FPack f_pack__timer;
 
 extern void f_timer__tick(void);
 

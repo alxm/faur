@@ -23,7 +23,6 @@ static const FPack* g_packs[] = {
     &f_pack__console_0,
     &f_pack__embed,
     &f_pack__platform,
-    &f_pack__timer,
     &f_pack__screen,
     &f_pack__align,
     &f_pack__color,
