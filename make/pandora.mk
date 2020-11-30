@@ -65,7 +65,7 @@ all : $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE) : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
 	@ mkdir -p $(@D) $(F_PND_DIR_STAGE)
 	rsync --archive --delete --progress --human-readable $(F_PND_DIR_BASE)/ $(F_PND_DIR_STAGE)
-	rsync --archive --delete --progress --human-readable $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_ASSETS) $(F_PND_DIR_STAGE)
+	rsync --archive --delete --progress --human-readable $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_MEDIA) $(F_PND_DIR_STAGE)
 	cp $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) $(F_PND_DIR_STAGE)
 	$(F_SDK_PANDORA_UTILS)/pnd_make.sh -c \
 		-d $(PWD)/$(F_PND_DIR_STAGE) \

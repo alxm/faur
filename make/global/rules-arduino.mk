@@ -1,7 +1,6 @@
 #
-# Unique build path
+# Arduino build dirs
 #
-F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
 F_BUILD_DIR_ARDUINO_BUILD := $(F_BUILD_DIR)/arduino-build
 F_BUILD_DIR_ARDUINO_CACHE := $(F_BUILD_DIR)/arduino-cache
 

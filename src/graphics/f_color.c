@@ -136,7 +136,7 @@ void f_color_blendSet(FColorBlend Blend)
             f_color_alphaSet(F_COLOR_ALPHA_MAX * 3 / 4);
         }
 
-        #if !F_CONFIG_RENDER_SOFTWARE
+        #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
             f_platform_api__drawSetBlend();
         #endif
     #endif
@@ -148,7 +148,7 @@ void f_color_alphaSet(int Alpha)
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #elif !F_CONFIG_RENDER_SOFTWARE
+    #elif !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__drawSetColor();
     #endif
 }
@@ -166,7 +166,7 @@ void f_color_colorSetRgb(int Red, int Green, int Blue)
 {
     setRgb(Red, Green, Blue);
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__drawSetColor();
     #endif
 }
@@ -179,7 +179,7 @@ void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #elif !F_CONFIG_RENDER_SOFTWARE
+    #elif !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__drawSetColor();
     #endif
 }
@@ -191,7 +191,7 @@ void f_color_colorSetHex(uint32_t Hexcode)
     f__color.rgb.b = (Hexcode)       & 0xff;
     f__color.pixel = f_color_pixelFromHex(Hexcode);
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__drawSetColor();
     #endif
 }
@@ -201,7 +201,7 @@ void f_color_colorSetPixel(FColorPixel Pixel)
     f__color.rgb = f_color_pixelToRgb(Pixel);
     f__color.pixel = Pixel;
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__drawSetColor();
     #endif
 }

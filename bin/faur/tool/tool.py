@@ -20,9 +20,9 @@ import re
 import subprocess
 import sys
 
-from utils.args import Args
-from utils.files import Files
-from utils.output import Output
+from faur.tool.args import Args
+from faur.tool.files import Files
+from faur.tool.output import Output
 
 class Tool:
     def __init__(self, ArgNames, FlagNames = ''):

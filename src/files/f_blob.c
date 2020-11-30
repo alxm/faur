@@ -90,6 +90,11 @@ static void read_padding(FBlobReader* Reader)
 
 FBlob* f_blob_new(const char* Path)
 {
+    #if !F_CONFIG_FILES_EMBED_PATHS_ENABLED
+        F__FATAL(
+            "f_blob_new(%s): Need F_CONFIG_FILES_EMBED_PATHS_ENABLED", Path);
+    #endif
+
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {

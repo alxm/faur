@@ -7,7 +7,7 @@ F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP
 #
 # Convenient symlinks available in target's bin dir
 #
-F_BUILD_LINK_BIN_ASSETS := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_ASSETS)
+F_BUILD_LINK_BIN_MEDIA := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_MEDIA)
 F_BUILD_LINK_BIN_SCREENSHOTS := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_SCREENSHOTS)
 
 #
@@ -90,10 +90,10 @@ endif
 #
 F_MAKE_ALL += \
     $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) \
-    $(F_BUILD_LINK_BIN_ASSETS) \
+    $(F_BUILD_LINK_BIN_MEDIA) \
     $(F_BUILD_LINK_BIN_SCREENSHOTS) \
 
-ifdef F_CONFIG_PATH_STATIC_COPY
+ifdef F_CONFIG_FILES_COPY_STATIC
     F_MAKE_ALL += copystatic
 endif
 
@@ -109,9 +109,9 @@ $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O) $(F_BUILD_FILE_FAUR_
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ $(F_CONFIG_BUILD_LIBS)
 
-$(F_BUILD_LINK_BIN_ASSETS) :
+$(F_BUILD_LINK_BIN_MEDIA) :
 	@ mkdir -p $(@D)
-	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_ASSETS) $@
+	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_MEDIA) $@
 
 $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 	@ mkdir -p $(@D)
@@ -161,7 +161,7 @@ valgrind : all
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
 
 #
 # Not file targets

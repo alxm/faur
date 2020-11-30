@@ -21,7 +21,7 @@ import re
 
 from PIL import Image
 
-from utils.tool import Tool
+from faur.tool.tool import Tool
 
 def format_rgb565(Pixel):
     r, g, b = Pixel
@@ -175,7 +175,7 @@ static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 #include <faur.v.h>
 
 #ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         #define F__GEN_GFX_CONST const
     #else
         #define F__GEN_GFX_CONST
@@ -185,7 +185,7 @@ static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffers}}};
 
-#if F_CONFIG_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER_SOFTWARE
 {span_buffers}
 static const struct {{
     FSpriteWord framesNum;
@@ -206,7 +206,7 @@ static F__GEN_GFX_CONST FSprite f__gfx_sprite__{var} = {{
         .flags = F_PIXELS__CONST,
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
-    #if F_CONFIG_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         (FPlatformTexture*)&f__gfx_texture__{var},
     #else
         NULL,

@@ -20,7 +20,7 @@
 
 #include "f_color.p.h"
 
-#define F__OPTIMIZE_ALPHA (F_CONFIG_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
+#define F__OPTIMIZE_ALPHA (F_CONFIG_SCREEN_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
 
 typedef struct {
     const FPalette* palette;

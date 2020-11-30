@@ -34,7 +34,7 @@ static void f_screen__init(void)
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
@@ -115,7 +115,7 @@ void f_screen__draw(void)
 
 FColorPixel* f_screen_pixelsGetBuffer(void)
 {
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__screenTextureSync();
     #endif
 
@@ -158,7 +158,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
     f__screen.sprite = Sprite;
     f__screen.frame = Frame;
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f__screen.yOffset = (int)f__screen.frame * f__screen.pixels->size.y;
         f__screen.texture = f_sprite__textureGet(Sprite);
 
@@ -178,14 +178,14 @@ void f_screen_pop(void)
         }
     #endif
 
-    #if F_CONFIG_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_sprite__textureUpdate(f__screen.sprite, f__screen.frame);
     #endif
 
     f__screen = *screen;
     f_pool_release(screen);
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__screenTextureSet(f__screen.texture);
         f_platform_api__screenClipSet();
     #endif
@@ -210,7 +210,7 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
     f__screen.clipEnd = (FVecInt){X + Width, Y + Height};
     f__screen.clipSize = (FVecInt){Width, Height};
 
-    #if !F_CONFIG_RENDER_SOFTWARE
+    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_platform_api__screenClipSet();
     #endif
 }
@@ -261,7 +261,7 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
                  f__screen.pixels->size.y);
     }
 
-    #if F_CONFIG_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_pixels__copyFrame(
             &Sprite->pixels, Frame, f__screen.pixels, f__screen.frame);
     #else
