@@ -18,11 +18,16 @@
 #include "f_button.v.h"
 #include <faur.v.h>
 
+typedef struct {
+    FListIntrNode listNode;
+    FList* andButtons; // FList<FPlatformButton*>
+} FButtonCombo;
+
 struct FButton {
     FListIntrNode listNode;
     const char* name; // friendly name
     FList* platformInputs; // FList<FPlatformButton*>
-    FList* combos; // FList<FList<FPlatformButton*>>
+    FListIntr combos; // FListIntr<FButtonCombo*>
     FTimer* autoRepeat;
     bool isClone;
     bool waitForRelease;
@@ -118,6 +123,7 @@ FButton* f_button_new(void)
 
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
+    b->combos = (FListIntr)F_LISTINTR_NEW(b->combos, FButtonCombo, listNode);
 
     return b;
 }
@@ -145,7 +151,10 @@ void f_button_free(FButton* Button)
     f_listintr_removeNode(&Button->listNode);
 
     if(!Button->isClone) {
-        f_list_freeEx(Button->combos, (FCallFree*)f_list_free);
+        F_LISTINTR_ITERATE(&Button->combos, FButtonCombo*, combo) {
+            f_list_free(combo->andButtons);
+        }
+
         f_list_free(Button->platformInputs);
     }
 
@@ -208,11 +217,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
     if(f_list_sizeIsEmpty(combo)) {
         f_list_free(combo);
     } else {
-        if(Button->combos == NULL) {
-            Button->combos = f_list_new();
-        }
-
-        f_list_push(Button->combos, combo);
+        f_listintr_addFirst(&Button->combos, combo);
     }
 
     va_end(args);
@@ -221,7 +226,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
 bool f_button_isWorking(const FButton* Button)
 {
     return !f_list_sizeIsEmpty(Button->platformInputs)
-        || (Button->combos && !f_list_sizeIsEmpty(Button->combos));
+        || !f_listintr_sizeIsEmpty(&Button->combos);
 }
 
 const char* f_button_nameGet(const FButton* Button)
@@ -273,9 +278,9 @@ void f_input_button__tick(void)
             }
         }
 
-        if(b->combos) {
-            F_LIST_ITERATE(b->combos, FList*, andList) {
-                F_LIST_ITERATE(andList, const FPlatformButton*, pb) {
+        if(!f_listintr_sizeIsEmpty(&b->combos)) {
+            F_LISTINTR_ITERATE(&b->combos, FButtonCombo*, combo) {
+                F_LIST_ITERATE(combo->andButtons, const FPlatformButton*, pb) {
                     if(!f_platform_api__inputButtonPressGet(pb)) {
                         break;
                     } else if(F_LIST_IS_LAST()) {
