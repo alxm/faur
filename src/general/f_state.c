@@ -23,7 +23,7 @@
 typedef struct {
     const char* name;
     FCallState* handler;
-    FStateStage stage;
+    F__StateStage stage;
 } FStateStackEntry;
 
 static FList* g_stack; // FList<FStateStackEntry*>
@@ -377,7 +377,7 @@ bool f_state__runStep(void)
     return true;
 }
 
-bool f__state_stageCheck(FStateStage Stage)
+bool f__state_stageCheck(F__StateStage Stage)
 {
     const FStateStackEntry* e = f_list_peek(g_stack);
 

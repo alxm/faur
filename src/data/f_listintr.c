@@ -95,12 +95,12 @@ bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
     return Node->next != Node;
 }
 
-FListIntrIt f__listintrit_new(FListIntr* List)
+F__ListIntrIt f__listintrit_new(FListIntr* List)
 {
-    return (FListIntrIt){List, List->root.next};
+    return (F__ListIntrIt){List, List->root.next};
 }
 
-bool f__listintrit_getNext(FListIntrIt* Iterator, void* UserPtrAddress)
+bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress)
 {
     FListIntrNode* current = Iterator->next;
     Iterator->next = current->next;

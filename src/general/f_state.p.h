@@ -51,9 +51,9 @@ typedef enum {
     F__STATE_STAGE_DRAW,
     F__STATE_STAGE_FREE,
     F__STATE_STAGE_NUM
-} FStateStage;
+} F__StateStage;
 
-extern bool f__state_stageCheck(FStateStage Stage);
+extern bool f__state_stageCheck(F__StateStage Stage);
 
 #define F_STATE_INIT if(f__state_stageCheck(F__STATE_STAGE_INIT))
 #define F_STATE_TICK if(f__state_stageCheck(F__STATE_STAGE_TICK))

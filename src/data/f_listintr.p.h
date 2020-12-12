@@ -33,7 +33,7 @@ typedef struct {
 typedef struct {
     FListIntr* list;
     FListIntrNode* next;
-} FListIntrIt;
+} F__ListIntrIt;
 
 #define F_LISTINTR_NEW(Self, Type, NodeField)        \
     {                                                \
@@ -55,11 +55,11 @@ extern void f_listintr_removeNode(FListIntrNode* Node);
 extern bool f_listintr_sizeIsEmpty(const FListIntr* List);
 extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
-extern FListIntrIt f__listintrit_new(FListIntr* List);
-extern bool f__listintrit_getNext(FListIntrIt* Iterator, void* UserPtrAddress);
+extern F__ListIntrIt f__listintrit_new(FListIntr* List);
+extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress);
 
 #define F_LISTINTR_ITERATE(List, PtrType, Name)                          \
-    for(FListIntrIt f__it = f__listintrit_new(List);                     \
+    for(F__ListIntrIt f__it = f__listintrit_new(List);                   \
         f__it.list != NULL;                                              \
         f__it.list = NULL)                                               \
         for(PtrType Name; f__listintrit_getNext(&f__it, (void*)&Name); )

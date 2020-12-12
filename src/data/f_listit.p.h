@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,32 +20,32 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FListIt FListIt;
+typedef struct F__ListIt F__ListIt;
 
 #include "../data/f_list.p.h"
 
-struct FListIt {
+struct F__ListIt {
     const FListNode* sentinelNode;
     const FListNode* nextNode;
     unsigned index;
     bool reversed;
 };
 
-extern FListIt f__listit_new(const FList* List, bool Reversed);
+extern F__ListIt f__listit_new(const FList* List, bool Reversed);
 
-extern bool f__listit_getNext(FListIt* Iterator, void* UserPtrAddress);
-extern void f__listit_remove(const FListIt* Iterator);
-extern bool f__listit_isFirst(const FListIt* Iterator);
-extern bool f__listit_isLast(const FListIt* Iterator);
+extern bool f__listit_getNext(F__ListIt* Iterator, void* UserPtrAddress);
+extern void f__listit_remove(const F__ListIt* Iterator);
+extern bool f__listit_isFirst(const F__ListIt* Iterator);
+extern bool f__listit_isLast(const F__ListIt* Iterator);
 
 #define F_LIST_ITERATE(List, PtrType, Name)                          \
-    for(FListIt f__it = f__listit_new(List, false);                  \
+    for(F__ListIt f__it = f__listit_new(List, false);                \
         f__it.sentinelNode != NULL;                                  \
         f__it.sentinelNode = NULL)                                   \
         for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
 
 #define F_LIST_ITERATE_REV(List, PtrType, Name)                      \
-    for(FListIt f__it = f__listit_new(List, true);                   \
+    for(F__ListIt f__it = f__listit_new(List, true);                 \
         f__it.sentinelNode != NULL;                                  \
         f__it.sentinelNode = NULL)                                   \
         for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
