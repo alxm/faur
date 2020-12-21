@@ -28,13 +28,6 @@ struct FHash {
     F__HashEntry* slots[]; // [numSlots]
 };
 
-struct F__HashEntry {
-    FListIntrNode listNode;
-    F__HashEntry* next;
-    const void* key;
-    void* content;
-};
-
 #if F_CONFIG_BUILD_GEN_LUTS
 static uint8_t g_crc8[256];
 
@@ -153,7 +146,7 @@ void f_hash_freeEx(FHash* Hash, FCallFree* Free)
             Hash->keyFree((void*)e->key);
         }
 
-        f_mem_free(e);
+        f_pool_release(e);
     }
 
     f_mem_free(Hash);
@@ -172,7 +165,7 @@ void f_hash_add(FHash* Hash, const void* Key, void* Content)
     #endif
 
     F__HashEntry* oldEntry = Hash->slots[slot];
-    F__HashEntry* newEntry = f_mem_malloc(sizeof(F__HashEntry));
+    F__HashEntry* newEntry = f_pool__alloc(F_POOL__HASHENTRY);
 
     newEntry->next = oldEntry;
     newEntry->key = Key;
@@ -214,7 +207,7 @@ static void removeEntry(FHash* Hash, unsigned Slot, F__HashEntry* Current, F__Ha
         Hash->keyFree((void*)Current->key);
     }
 
-    f_mem_free(Current);
+    f_pool_release(Current);
 }
 
 void f_hash_removeKey(FHash* Hash, const void* Key)

@@ -24,6 +24,7 @@ typedef enum {
     F_POOL__INVALID = -1,
     F_POOL__BLOCK,
     F_POOL__CONSOLE,
+    F_POOL__HASHENTRY,
     F_POOL__LIST,
     F_POOL__LISTNODE,
     F_POOL__PATH,

@@ -24,4 +24,11 @@
 
 extern const FPack f_pack__hash;
 
+struct F__HashEntry {
+    FListIntrNode listNode;
+    F__HashEntry* next;
+    const void* key;
+    void* content;
+};
+
 #endif // F_INC_DATA_HASH_V_H
