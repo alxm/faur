@@ -26,7 +26,7 @@ typedef struct F__HashEntry F__HashEntry;
 typedef unsigned FCallHashFunction(const void* Key);
 typedef bool FCallHashEqual(const void* KeyA, const void* KeyB);
 
-#include "../data/f_listit.p.h"
+#include "../data/f_listintr.p.h"
 
 extern FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFree* KeyFree, unsigned NumSlots);
 extern FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString);
@@ -45,18 +45,18 @@ extern bool f_hash_contains(const FHash* Hash, const void* Key);
 extern unsigned f_hash_sizeGet(const FHash* Hash);
 extern void** f_hash_toArray(const FHash* Hash);
 
-extern const FList* f__hash_entries(const FHash* Hash);
+extern const FListIntr* f__hash_entries(const FHash* Hash);
 extern void* f__hash_entryValue(const F__HashEntry* Entry);
 extern const void* f__hash_entryKey(const F__HashEntry* Entry);
 
-#define F_HASH_ITERATE(Hash, PtrType, Name)                          \
-    F_LIST_ITERATE(f__hash_entries(Hash), const F__HashEntry*, f__e) \
-        for(PtrType Name = f__hash_entryValue(f__e);                 \
+#define F_HASH_ITERATE(Hash, PtrType, Name)                              \
+    F_LISTINTR_ITERATE(f__hash_entries(Hash), const F__HashEntry*, f__e) \
+        for(PtrType Name = f__hash_entryValue(f__e);                     \
             f__e != NULL; f__e = NULL)
 
-#define F_HASH_ITERATE_KEYS(Hash, PtrType, Name)                     \
-    F_LIST_ITERATE(f__hash_entries(Hash), const F__HashEntry*, f__e) \
-        for(PtrType Name = f__hash_entryKey(f__e);                   \
+#define F_HASH_ITERATE_KEYS(Hash, PtrType, Name)                         \
+    F_LISTINTR_ITERATE(f__hash_entries(Hash), const F__HashEntry*, f__e) \
+        for(PtrType Name = f__hash_entryKey(f__e);                       \
             f__e != NULL; f__e = NULL)
 
 #define F_HASH_KEY() f__hash_entryKey(f__e)
