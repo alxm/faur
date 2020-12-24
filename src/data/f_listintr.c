@@ -18,9 +18,14 @@
 #include "f_listintr.v.h"
 #include <faur.v.h>
 
-static inline FListIntrNode* itemToNode(FListIntr* List, void* Item)
+static inline FListIntrNode* itemToNode(const FListIntr* List, const void* Item)
 {
     return (FListIntrNode*)(void*)((uint8_t*)Item + List->itemNodeOffset);
+}
+
+static inline void* nodeToItem(const FListIntr* List, const FListIntrNode* Node)
+{
+    return (uint8_t*)Node - List->itemNodeOffset;
 }
 
 void f_listintr_init(FListIntr* List, size_t NodeOffset)
@@ -67,6 +72,30 @@ void f_listintr_addLast(FListIntr* List, void* Item)
     itemNode->next->prev = itemNode;
 }
 
+void* f_listintr_getFirst(const FListIntr* List)
+{
+    FListIntrNode* first = List->root.next;
+
+    if(first == &List->root) {
+        return NULL;
+    }
+
+    return nodeToItem(List, first);
+}
+
+void* f_listintr_removeFirst(FListIntr* List)
+{
+    FListIntrNode* first = List->root.next;
+
+    if(first == &List->root) {
+        return NULL;
+    }
+
+    f_listintr_removeNode(first);
+
+    return nodeToItem(List, first);
+}
+
 void f_listintr_removeItem(FListIntr* List, void* Item)
 {
     f_listintr_removeNode(itemToNode(List, Item));
@@ -106,8 +135,7 @@ bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress)
         return false;
     }
 
-    *(void**)UserPtrAddress =
-        (uint8_t*)Iterator->next - Iterator->list->itemNodeOffset;
+    *(void**)UserPtrAddress = nodeToItem(Iterator->list, Iterator->next);
 
     Iterator->next = Iterator->next->next;
     Iterator->index++;

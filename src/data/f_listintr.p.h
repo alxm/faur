@@ -50,11 +50,29 @@ extern void f_listintr_clear(FListIntr* List);
 extern void f_listintr_addFirst(FListIntr* List, void* Item);
 extern void f_listintr_addLast(FListIntr* List, void* Item);
 
+extern void* f_listintr_getFirst(const FListIntr* List);
+
+extern void* f_listintr_removeFirst(FListIntr* List);
 extern void f_listintr_removeItem(FListIntr* List, void* Item);
 extern void f_listintr_removeNode(FListIntrNode* Node);
 
 extern bool f_listintr_sizeIsEmpty(const FListIntr* List);
 extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
+
+static inline void f_listintr_push(FListIntr* List, void* Content)
+{
+    f_listintr_addFirst(List, Content);
+}
+
+static inline void* f_listintr_pop(FListIntr* List)
+{
+    return f_listintr_removeFirst(List);
+}
+
+static inline void* f_listintr_peek(const FListIntr* List)
+{
+    return f_listintr_getFirst(List);
+}
 
 extern F__ListIntrIt f__listintrit_new(const FListIntr* List);
 extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress);
