@@ -59,6 +59,8 @@ extern void f_listintr_removeNode(FListIntrNode* Node);
 extern bool f_listintr_sizeIsEmpty(const FListIntr* List);
 extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
+extern void f_listintr_apply(const FListIntr* List, FCallFree* Apply);
+
 static inline void f_listintr_push(FListIntr* List, void* Content)
 {
     f_listintr_addFirst(List, Content);

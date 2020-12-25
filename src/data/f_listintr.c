@@ -124,6 +124,16 @@ bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
     return Node->next != Node;
 }
 
+void f_listintr_apply(const FListIntr* List, FCallFree* Apply)
+{
+    for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
+        n1 != &List->root;
+        n1 = n2, n2 = n2->next) {
+
+        Apply(nodeToItem(List, n1));
+    }
+}
+
 F__ListIntrIt f__listintrit_new(const FListIntr* List)
 {
     return (F__ListIntrIt){List, List->root.next, UINT_MAX};

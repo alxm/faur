@@ -61,6 +61,8 @@ extern bool f_list_sizeIsEmpty(const FList* List);
 
 extern bool f_list_contains(const FList* List, const void* Item);
 
+extern void f_list_apply(const FList* List, FCallFree* Apply);
+
 static inline FListNode* f_list_push(FList* List, void* Content)
 {
     return f_list_addFirst(List, Content);

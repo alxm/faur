@@ -443,3 +443,10 @@ bool f_list_contains(const FList* List, const void* Item)
 
     return false;
 }
+
+void f_list_apply(const FList* List, FCallFree* Apply)
+{
+    F__ITERATE_SAFE(List, current, next) {
+        Apply(current->content);
+    }
+}
