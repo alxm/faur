@@ -27,6 +27,7 @@ typedef struct FScreen FScreen;
 #include "../math/f_fix.v.h"
 
 struct FScreen {
+    FListIntrNode listNode;
     FPixels* pixels;
     FSprite* sprite;
     unsigned frame;

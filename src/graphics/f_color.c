@@ -25,12 +25,11 @@ FColorState f__color;
 FColorPixel f_color__key;
 FColorPixel f_color__limit;
 
-static FList* g_stack;
+static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FColorState, listNode);
 static FPalette* g_palette;
 
 static void f_color__init(void)
 {
-    g_stack = f_list_new();
     g_palette = f_palette_newFromSprite(f_gfx__g_palette);
 
     f_color_reset();
@@ -41,7 +40,7 @@ static void f_color__init(void)
 
 static void f_color__uninit(void)
 {
-    f_list_freeEx(g_stack, f_pool_release);
+    f_listintr_apply(&g_stack, f_pool_release);
     f_palette_free(g_palette);
 }
 
@@ -53,14 +52,14 @@ const FPack f_pack__color = {
 
 void f_color_push(void)
 {
-    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_COLOR, &f__color));
+    f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_COLOR, &f__color));
 
     f_color_reset();
 }
 
 void f_color_pop(void)
 {
-    FColorState* state = f_list_pop(g_stack);
+    FColorState* state = f_listintr_pop(&g_stack);
 
     #if F_CONFIG_DEBUG
         if(state == NULL) {

@@ -27,14 +27,18 @@ typedef enum {
     F_FONT__ID_NUM
 } FFontId;
 
-typedef struct {
+typedef struct FFontState FFontState;
+
+#include "../data/f_listintr.v.h"
+#include "../general/f_init.v.h"
+
+struct FFontState {
+    FListIntrNode listNode;
     const FFont* font;
     int x, startX, y;
     int lineHeight;
     int wrapWidth, currentLineWidth;
-} FFontState;
-
-#include "../general/f_init.v.h"
+};
 
 extern const FPack f_pack__font;
 
