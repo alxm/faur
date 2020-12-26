@@ -51,6 +51,7 @@ F_EXTERN_C_START
 #include "graphics/f_screenshot.v.h"
 #include "graphics/f_screen.v.h"
 #include "graphics/f_sprite.v.h"
+#include "graphics/f_spritelayers.v.h"
 #include "input/f_button.v.h"
 #include "input/f_input.v.h"
 #include "math/f_fix.v.h"

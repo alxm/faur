@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,15 +18,9 @@
 #include "f_spritelayers.v.h"
 #include <faur.v.h>
 
-typedef struct {
-    FSprite* sprite;
-    FColorBlend blend;
-    int r, g, b, a;
-} FLayer;
-
-static FLayer* layer_new(FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha)
+static FSpriteLayersLayer* layer_new(FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
-    FLayer* l = f_mem_malloc(sizeof(FLayer));
+    FSpriteLayersLayer* l = f_pool__alloc(F_POOL__SPRITE_LAYER);
 
     l->sprite = Sprite;
     l->blend = Blend;
@@ -38,51 +32,64 @@ static FLayer* layer_new(FSprite* Sprite, FColorBlend Blend, int Red, int Green,
     return l;
 }
 
-static void layer_free(FLayer* Layer)
+static void layer_free(FSpriteLayersLayer* Layer)
 {
-    f_mem_free(Layer);
+    f_pool_release(Layer);
 }
 
-static void layer_freeEx(FLayer* Layer)
+static void layer_freeEx(FSpriteLayersLayer* Layer)
 {
     f_sprite_free(Layer->sprite);
 
-    f_mem_free(Layer);
+    f_pool_release(Layer);
 }
 
 FSpriteLayers* f_spritelayers_new(void)
 {
-    return f_list_new();
+    FListIntr* l = f_pool__alloc(F_POOL__LISTINTR);
+
+    f_listintr_init(l, offsetof(FSpriteLayersLayer, listNode));
+
+    return l;
 }
 
 void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites)
 {
-    if(FreeSprites) {
-        f_list_freeEx(Layers, (FCallFree*)layer_freeEx);
-    } else {
-        f_list_freeEx(Layers, (FCallFree*)layer_free);
+    if(Layers == NULL) {
+        return;
     }
+
+    if(FreeSprites) {
+        f_listintr_apply(Layers, (FCallFree*)layer_freeEx);
+    } else {
+        f_listintr_apply(Layers, (FCallFree*)layer_free);
+    }
+
+    f_pool_release(Layers);
 }
 
 void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites)
 {
     if(FreeSprites) {
-        f_list_clearEx(Layers, (FCallFree*)layer_freeEx);
+        f_listintr_apply(Layers, (FCallFree*)layer_freeEx);
     } else {
-        f_list_clearEx(Layers, (FCallFree*)layer_free);
+        f_listintr_apply(Layers, (FCallFree*)layer_free);
     }
+
+    f_listintr_clear(Layers);
 }
 
 void f_spritelayers_add(FSpriteLayers* Layers, FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
-    f_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
+    f_listintr_addLast(
+        Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
 void f_spritelayers_blit(const FSpriteLayers* Layers, unsigned Frame, int X, int Y)
 {
     f_color_push();
 
-    F_LIST_ITERATE(Layers, FLayer*, l) {
+    F_LISTINTR_ITERATE(Layers, const FSpriteLayersLayer*, l) {
         f_color_blendSet(l->blend);
         f_color_colorSetRgba(l->r, l->g, l->b, l->a);
 
