@@ -36,12 +36,6 @@ void f_listintr_init(FListIntr* List, size_t NodeOffset)
     List->itemNodeOffset = NodeOffset;
 }
 
-void f_listintr_initNode(FListIntrNode* Node)
-{
-    Node->prev = Node;
-    Node->next = Node;
-}
-
 void f_listintr_clear(FListIntr* List)
 {
     List->root.prev = &List->root;
@@ -119,11 +113,6 @@ bool f_listintr_sizeIsEmpty(const FListIntr* List)
     return List->root.next == &List->root;
 }
 
-bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
-{
-    return Node->next != Node;
-}
-
 void f_listintr_apply(const FListIntr* List, FCallFree* Apply)
 {
     for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
@@ -132,6 +121,17 @@ void f_listintr_apply(const FListIntr* List, FCallFree* Apply)
 
         Apply(nodeToItem(List, n1));
     }
+}
+
+void f_listintr_nodeInit(FListIntrNode* Node)
+{
+    Node->prev = Node;
+    Node->next = Node;
+}
+
+bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
+{
+    return Node->next != Node;
 }
 
 F__ListIntrIt f__listintrit_new(const FListIntr* List)

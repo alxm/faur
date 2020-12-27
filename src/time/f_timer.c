@@ -69,7 +69,8 @@ FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 {
     FTimer* t = f_pool__alloc(F_POOL__TIMER);
 
-    f_listintr_initNode(&t->listNode);
+    f_listintr_nodeInit(&t->listNode);
+
     t->periodMs = PeriodMs;
     t->period = f_time_msToTicks(PeriodMs);
 
@@ -84,7 +85,8 @@ FTimer* f_timer_dup(const FTimer* Timer)
 {
     FTimer* t = f_pool__dup(F_POOL__TIMER, Timer);
 
-    f_listintr_initNode(&t->listNode);
+    f_listintr_nodeInit(&t->listNode);
+
     F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
     t->diff = 0;
 

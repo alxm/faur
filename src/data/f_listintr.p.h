@@ -43,7 +43,6 @@ typedef struct {
     }
 
 extern void f_listintr_init(FListIntr* List, size_t NodeOffset);
-extern void f_listintr_initNode(FListIntrNode* Node);
 
 extern void f_listintr_clear(FListIntr* List);
 
@@ -57,7 +56,6 @@ extern void f_listintr_removeItem(FListIntr* List, void* Item);
 extern void f_listintr_removeNode(FListIntrNode* Node);
 
 extern bool f_listintr_sizeIsEmpty(const FListIntr* List);
-extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
 extern void f_listintr_apply(const FListIntr* List, FCallFree* Apply);
 
@@ -75,6 +73,9 @@ static inline void* f_listintr_peek(const FListIntr* List)
 {
     return f_listintr_getFirst(List);
 }
+
+extern void f_listintr_nodeInit(FListIntrNode* Node);
+extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
 extern F__ListIntrIt f__listintrit_new(const FListIntr* List);
 extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress);
