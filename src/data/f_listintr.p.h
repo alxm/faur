@@ -92,6 +92,6 @@ extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress)
         for(PtrType Name; f__listintrit_getNext(&f__it, (void*)&Name); )
 
 #define F_LISTINTR_INDEX() f__it.index
-#define F_LISTINTR_REMOVE_CURRENT() f_listintr_removeNode(f__it.current)
+#define F_LISTINTR_REMOVE() f_listintr_removeNode(f__it.current)
 
 #endif // F_INC_DATA_LISTINTR_P_H

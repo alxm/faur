@@ -61,7 +61,7 @@ extern bool f__listit_isLast(const F__ListIt* Iterator);
         else
 
 #define F_LIST_INDEX() f__it.index
-#define F_LIST_REMOVE_CURRENT() f__listit_remove(&f__it)
+#define F_LIST_REMOVE() f__listit_remove(&f__it)
 #define F_LIST_IS_FIRST() f__listit_isFirst(&f__it)
 #define F_LIST_IS_LAST() f__listit_isLast(&f__it)
 
