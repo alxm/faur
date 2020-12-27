@@ -36,6 +36,7 @@ typedef enum {
     F_POOL__STACK_COLOR,
     F_POOL__STACK_FONT,
     F_POOL__STACK_SCREEN,
+    F_POOL__STACK_STATE,
     F_POOL__TIMER,
     F_POOL__NUM
 } FPoolId;

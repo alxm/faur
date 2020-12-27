@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,17 @@
 
 #include "f_state.p.h"
 
+typedef struct FStateEntry FStateEntry;
+
+#include "../data/f_listintr.v.h"
 #include "../general/f_init.v.h"
+
+struct FStateEntry {
+    FListIntrNode listNode;
+    const char* name;
+    FCallState* handler;
+    F__StateStage stage;
+};
 
 extern const FPack f_pack__state;
 

@@ -63,6 +63,7 @@ static const unsigned g_sizes[F_POOL__NUM] = {
     [F_POOL__STACK_COLOR] = sizeof(FColorState),
     [F_POOL__STACK_FONT] = sizeof(FFontState),
     [F_POOL__STACK_SCREEN] = sizeof(FScreen),
+    [F_POOL__STACK_STATE] = sizeof(FStateEntry),
     [F_POOL__TIMER] = sizeof(FTimer),
 };
 
