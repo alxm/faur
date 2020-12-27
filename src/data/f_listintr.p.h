@@ -44,6 +44,11 @@ typedef struct {
 
 extern void f_listintr_init(FListIntr* List, size_t NodeOffset);
 
+#ifndef FAUR_IMPLEMENT_LIST
+    #define f_listintr_init(List, Type, NodeField) \
+        f_listintr_init(List, offsetof(Type, NodeField))
+#endif
+
 extern void f_listintr_clear(FListIntr* List);
 
 extern void f_listintr_addFirst(FListIntr* List, void* Item);

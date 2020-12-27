@@ -15,6 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define FAUR_IMPLEMENT_LIST
+
 #include "f_listintr.v.h"
 #include <faur.v.h>
 

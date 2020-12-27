@@ -113,7 +113,7 @@ FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFr
     h->keyFree = KeyFree;
     h->numSlots = NumSlots;
 
-    f_listintr_init(&h->entries, offsetof(F__HashEntry, listNode));
+    f_listintr_init(&h->entries, F__HashEntry, listNode);
 
     return h;
 }

@@ -48,7 +48,7 @@ FSpriteLayers* f_spritelayers_new(void)
 {
     FListIntr* l = f_pool__alloc(F_POOL__LISTINTR);
 
-    f_listintr_init(l, offsetof(FSpriteLayersLayer, listNode));
+    f_listintr_init(l, FSpriteLayersLayer, listNode);
 
     return l;
 }

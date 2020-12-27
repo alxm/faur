@@ -30,7 +30,7 @@ extern void f_state_pop(void);
 extern void f_state_popUntil(FCallState* Handler, const char* Name);
 extern void f_state_replace(FCallState* Handler, const char* Name);
 
-#ifndef FAUR_IMPLEMENT
+#ifndef FAUR_IMPLEMENT_STATE
     #define f_state_push(Handler) f_state_push(Handler, #Handler)
     #define f_state_popUntil(Handler) f_state_popUntil(Handler, #Handler)
     #define f_state_replace(Handler) f_state_replace(Handler, #Handler)

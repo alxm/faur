@@ -22,7 +22,7 @@
 
 extern void f_sym_set(const char* Name, uintptr_t Value);
 
-#ifndef FAUR_IMPLEMENT
+#ifndef FAUR_IMPLEMENT_SYM
     #define f_sym_set(Symbol) f_sym_set(#Symbol, (uintptr_t)Symbol)
 #endif
 
