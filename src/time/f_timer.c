@@ -22,7 +22,7 @@
 #define F_TIMER__RUNNING F_FLAGS_BIT(1)
 #define F_TIMER__EXPIRED F_FLAGS_BIT(2)
 
-static FListIntr g_running = F_LISTINTR_NEW(g_running, FTimer, listNode);
+static F_LISTINTR(g_running, FTimer, listNode);
 
 void f_timer__tick(void)
 {

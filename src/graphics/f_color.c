@@ -25,7 +25,7 @@ FColorState f__color;
 FColorPixel f_color__key;
 FColorPixel f_color__limit;
 
-static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FColorState, listNode);
+static F_LISTINTR(g_stack, FColorState, listNode);
 static FPalette* g_palette;
 
 static void f_color__init(void)

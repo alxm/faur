@@ -113,7 +113,7 @@ static const char* g_buttonNames[F_BUTTON_NUM] = {
 
 static const char* g_defaultName = "FButton";
 
-static FListIntr g_buttons = F_LISTINTR_NEW(g_buttons, FButton, listNode);
+static F_LISTINTR(g_buttons, FButton, listNode);
 
 FButton* f_button_new(void)
 {
@@ -123,7 +123,8 @@ FButton* f_button_new(void)
 
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
-    b->combos = (FListIntr)F_LISTINTR_NEW(b->combos, FButtonCombo, listNode);
+
+    f_listintr_init(&b->combos, FButtonCombo, listNode);
 
     return b;
 }

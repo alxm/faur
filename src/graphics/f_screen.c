@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 FScreen f__screen;
-static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FScreen, listNode);
+static F_LISTINTR(g_stack, FScreen, listNode);
 
 #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
     static FButton* g_fullScreenButton;

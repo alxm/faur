@@ -20,8 +20,8 @@
 #include "f_state.v.h"
 #include <faur.v.h>
 
-static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FStateEntry, listNode);
-static FListIntr g_pending = F_LISTINTR_NEW(g_pending, FStateEntry, listNode);
+static F_LISTINTR(g_stack, FStateEntry, listNode);
+static F_LISTINTR(g_pending, FStateEntry, listNode);
 
 static bool g_exiting;
 static const FEvent* g_blockEvent;

@@ -36,9 +36,9 @@ typedef struct {
     unsigned index;
 } F__ListIntrIt;
 
-#define F_LISTINTR_NEW(Self, Type, NodeField)        \
-    {                                                \
-        .root = {&Self.root, &Self.root},            \
+#define F_LISTINTR(Name, Type, NodeField)            \
+    FListIntr Name = {                               \
+        .root = {&Name.root, &Name.root},            \
         .itemNodeOffset = offsetof(Type, NodeField), \
     }
 

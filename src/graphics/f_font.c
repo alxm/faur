@@ -27,7 +27,7 @@
 
 static FFont* g_defaultFonts[F_FONT__ID_NUM];
 static FFontState g_state;
-static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FFontState, listNode);
+static F_LISTINTR(g_stack, FFontState, listNode);
 static char g_buffer[512];
 
 static void f_font__init(void)

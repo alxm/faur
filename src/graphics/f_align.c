@@ -20,7 +20,7 @@
 
 FAlign f__align;
 
-static FListIntr g_stack = F_LISTINTR_NEW(g_stack, FAlign, listNode);
+static F_LISTINTR(g_stack, FAlign, listNode);
 
 static void f_align__init(void)
 {
