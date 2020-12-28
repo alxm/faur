@@ -154,3 +154,14 @@ bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress)
 
     return true;
 }
+
+void f__listintrit_remove(const F__ListIntrIt* Iterator)
+{
+    FListIntrNode* current = Iterator->next->prev;
+
+    if(current == &Iterator->list->root) {
+        return;
+    }
+
+    f_listintr_removeNode(current);
+}

@@ -84,6 +84,7 @@ extern bool f_listintr_nodeIsLinked(const FListIntrNode* Node);
 
 extern F__ListIntrIt f__listintrit_new(const FListIntr* List);
 extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress);
+extern void f__listintrit_remove(const F__ListIntrIt* Iterator);
 
 #define F_LISTINTR_ITERATE(List, PtrType, Name)                          \
     for(F__ListIntrIt f__it = f__listintrit_new(List);                   \
@@ -92,6 +93,6 @@ extern bool f__listintrit_getNext(F__ListIntrIt* Iterator, void* UserPtrAddress)
         for(PtrType Name; f__listintrit_getNext(&f__it, (void*)&Name); )
 
 #define F_LISTINTR_INDEX() f__it.index
-#define F_LISTINTR_REMOVE() f_listintr_removeNode(f__it.current)
+#define F_LISTINTR_REMOVE() f__listintrit_remove(&f__it)
 
 #endif // F_INC_DATA_LISTINTR_P_H
