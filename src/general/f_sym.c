@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define FAUR_IMPLEMENT 1
+#define FAUR_IMPLEMENT_SYM
 
 #include "f_sym.v.h"
 #include <faur.v.h>

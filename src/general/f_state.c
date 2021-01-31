@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define FAUR_IMPLEMENT 1
+#define FAUR_IMPLEMENT_STATE
 
 #include "f_state.v.h"
 #include <faur.v.h>
 
-typedef struct {
-    const char* name;
-    FCallState* handler;
-    FStateStage stage;
-} FStateStackEntry;
+static F_LISTINTR(g_stack, FStateEntry, listNode);
+static F_LISTINTR(g_pending, FStateEntry, listNode);
 
-static FList* g_stack; // FList<FStateStackEntry*>
-static FList* g_pending; // FList<FStateStackEntry*/NULL>
 static bool g_exiting;
 static const FEvent* g_blockEvent;
 
@@ -44,23 +39,23 @@ static const char* g_stageNames[F__STATE_STAGE_NUM] = {
 
 static void pending_push(FCallState* Handler, const char* Name)
 {
-    FStateStackEntry* e = f_mem_malloc(sizeof(FStateStackEntry));
+    FStateEntry* e = f_pool__alloc(F_POOL__STACK_STATE);
 
     e->name = Name;
     e->handler = Handler;
     e->stage = F__STATE_STAGE_INVALID;
 
-    f_list_addLast(g_pending, e);
+    f_listintr_addLast(&g_pending, e);
 }
 
 static void pending_pop(void)
 {
-    f_list_addLast(g_pending, NULL);
+    f_listintr_addLast(&g_pending, f_pool__alloc(F_POOL__STACK_STATE));
 }
 
 static void pending_handle(void)
 {
-    FStateStackEntry* current = f_list_peek(g_stack);
+    FStateEntry* current = f_listintr_peek(&g_stack);
 
     if(current) {
         bool resetFps = false;
@@ -80,24 +75,24 @@ static void pending_handle(void)
                 f_out__state("Destroying '%s' instance", current->name);
             #endif
 
-            f_mem_free(f_list_pop(g_stack));
+            f_pool_release(f_listintr_pop(&g_stack));
 
-            current = f_list_peek(g_stack);
+            current = f_listintr_peek(&g_stack);
             resetFps = current && current->stage == F__STATE_STAGE_TICK;
         }
 
-        if(resetFps && !g_exiting && f_list_sizeIsEmpty(g_pending)) {
+        if(resetFps && !g_exiting && f_listintr_sizeIsEmpty(&g_pending)) {
             f_fps__reset();
         }
     }
 
-    if(f_list_sizeIsEmpty(g_pending) || f_state_blockGet()) {
+    if(f_listintr_sizeIsEmpty(&g_pending) || f_state_blockGet()) {
         return;
     }
 
-    FStateStackEntry* pendingState = f_list_pop(g_pending);
+    FStateEntry* pendingState = f_listintr_pop(&g_pending);
 
-    if(pendingState == NULL) {
+    if(pendingState->handler == NULL) {
         #if F_CONFIG_DEBUG
             if(current == NULL) {
                 F__FATAL("Pop state: stack is empty");
@@ -112,11 +107,13 @@ static void pending_handle(void)
         #endif
 
         current->stage = F__STATE_STAGE_FREE;
+
+        f_pool_release(pendingState);
     } else {
         #if F_CONFIG_DEBUG
             f_out__state("Push '%s'", pendingState->name);
 
-            F_LIST_ITERATE(g_stack, const FStateStackEntry*, e) {
+            F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
                 if(pendingState->handler == e->handler) {
                     F__FATAL("State '%s' already in stack", e->name);
                 }
@@ -125,27 +122,21 @@ static void pending_handle(void)
 
         f_out__state("New '%s' instance", pendingState->name);
 
-        f_list_push(g_stack, pendingState);
-
         pendingState->stage = F__STATE_STAGE_INIT;
-    }
-}
 
-static void f_state__init(void)
-{
-    g_stack = f_list_new();
-    g_pending = f_list_new();
+        f_listintr_push(&g_stack, pendingState);
+    }
 }
 
 static void f_state__uninit(void)
 {
-    f_list_freeEx(g_stack, f_mem_free);
-    f_list_freeEx(g_pending, f_mem_free);
+    f_listintr_apply(&g_stack, f_pool_release);
+    f_listintr_apply(&g_pending, f_pool_release);
 }
 
 const FPack f_pack__state = {
     "State",
-    f_state__init,
+    NULL,
     f_state__uninit,
 };
 
@@ -208,7 +199,7 @@ void f_state_popUntil(FCallState* Handler, const char* Name)
     int pops = 0;
     bool found = false;
 
-    F_LIST_ITERATE(g_stack, const FStateStackEntry*, e) {
+    F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
         if(e->handler == Handler) {
             found = true;
             break;
@@ -259,17 +250,17 @@ void f_state_exit(void)
     g_exiting = true;
 
     // Clear the pending actions queue
-    f_list_clearEx(g_pending, f_mem_free);
+    f_listintr_apply(&g_pending, f_pool_release);
 
     // Queue a pop for every state in the stack
-    for(unsigned i = f_list_sizeGet(g_stack); i--; ) {
+    F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
         pending_pop();
     }
 }
 
 FCallState* f_state_currentGet(void)
 {
-    FStateStackEntry* current = f_list_peek(g_stack);
+    FStateEntry* current = f_listintr_peek(&g_stack);
 
     if(current == NULL) {
         F__FATAL("f_state_currentGet: Stack is empty");
@@ -280,7 +271,7 @@ FCallState* f_state_currentGet(void)
 
 bool f_state_currentChanged(void)
 {
-    return !f_list_sizeIsEmpty(g_pending);
+    return !f_listintr_sizeIsEmpty(&g_pending);
 }
 
 bool f_state_blockGet(void)
@@ -305,7 +296,7 @@ bool f_state__runStep(void)
 {
     pending_handle();
 
-    FStateStackEntry* s = f_list_peek(g_stack);
+    FStateEntry* s = f_listintr_peek(&g_stack);
 
     if(s == NULL) {
         return false;
@@ -322,7 +313,7 @@ bool f_state__runStep(void)
             f_entity__tick();
             f_fade__tick();
 
-            if(!f_list_sizeIsEmpty(g_pending) && !f_state_blockGet()) {
+            if(!f_listintr_sizeIsEmpty(&g_pending) && !f_state_blockGet()) {
                 return true;
             }
 
@@ -336,7 +327,7 @@ bool f_state__runStep(void)
                 g_tickPost();
             }
 
-            if(!f_list_sizeIsEmpty(g_pending) && !f_state_blockGet()) {
+            if(!f_listintr_sizeIsEmpty(&g_pending) && !f_state_blockGet()) {
                 return true;
             }
         }
@@ -377,9 +368,9 @@ bool f_state__runStep(void)
     return true;
 }
 
-bool f__state_stageCheck(FStateStage Stage)
+bool f__state_stageCheck(F__StateStage Stage)
 {
-    const FStateStackEntry* e = f_list_peek(g_stack);
+    const FStateEntry* e = f_listintr_peek(&g_stack);
 
     #if F_CONFIG_DEBUG
         if(e == NULL) {

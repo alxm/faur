@@ -22,42 +22,23 @@
 #define F_TIMER__RUNNING F_FLAGS_BIT(1)
 #define F_TIMER__EXPIRED F_FLAGS_BIT(2)
 
-FFixu g_ticksNow;
-static FList* g_runningTimers; // FList<FTimer*>
-
-static void f_timer__init(void)
-{
-    g_ticksNow = f_fixu_fromInt(f_fps_ticksGet());
-    g_runningTimers = f_list_new();
-}
-
-static void f_timer__uninit(void)
-{
-    f_list_free(g_runningTimers);
-}
-
-const FPack f_pack__timer = {
-    "Timer",
-    f_timer__init,
-    f_timer__uninit,
-};
+static F_LISTINTR(g_running, FTimer, listNode);
 
 void f_timer__tick(void)
 {
-    g_ticksNow = f_fixu_fromInt(f_fps_ticksGet());
+    FFixu ticksNow = f_fixu_fromInt(f_fps_ticksGet());
 
-    F_LIST_ITERATE(g_runningTimers, FTimer*, t) {
+    F_LISTINTR_ITERATE(&g_running, FTimer*, t) {
         if(!F_FLAGS_TEST_ANY(t->flags, F_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
-            f_list_removeNode(t->runningListNode);
-            t->runningListNode = NULL;
+            f_listintr_removeNode(&t->listNode);
 
             F_FLAGS_CLEAR(t->flags, F_TIMER__EXPIRED);
 
             continue;
         }
 
-        unsigned diff = g_ticksNow - t->start;
+        unsigned diff = ticksNow - t->start;
 
         if(diff >= t->period) {
             F_FLAGS_SET(t->flags, F_TIMER__EXPIRED);
@@ -88,6 +69,8 @@ FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 {
     FTimer* t = f_pool__alloc(F_POOL__TIMER);
 
+    f_listintr_nodeInit(&t->listNode);
+
     t->periodMs = PeriodMs;
     t->period = f_time_msToTicks(PeriodMs);
 
@@ -102,10 +85,10 @@ FTimer* f_timer_dup(const FTimer* Timer)
 {
     FTimer* t = f_pool__dup(F_POOL__TIMER, Timer);
 
-    F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
+    f_listintr_nodeInit(&t->listNode);
 
+    F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
     t->diff = 0;
-    t->runningListNode = NULL;
 
     return t;
 }
@@ -116,8 +99,8 @@ void f_timer_free(FTimer* Timer)
         return;
     }
 
-    if(Timer->runningListNode) {
-        f_list_removeNode(Timer->runningListNode);
+    if(f_listintr_nodeIsLinked(&Timer->listNode)) {
+        f_listintr_removeNode(&Timer->listNode);
     }
 
     f_pool_release(Timer);
@@ -153,7 +136,7 @@ void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs)
 
 void f_timer_runStart(FTimer* Timer)
 {
-    Timer->start = g_ticksNow;
+    Timer->start = f_fixu_fromInt(f_fps_ticksGet());
     Timer->diff = 0;
     Timer->expiredCount = 0;
 
@@ -166,8 +149,8 @@ void f_timer_runStart(FTimer* Timer)
         F_FLAGS_CLEAR(Timer->flags, F_TIMER__EXPIRED);
     }
 
-    if(Timer->runningListNode == NULL) {
-        Timer->runningListNode = f_list_addLast(g_runningTimers, Timer);
+    if(!f_listintr_nodeIsLinked(&Timer->listNode)) {
+        f_listintr_addLast(&g_running, Timer);
     }
 }
 
@@ -177,10 +160,7 @@ void f_timer_runStop(FTimer* Timer)
 
     F_FLAGS_CLEAR(Timer->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
 
-    if(Timer->runningListNode) {
-        f_list_removeNode(Timer->runningListNode);
-        Timer->runningListNode = NULL;
-    }
+    f_listintr_removeNode(&Timer->listNode);
 }
 
 bool f_timer_runGet(const FTimer* Timer)

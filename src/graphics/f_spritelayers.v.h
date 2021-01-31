@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,12 @@
 #define F_INC_GRAPHICS_SPRITELAYERS_V_H
 
 #include "f_spritelayers.p.h"
+
+typedef struct {
+    FListIntrNode listNode;
+    FSprite* sprite;
+    FColorBlend blend;
+    int r, g, b, a;
+} FSpriteLayersLayer;
 
 #endif // F_INC_GRAPHICS_SPRITELAYERS_V_H

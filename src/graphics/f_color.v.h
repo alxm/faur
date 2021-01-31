@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,18 +22,7 @@
 
 #define F__OPTIMIZE_ALPHA (F_CONFIG_SCREEN_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
 
-typedef struct {
-    const FPalette* palette;
-    FColorBlend blend;
-    #if F__OPTIMIZE_ALPHA
-        FColorBlend canonicalBlend;
-    #endif
-    FColorRgb rgb;
-    FColorPixel pixel;
-    int alpha;
-    bool fillBlit;
-    bool fillDraw;
-} FColorState;
+typedef struct FColorState FColorState;
 
 typedef enum {
     F_COLOR__PAL_BROWN1,
@@ -49,8 +38,23 @@ typedef enum {
     F_COLOR__PAL_NUM
 } FColorPaletteInternal;
 
+#include "../data/f_listintr.v.h"
 #include "../general/f_init.v.h"
 #include "../math/f_math.v.h"
+
+struct FColorState {
+    FListIntrNode listNode;
+    const FPalette* palette;
+    FColorBlend blend;
+    #if F__OPTIMIZE_ALPHA
+        FColorBlend canonicalBlend;
+    #endif
+    FColorRgb rgb;
+    FColorPixel pixel;
+    int alpha;
+    bool fillBlit;
+    bool fillDraw;
+};
 
 extern const FPack f_pack__color;
 

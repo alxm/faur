@@ -23,14 +23,9 @@ struct FHash {
     FCallHashEqual* keyEqual;
     FCallFree* keyFree;
     unsigned numSlots;
-    FList* entries;
-    FHashEntry* slots[]; // [numSlots]
-};
-
-struct FHashEntry {
-    FHashEntry* next;
-    const void* key;
-    void* content;
+    unsigned numEntries;
+    FListIntr entries; // FListIntr<F__HashEntry*>
+    F__HashEntry* slots[]; // [numSlots]
 };
 
 #if F_CONFIG_BUILD_GEN_LUTS
@@ -111,13 +106,14 @@ FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFr
         NumSlots = slots;
     }
 
-    FHash* h = f_mem_mallocz(sizeof(FHash) + NumSlots * sizeof(FHashEntry*));
+    FHash* h = f_mem_mallocz(sizeof(FHash) + NumSlots * sizeof(F__HashEntry*));
 
     h->function = Function;
     h->keyEqual = KeyEqual ? KeyEqual : keyEqual;
     h->keyFree = KeyFree;
     h->numSlots = NumSlots;
-    h->entries = f_list_new();
+
+    f_listintr_init(&h->entries, F__HashEntry, listNode);
 
     return h;
 }
@@ -141,7 +137,7 @@ void f_hash_freeEx(FHash* Hash, FCallFree* Free)
         return;
     }
 
-    F_LIST_ITERATE(Hash->entries, FHashEntry*, e) {
+    F_LISTINTR_ITERATE(&Hash->entries, F__HashEntry*, e) {
         if(Free) {
             Free(e->content);
         }
@@ -150,10 +146,8 @@ void f_hash_freeEx(FHash* Hash, FCallFree* Free)
             Hash->keyFree((void*)e->key);
         }
 
-        f_mem_free(e);
+        f_pool_release(e);
     }
-
-    f_list_free(Hash->entries);
 
     f_mem_free(Hash);
 }
@@ -163,29 +157,30 @@ void f_hash_add(FHash* Hash, const void* Key, void* Content)
     unsigned slot = getSlot(Hash, Key);
 
     #if F_CONFIG_DEBUG
-        for(FHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+        for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
             if(Hash->keyEqual(Key, e->key)) {
                 F__FATAL("f_hash_add: Key already in table");
             }
         }
     #endif
 
-    FHashEntry* oldEntry = Hash->slots[slot];
-    FHashEntry* newEntry = f_mem_malloc(sizeof(FHashEntry));
+    F__HashEntry* oldEntry = Hash->slots[slot];
+    F__HashEntry* newEntry = f_pool__alloc(F_POOL__HASHENTRY);
 
     newEntry->next = oldEntry;
     newEntry->key = Key;
     newEntry->content = Content;
 
     Hash->slots[slot] = newEntry;
-    f_list_addLast(Hash->entries, newEntry);
+    f_listintr_addLast(&Hash->entries, newEntry);
+    Hash->numEntries++;
 }
 
 void* f_hash_update(FHash* Hash, const void* Key, void* NewContent)
 {
     unsigned slot = getSlot(Hash, Key);
 
-    for(FHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+    for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
         if(Hash->keyEqual(Key, e->key)) {
             void* oldContent = e->content;
             e->content = NewContent;
@@ -197,7 +192,7 @@ void* f_hash_update(FHash* Hash, const void* Key, void* NewContent)
     return NULL;
 }
 
-static void removeEntry(FHash* Hash, unsigned Slot, FHashEntry* Current, FHashEntry* Previous)
+static void removeEntry(FHash* Hash, unsigned Slot, F__HashEntry* Current, F__HashEntry* Previous)
 {
     if(Previous == NULL) {
         Hash->slots[Slot] = Current->next;
@@ -205,21 +200,22 @@ static void removeEntry(FHash* Hash, unsigned Slot, FHashEntry* Current, FHashEn
         Previous->next = Current->next;
     }
 
-    f_list_removeItem(Hash->entries, Current);
+    f_listintr_removeNode(&Current->listNode);
+    Hash->numEntries--;
 
     if(Hash->keyFree) {
         Hash->keyFree((void*)Current->key);
     }
 
-    f_mem_free(Current);
+    f_pool_release(Current);
 }
 
 void f_hash_removeKey(FHash* Hash, const void* Key)
 {
     unsigned slot = getSlot(Hash, Key);
-    FHashEntry* prev = NULL;
+    F__HashEntry* prev = NULL;
 
-    for(FHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+    for(F__HashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
         if(Hash->keyEqual(Key, e->key)) {
             removeEntry(Hash, slot, e, prev);
 
@@ -231,9 +227,9 @@ void f_hash_removeKey(FHash* Hash, const void* Key)
 void f_hash_removeItem(FHash* Hash, const void* Content)
 {
     for(unsigned slot = Hash->numSlots; slot--; ) {
-        FHashEntry* prev = NULL;
+        F__HashEntry* prev = NULL;
 
-        for(FHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+        for(F__HashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
             if(e->content == Content) {
                 removeEntry(Hash, slot, e, prev);
 
@@ -247,7 +243,7 @@ void* f_hash_get(const FHash* Hash, const void* Key)
 {
     unsigned slot = getSlot(Hash, Key);
 
-    for(FHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+    for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
         if(Hash->keyEqual(Key, e->key)) {
             return e->content;
         }
@@ -260,7 +256,7 @@ bool f_hash_contains(const FHash* Hash, const void* Key)
 {
     unsigned slot = getSlot(Hash, Key);
 
-    for(FHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+    for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
         if(Hash->keyEqual(Key, e->key)) {
             return true;
         }
@@ -271,32 +267,31 @@ bool f_hash_contains(const FHash* Hash, const void* Key)
 
 unsigned f_hash_sizeGet(const FHash* Hash)
 {
-    return f_list_sizeGet(Hash->entries);
+    return Hash->numEntries;
 }
 
 void** f_hash_toArray(const FHash* Hash)
 {
-    void** array = f_mem_malloc(
-                    f_list_sizeGet(Hash->entries) * sizeof(void*));
+    void** array = f_mem_malloc(Hash->numEntries * sizeof(void*));
 
-    F_LIST_ITERATE(Hash->entries, const FHashEntry*, e) {
-        array[F_LIST_INDEX()] = e->content;
+    F_LISTINTR_ITERATE(&Hash->entries, const F__HashEntry*, e) {
+        array[F_LISTINTR_INDEX()] = e->content;
     }
 
     return array;
 }
 
-const FList* f__hash_entries(const FHash* Hash)
+const FListIntr* f__hash_entries(const FHash* Hash)
 {
-    return Hash->entries;
+    return &Hash->entries;
 }
 
-void* f__hash_entryValue(const FHashEntry* Entry)
+void* f__hash_entryValue(const F__HashEntry* Entry)
 {
     return Entry->content;
 }
 
-const void* f__hash_entryKey(const FHashEntry* Entry)
+const void* f__hash_entryKey(const F__HashEntry* Entry)
 {
     return Entry->key;
 }
@@ -309,7 +304,7 @@ void f__hash_printStats(const FHash* Hash, const char* Message)
     for(unsigned slot = 0; slot < Hash->numSlots; slot++) {
         unsigned entriesInSlot = 0;
 
-        for(FHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+        for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
             entriesInSlot++;
         }
 
@@ -340,16 +335,14 @@ void f__hash_printStats(const FHash* Hash, const char* Message)
         return;
     }
 
-    unsigned numEntries = f_list_sizeGet(Hash->entries);
-
     printf("%d/%d (%d%%) slots used, %d/%d (%d%%) entries collide, "
            "chain min=%d avg=%.2f max=%d\n",
            occupiedSlots,
            Hash->numSlots,
            100 * occupiedSlots / Hash->numSlots,
            collisions,
-           numEntries,
-           100 * collisions / numEntries,
+           Hash->numEntries,
+           100 * collisions / Hash->numEntries,
            minLength,
            (float)lengthSum / (float)occupiedSlots,
            maxLength);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,11 +18,16 @@
 #include "f_button.v.h"
 #include <faur.v.h>
 
+typedef struct {
+    FListIntrNode listNode;
+    FList* andButtons; // FList<FPlatformButton*>
+} FButtonCombo;
+
 struct FButton {
-    FListNode* listNode;
+    FListIntrNode listNode;
     const char* name; // friendly name
     FList* platformInputs; // FList<FPlatformButton*>
-    FList* combos; // FList<FList<FPlatformButton*>>
+    FListIntr combos; // FListIntr<FButtonCombo*>
     FTimer* autoRepeat;
     bool isClone;
     bool waitForRelease;
@@ -108,25 +113,18 @@ static const char* g_buttonNames[F_BUTTON_NUM] = {
 
 static const char* g_defaultName = "FButton";
 
-static FList* g_buttons; // FList<FButton*>
-
-void f_input_button__init(void)
-{
-    g_buttons = f_list_new();
-}
-
-void f_input_button__uninit(void)
-{
-    f_list_free(g_buttons);
-}
+static F_LISTINTR(g_buttons, FButton, listNode);
 
 FButton* f_button_new(void)
 {
     FButton* b = f_mem_mallocz(sizeof(FButton));
 
-    b->listNode = f_list_addLast(g_buttons, b);
+    f_listintr_addLast(&g_buttons, b);
+
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
+
+    f_listintr_init(&b->combos, FButtonCombo, listNode);
 
     return b;
 }
@@ -135,7 +133,8 @@ FButton* f_button_dup(const FButton* Button)
 {
     FButton* b = f_mem_dup(Button, sizeof(FButton));
 
-    b->listNode = f_list_addLast(g_buttons, b);
+    f_listintr_addLast(&g_buttons, b);
+
     b->autoRepeat = NULL;
     b->isClone = true;
     b->waitForRelease = false;
@@ -150,10 +149,13 @@ void f_button_free(FButton* Button)
         return;
     }
 
-    f_list_removeNode(Button->listNode);
+    f_listintr_removeNode(&Button->listNode);
 
     if(!Button->isClone) {
-        f_list_freeEx(Button->combos, (FCallFree*)f_list_free);
+        F_LISTINTR_ITERATE(&Button->combos, FButtonCombo*, combo) {
+            f_list_free(combo->andButtons);
+        }
+
         f_list_free(Button->platformInputs);
     }
 
@@ -216,11 +218,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
     if(f_list_sizeIsEmpty(combo)) {
         f_list_free(combo);
     } else {
-        if(Button->combos == NULL) {
-            Button->combos = f_list_new();
-        }
-
-        f_list_push(Button->combos, combo);
+        f_listintr_addFirst(&Button->combos, combo);
     }
 
     va_end(args);
@@ -229,7 +227,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
 bool f_button_isWorking(const FButton* Button)
 {
     return !f_list_sizeIsEmpty(Button->platformInputs)
-        || (Button->combos && !f_list_sizeIsEmpty(Button->combos));
+        || !f_listintr_sizeIsEmpty(&Button->combos);
 }
 
 const char* f_button_nameGet(const FButton* Button)
@@ -271,7 +269,7 @@ void f_button_pressClear(FButton* Button)
 
 void f_input_button__tick(void)
 {
-    F_LIST_ITERATE(g_buttons, FButton*, b) {
+    F_LISTINTR_ITERATE(&g_buttons, FButton*, b) {
         bool pressed = false;
 
         F_LIST_ITERATE(b->platformInputs, const FPlatformButton*, pb) {
@@ -281,9 +279,9 @@ void f_input_button__tick(void)
             }
         }
 
-        if(b->combos) {
-            F_LIST_ITERATE(b->combos, FList*, andList) {
-                F_LIST_ITERATE(andList, const FPlatformButton*, pb) {
+        if(!f_listintr_sizeIsEmpty(&b->combos)) {
+            F_LISTINTR_ITERATE(&b->combos, FButtonCombo*, combo) {
+                F_LIST_ITERATE(combo->andButtons, const FPlatformButton*, pb) {
                     if(!f_platform_api__inputButtonPressGet(pb)) {
                         break;
                     } else if(F_LIST_IS_LAST()) {

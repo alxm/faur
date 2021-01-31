@@ -22,8 +22,6 @@
 
 #include "../general/f_init.v.h"
 
-extern const FPack f_pack__input;
-
 extern void f_input__tick(void);
 
 #endif // F_INC_INPUTS_INPUT_V_H

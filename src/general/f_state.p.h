@@ -30,7 +30,7 @@ extern void f_state_pop(void);
 extern void f_state_popUntil(FCallState* Handler, const char* Name);
 extern void f_state_replace(FCallState* Handler, const char* Name);
 
-#ifndef FAUR_IMPLEMENT
+#ifndef FAUR_IMPLEMENT_STATE
     #define f_state_push(Handler) f_state_push(Handler, #Handler)
     #define f_state_popUntil(Handler) f_state_popUntil(Handler, #Handler)
     #define f_state_replace(Handler) f_state_replace(Handler, #Handler)
@@ -51,9 +51,9 @@ typedef enum {
     F__STATE_STAGE_DRAW,
     F__STATE_STAGE_FREE,
     F__STATE_STAGE_NUM
-} FStateStage;
+} F__StateStage;
 
-extern bool f__state_stageCheck(FStateStage Stage);
+extern bool f__state_stageCheck(F__StateStage Stage);
 
 #define F_STATE_INIT if(f__state_stageCheck(F__STATE_STAGE_INIT))
 #define F_STATE_TICK if(f__state_stageCheck(F__STATE_STAGE_TICK))

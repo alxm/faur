@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 FScreen f__screen;
-static FList* g_stack; // FList<FScreen*>
+static F_LISTINTR(g_stack, FScreen, listNode);
 
 #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
     static FButton* g_fullScreenButton;
@@ -51,13 +51,11 @@ static void f_screen__init(void)
             f_button_bindKey(g_zoomButtons[z], F_KEY_F1 + z);
         }
     #endif
-
-    g_stack = f_list_new();
 }
 
 static void f_screen__uninit(void)
 {
-    f_list_freeEx(g_stack, f_pool_release);
+    f_listintr_apply(&g_stack, f_pool_release);
 
     #if F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD
         f_button_free(g_fullScreenButton);
@@ -105,7 +103,7 @@ void f_screen__tick(void)
 void f_screen__draw(void)
 {
     #if F_CONFIG_DEBUG
-        if(!f_list_sizeIsEmpty(g_stack)) {
+        if(!f_listintr_sizeIsEmpty(&g_stack)) {
             F__FATAL("Screen target stack is not empty");
         }
     #endif
@@ -152,7 +150,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
         }
     #endif
 
-    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
+    f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
 
     f__screen.pixels = &Sprite->pixels;
     f__screen.sprite = Sprite;
@@ -170,7 +168,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
 
 void f_screen_pop(void)
 {
-    FScreen* screen = f_list_pop(g_stack);
+    FScreen* screen = f_listintr_pop(&g_stack);
 
     #if F_CONFIG_DEBUG
         if(screen == NULL) {

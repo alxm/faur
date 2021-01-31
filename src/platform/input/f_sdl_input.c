@@ -838,7 +838,7 @@ void f_platform_api__inputPoll(void)
                     if(memcmp(&guid, &c->guid, sizeof(SDL_JoystickGUID)) == 0) {
                         if(!controllerRestore(c, event.jdevice.which)) {
                             controllerFree(c);
-                            F_LIST_REMOVE_CURRENT();
+                            F_LIST_REMOVE();
                         }
 
                         found = true;

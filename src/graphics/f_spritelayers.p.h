@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FList FSpriteLayers;
-
-#include "../data/f_list.p.h"
+#include "../data/f_listintr.p.h"
 #include "../graphics/f_sprite.p.h"
+
+typedef FListIntr FSpriteLayers;
 
 extern FSpriteLayers* f_spritelayers_new(void);
 extern void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites);

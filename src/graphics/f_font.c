@@ -27,13 +27,11 @@
 
 static FFont* g_defaultFonts[F_FONT__ID_NUM];
 static FFontState g_state;
-static FList* g_stack;
+static F_LISTINTR(g_stack, FFontState, listNode);
 static char g_buffer[512];
 
 static void f_font__init(void)
 {
-    g_stack = f_list_new();
-
     g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__g_font_6x8;
 
     #if !F_CONFIG_TRAIT_LOW_MEM
@@ -49,7 +47,7 @@ static void f_font__uninit(void)
         f_font_free(g_defaultFonts[f]);
     }
 
-    f_list_freeEx(g_stack, f_pool_release);
+    f_listintr_apply(&g_stack, f_pool_release);
 }
 
 const FPack f_pack__font = {
@@ -77,14 +75,14 @@ void f_font_free(FFont* Font)
 
 void f_font_push(void)
 {
-    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_FONT, &g_state));
+    f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_FONT, &g_state));
 
     f_font_reset();
 }
 
 void f_font_pop(void)
 {
-    FFontState* state = f_list_pop(g_stack);
+    FFontState* state = f_listintr_pop(&g_stack);
 
     #if F_CONFIG_DEBUG
         if(state == NULL) {

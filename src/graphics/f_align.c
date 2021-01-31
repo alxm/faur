@@ -20,18 +20,16 @@
 
 FAlign f__align;
 
-static FList* g_stack;
+static F_LISTINTR(g_stack, FAlign, listNode);
 
 static void f_align__init(void)
 {
-    g_stack = f_list_new();
-
     f_align_reset();
 }
 
 static void f_align__uninit(void)
 {
-    f_list_freeEx(g_stack, f_pool_release);
+    f_listintr_apply(&g_stack, f_pool_release);
 }
 
 const FPack f_pack__align = {
@@ -42,14 +40,14 @@ const FPack f_pack__align = {
 
 void f_align_push(void)
 {
-    f_list_push(g_stack, f_pool__dup(F_POOL__STACK_ALIGN, &f__align));
+    f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_ALIGN, &f__align));
 
     f_align_reset();
 }
 
 void f_align_pop(void)
 {
-    FAlign* align = f_list_pop(g_stack);
+    FAlign* align = f_listintr_pop(&g_stack);
 
     #if F_CONFIG_DEBUG
         if(align == NULL) {

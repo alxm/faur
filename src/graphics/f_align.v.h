@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,16 @@
 
 #include "f_align.p.h"
 
-typedef struct {
+typedef struct FAlign FAlign;
+
+#include "../data/f_listintr.v.h"
+#include "../general/f_init.v.h"
+
+struct FAlign {
+    FListIntrNode listNode;
     FAlignX x;
     FAlignY y;
-} FAlign;
-
-#include "../general/f_init.v.h"
+};
 
 extern const FPack f_pack__align;
 

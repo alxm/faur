@@ -20,9 +20,6 @@
 
 #include "f_button.p.h"
 
-extern void f_input_button__init(void);
-extern void f_input_button__uninit(void);
-
 extern void f_input_button__tick(void);
 
 #endif // F_INC_INPUTS_BUTTON_V_H
