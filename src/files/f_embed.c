@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,10 +22,16 @@
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
+#if F_CONFIG_TRAIT_LOW_MEM
+    #define F__EMBED_HASH_SLOTS 8
+#else
+    #define F__EMBED_HASH_SLOTS 256
+#endif
+
 static void f_embed__init(void)
 {
-    g_dirs = f_hash_newStr(256, false);
-    g_files = f_hash_newStr(256, false);
+    g_dirs = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
+    g_files = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
 
     f_embed__populate();
 }

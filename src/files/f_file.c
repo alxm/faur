@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -51,6 +51,13 @@ bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
     }
 
     return ret;
+}
+
+const void* f_file_bufferReadConst(const char* Path)
+{
+    const FEmbeddedFile* data = f_embed__fileGet(Path);
+
+    return data ? data->buffer : NULL;
 }
 
 bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
