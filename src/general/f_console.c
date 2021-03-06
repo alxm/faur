@@ -286,32 +286,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F_CONFIG_CONSOLE_ENABLED
-const FPack f_pack__console_0;
-const FPack f_pack__console_1;
-
-void f_console_showSet(bool Show)
-{
-    F_UNUSED(Show);
-}
-
-void f_console__tick(void)
-{
-}
-
-void f_console__draw(void)
-{
-}
-
-bool f_console__isInitialized(void)
-{
-    return false;
-}
-
-void f_console__write(FOutSource Source, FOutType Type, const char* Text)
-{
-    F_UNUSED(Source);
-    F_UNUSED(Type);
-    F_UNUSED(Text);
-}
-#endif // !F_CONFIG_CONSOLE_ENABLED
+#endif // F_CONFIG_CONSOLE_ENABLED

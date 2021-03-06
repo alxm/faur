@@ -151,14 +151,4 @@ void f_sound__draw(void)
         f_color_pop();
     #endif
 }
-#else // !F_CONFIG_SOUND_ENABLED
-const FPack f_pack__sound;
-
-void f_sound__tick(void)
-{
-}
-
-void f_sound__draw(void)
-{
-}
-#endif // !F_CONFIG_SOUND_ENABLED
+#endif // F_CONFIG_SOUND_ENABLED

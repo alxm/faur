@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -91,13 +91,13 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             free(functionNames);
         #endif
 
-        bool console = f_console__isInitialized();
-
-        if(console) {
-            f_console_showSet(true);
-            f_console__draw();
-            f_screen__draw();
-        }
+        #if F_CONFIG_CONSOLE_ENABLED
+            if(f_console__isInitialized()) {
+                f_console_showSet(true);
+                f_console__draw();
+                f_screen__draw();
+            }
+        #endif
 
         #if F_CONFIG_DEBUG_WAIT
             while(true) {
@@ -105,12 +105,14 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
                 f_time_msSpin(1000);
             }
         #elif !F_CONFIG_TRAIT_DESKTOP
-            if(console) {
-                f_out__info("Exiting in 10s");
-                f_console__draw();
-                f_screen__draw();
-                f_time_msWait(10 * 1000);
-            }
+            #if F_CONFIG_CONSOLE_ENABLED
+                if(f_console__isInitialized()) {
+                    f_out__info("Exiting in 10s");
+                    f_console__draw();
+                    f_screen__draw();
+                    f_time_msWait(10 * 1000);
+                }
+            #endif
         #endif
 
         #if F_CONFIG_TRAIT_CUSTOM_EXIT

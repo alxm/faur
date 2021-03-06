@@ -161,10 +161,4 @@ void f_screenshot_take(void)
 {
     takeScreenshot();
 }
-#else // !F_CONFIG_LIB_PNG
-const FPack f_pack__screenshot;
-
-void f_screenshot__tick(void)
-{
-}
-#endif // !F_CONFIG_LIB_PNG
+#endif // F_CONFIG_LIB_PNG

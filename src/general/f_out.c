@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -77,7 +77,9 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
     f_platform_api__filePrint(Stream, Text);
     f_platform_api__filePrint(Stream, "\n");
 
-    f_console__write(Source, Type, Text);
+    #if F_CONFIG_CONSOLE_ENABLED
+        f_console__write(Source, Type, Text);
+    #endif
 }
 
 static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char* Format, va_list Args)

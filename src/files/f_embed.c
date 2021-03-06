@@ -132,8 +132,6 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
     return false;
 }
 #else // !F_CONFIG_FILES_EMBED_PATHS_ENABLED
-const FPack f_pack__embed;
-
 bool f_embed__stat(const char* Path, FPathInfo* Info)
 {
     F_UNUSED(Path);
