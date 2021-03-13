@@ -64,4 +64,4 @@ run : $(F_MAKE_PREREQS)
 #
 # Not file targets
 #
-.PHONY :  arduino_build arduino_dirs run
+.PHONY : arduino_build arduino_dirs run

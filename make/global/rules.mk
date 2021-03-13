@@ -102,6 +102,11 @@ endif
 all_build : $(F_MAKE_ALL)
 
 #
+# Code generation target
+#
+gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H)
+
+#
 # ECS init code
 #
 $(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
@@ -176,4 +181,4 @@ cleanall : clean cleangen
 #
 # Not file targets
 #
-.PHONY : all all_build clean cleanall cleangen
+.PHONY : all all_build clean cleanall cleangen gen

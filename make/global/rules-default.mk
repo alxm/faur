@@ -125,6 +125,9 @@ $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
+#
+# Project source code, not including generated code
+#
 $(F_BUILD_FILES_SRC_O) : $(F_MAKE_PREREQS)
 
 #
@@ -166,4 +169,4 @@ copystatic :
 #
 # Not file targets
 #
-.PHONY :  copystatic run valgrind
+.PHONY : copystatic run valgrind
