@@ -32,8 +32,6 @@ F_BUILD_FILES_O := \
 #
 # Faur lib files
 #
-F_BUILD_FILE_FAUR_LIB := $(F_BUILD_DIR_FAUR_O)/faur.a
-
 F_BUILD_FILES_FAUR_C := $(shell find $(F_FAUR_DIR_SRC) -type f \( -name "*.c" -o -name "*.cpp" \))
 F_BUILD_FILES_FAUR_O := $(F_BUILD_FILES_FAUR_C:$(F_FAUR_DIR_SRC)/%=$(F_BUILD_DIR_FAUR_O)/%.o)
 
@@ -105,7 +103,7 @@ endif
 #
 # Main app
 #
-$(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O) $(F_BUILD_FILE_FAUR_LIB)
+$(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O) $(F_BUILD_FILES_FAUR_O)
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ $(F_CONFIG_BUILD_LIBS)
 
@@ -133,10 +131,6 @@ $(F_BUILD_FILES_SRC_O) : $(F_MAKE_PREREQS)
 #
 # Faur lib
 #
-$(F_BUILD_FILE_FAUR_LIB) : $(F_BUILD_FILES_FAUR_O)
-	@ mkdir -p $(@D)
-	$(AR) rs$(F_CONFIG_BUILD_FLAGS_AR) $@ $^
-
 $(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
 
 $(F_BUILD_DIR_FAUR_O)/%.c.o : $(F_FAUR_DIR_SRC)/%.c

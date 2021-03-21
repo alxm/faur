@@ -1,6 +1,5 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-F_CONFIG_BUILD_FLAGS_AR := T
 F_CONFIG_BUILD_OPT ?= 0
 F_CONFIG_DEBUG ?= 1
 F_CONFIG_LIB_PNG ?= 1
