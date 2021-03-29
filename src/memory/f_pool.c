@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Alex Margarit <alex@alxm.org>
+    Copyright 2020-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -148,6 +148,10 @@ void f_pool_free(FPool* Pool)
 
 void* f_pool_alloc(FPool* Pool)
 {
+    #if F_CONFIG_DEBUG_POOL_MALLOC
+        return f_mem_mallocz(Pool->objSize);
+    #endif
+
     if(Pool->freeEntryList == NULL) {
         slab_new(Pool);
     }
@@ -166,6 +170,12 @@ void* f_pool_alloc(FPool* Pool)
 
 void f_pool_release(void* Buffer)
 {
+    #if F_CONFIG_DEBUG_POOL_MALLOC
+        f_mem_free(Buffer);
+
+        return;
+    #endif
+
     if(Buffer == NULL) {
         return;
     }
