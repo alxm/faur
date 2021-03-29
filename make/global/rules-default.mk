@@ -156,6 +156,9 @@ run : all
 valgrind : all
 	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind ./$(F_BUILD_FILE_BIN)
 
+valgrindall : all
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN
+
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
 	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
