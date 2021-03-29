@@ -249,6 +249,8 @@ void f_state_exit(void)
 
     g_exiting = true;
 
+    f_state_blockSet(NULL);
+
     // Clear the pending actions queue
     f_listintr_apply(&g_pending, f_pool_release);
     f_listintr_clear(&g_pending);
@@ -282,6 +284,7 @@ bool f_state_blockGet(void)
             return true;
         }
 
+        // Forget event if not set
         g_blockEvent = NULL;
     }
 
@@ -290,6 +293,10 @@ bool f_state_blockGet(void)
 
 void f_state_blockSet(const FEvent* Event)
 {
+    if(g_exiting) {
+        return;
+    }
+
     g_blockEvent = Event;
 }
 
