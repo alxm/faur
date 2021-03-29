@@ -251,6 +251,7 @@ void f_state_exit(void)
 
     // Clear the pending actions queue
     f_listintr_apply(&g_pending, f_pool_release);
+    f_listintr_clear(&g_pending);
 
     // Queue a pop for every state in the stack
     F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
