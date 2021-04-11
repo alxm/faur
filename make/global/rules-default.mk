@@ -22,12 +22,8 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)/*")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
-F_BUILD_FILES_C := \
-    $(F_BUILD_FILES_SRC_C) \
-    $(F_BUILD_FILES_GEN_C) \
-
-F_BUILD_FILES_O := \
-    $(F_BUILD_FILES_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
+F_BUILD_FILES_PROJ_C := $(F_BUILD_FILES_SRC_C) $(F_BUILD_FILES_GEN_C)
+F_BUILD_FILES_PROJ_O := $(F_BUILD_FILES_PROJ_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
 #
 # Faur lib files
@@ -38,6 +34,11 @@ F_BUILD_FILES_FAUR_O := $(F_BUILD_FILES_FAUR_C:$(F_FAUR_DIR_SRC)/%=$(F_BUILD_DIR
 F_BUILD_FILES_FAUR_PUBLIC_HEADERS := \
     $(F_FAUR_DIR_SRC)/general/f_system_includes.h \
     $(shell find $(F_FAUR_DIR_SRC) -type f -name "*.p.h")
+
+#
+# All object files
+#
+F_BUILD_FILES_O := $(F_BUILD_FILES_PROJ_O) $(F_BUILD_FILES_FAUR_O)
 
 #
 # Compiler flags
@@ -98,12 +99,12 @@ endif
 #
 # Auto-generated object dependencies
 #
--include $(F_BUILD_FILES_O:.o=.d) $(F_BUILD_FILES_FAUR_O:.o=.d)
+-include $(F_BUILD_FILES_O:.o=.d)
 
 #
 # Main app
 #
-$(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O) $(F_BUILD_FILES_FAUR_O)
+$(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O)
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ $(F_CONFIG_BUILD_LIBS)
 
