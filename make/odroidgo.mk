@@ -18,7 +18,7 @@ F_CONFIG_TRAIT_CUSTOM_MAIN := 1
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : $(F_MAKE_PREREQS)
+run : $(F_ARDUINO_PRE)
 	$(F_SDK_ARDUINO_DIR_15)/packages/esp32/tools/esptool_py/2.6.1/esptool.py \
 		--chip esp32 \
 		--port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \

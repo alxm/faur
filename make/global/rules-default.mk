@@ -22,7 +22,7 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)/*")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
-F_BUILD_FILES_PROJ_C := $(F_BUILD_FILES_SRC_C) $(F_BUILD_FILES_GEN_C)
+F_BUILD_FILES_PROJ_C := $(F_BUILD_FILES_SRC_C) $(F_BUILD_FILES_GEN_C) $(F_BUILD_FILE_GEN_INC_C)
 F_BUILD_FILES_PROJ_O := $(F_BUILD_FILES_PROJ_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
 #
@@ -125,15 +125,15 @@ $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
 #
-# Project source code, not including generated code
+# Dependencies on generated code
 #
-$(F_BUILD_FILES_SRC_O) : $(F_MAKE_PREREQS)
+$(F_BUILD_FILES_SRC_O) : $(F_BUILD_FILE_GEN_INC_H)
+
+$(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
 
 #
 # Faur lib
 #
-$(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
-
 $(F_BUILD_DIR_FAUR_O)/%.c.o : $(F_FAUR_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)

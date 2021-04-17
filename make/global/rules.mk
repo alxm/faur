@@ -53,8 +53,8 @@ F_BUILD_FILES_SFX_C := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX
 F_BUILD_FILES_SFX_H := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
 F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
+F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c)
 F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h)
-F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_H:%.h=%.c)
 
 #
 # All generated source code
@@ -80,7 +80,6 @@ F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 # Default make targets
 #
 F_MAKE_ALL :=
-F_MAKE_PREREQS := $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H)
 
 #
 # Declare default target first
@@ -104,7 +103,7 @@ all_build : $(F_MAKE_ALL)
 #
 # Code generation target
 #
-gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H)
+gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
 
 #
 # ECS init code

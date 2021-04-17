@@ -39,8 +39,14 @@ F_ARDUINO_UPLOAD := \
         --pref compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
         $(F_BUILD_FILE_INO)
 
+F_ARDUINO_PRE := \
+    arduino_dirs \
+    $(F_BUILD_FILE_INO) \
+    $(F_BUILD_FILE_GEN_INC_C) \
+    $(F_BUILD_FILE_GEN_INC_H) \
+    $(F_BUILD_FILES_FAUR_GFX_H) \
+
 F_MAKE_ALL += arduino_build
-F_MAKE_PREREQS += arduino_dirs $(F_BUILD_FILE_INO) $(F_BUILD_FILES_FAUR_GFX_H)
 
 #
 # Arduino files and paths
@@ -52,13 +58,13 @@ arduino_dirs :
 $(F_BUILD_FILE_INO) :
 	echo "//" > $@
 
-arduino_build : $(F_MAKE_PREREQS)
+arduino_build : $(F_ARDUINO_PRE)
 	$(F_ARDUINO_BUILDER)
 
 #
 # Action targets
 #
-run : $(F_MAKE_PREREQS)
+run : $(F_ARDUINO_PRE)
 	$(F_ARDUINO_UPLOAD)
 
 #
