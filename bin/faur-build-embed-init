@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -54,12 +54,14 @@ def main():
 //
 #include <faur.v.h>
 
+#if F_CONFIG_FILES_EMBED_PATHS_MODE_C
 {}
 
 void f_embed__populate(void)
 {{
 {}
 }}
+#endif // F_CONFIG_FILES_EMBED_PATHS_MODE_C
 """.format(g_tool.get_cmd(),
            '\n'.join(includes),
            '\n'.join(embed_calls)))

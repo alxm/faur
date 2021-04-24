@@ -35,9 +35,10 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 #
 # Project root-relative paths
 #
-F_BUILD_FILES_EMBED_BIN := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
-F_BUILD_FILES_EMBED_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
-F_BUILD_FILES_EMBED_TARGET := $(F_BUILD_FILES_EMBED_NAMES:%=$(F_BUILD_DIR_GEN_EMBED)/%)
+F_BUILD_FILES_EMBED_BIN_PATHS_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_BIN_PATHS_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_ABS:%=%.h)
+F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 
 #
 # The file that implements f_embed__populate
@@ -119,9 +120,9 @@ $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
-$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-build-embed-init
+$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_BIN_H)
 
 #
 # Embedded objects
