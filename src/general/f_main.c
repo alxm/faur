@@ -99,7 +99,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             }
         #endif
 
-        #if F_CONFIG_DEBUG_WAIT
+        #if F_CONFIG_DEBUG_FATAL_WAIT
             while(true) {
                 printf("Waiting to attach debugger: PID %d\n", getpid());
                 f_time_msSpin(1000);

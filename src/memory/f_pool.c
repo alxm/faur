@@ -148,7 +148,7 @@ void f_pool_free(FPool* Pool)
 
 void* f_pool_alloc(FPool* Pool)
 {
-    #if F_CONFIG_DEBUG_POOL_MALLOC
+    #if F_CONFIG_DEBUG_MEM_POOL
         return f_mem_mallocz(Pool->objSize);
     #endif
 
@@ -170,7 +170,7 @@ void* f_pool_alloc(FPool* Pool)
 
 void f_pool_release(void* Buffer)
 {
-    #if F_CONFIG_DEBUG_POOL_MALLOC
+    #if F_CONFIG_DEBUG_MEM_POOL
         f_mem_free(Buffer);
 
         return;
