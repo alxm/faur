@@ -197,21 +197,6 @@ F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 256
 F_CONFIG_LIB_SDL_MIXER_LIMITED_SUPPORT ?= 0
 F_CONFIG_LIB_SDL_TIME ?= 1
 
-ifdef F_CONFIG_LIB_SDL_CONFIG
-    ifeq ($(F_CONFIG_LIB_SDL), 1)
-        ifeq ($(F_CONFIG_SOUND_ENABLED), 1)
-            F_CONFIG_BUILD_LIBS += -lSDL_mixer
-        endif
-    else ifeq ($(F_CONFIG_LIB_SDL), 2)
-        ifeq ($(F_CONFIG_SOUND_ENABLED), 1)
-            F_CONFIG_BUILD_LIBS += -lSDL2_mixer
-        endif
-    endif
-
-    F_CONFIG_BUILD_FLAGS_SHARED += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --cflags)
-    F_CONFIG_BUILD_LIBS += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --libs)
-endif
-
 #
 # Build-time info
 #

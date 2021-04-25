@@ -71,6 +71,10 @@ else
     F_BUILD_FLAGS_SHARED += -g
 endif
 
+ifdef F_CONFIG_LIB_SDL_CONFIG
+    F_BUILD_FLAGS_SHARED += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --cflags)
+endif
+
 F_BUILD_FLAGS_C := \
     $(F_BUILD_FLAGS_SHARED) \
     $(F_CONFIG_BUILD_FLAGS_C) \
@@ -87,6 +91,23 @@ F_BUILD_FLAGS_CPP := \
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC), 0)
     F_BUILD_FLAGS_CPP += -pedantic -pedantic-errors
+endif
+
+#
+# Libraries to link with
+#
+F_BUILD_LIBS := $(F_CONFIG_BUILD_LIBS)
+
+ifdef F_CONFIG_LIB_SDL_CONFIG
+    ifeq ($(F_CONFIG_SOUND_ENABLED), 1)
+        ifeq ($(F_CONFIG_LIB_SDL), 1)
+            F_BUILD_LIBS += -lSDL_mixer
+        else ifeq ($(F_CONFIG_LIB_SDL), 2)
+            F_BUILD_LIBS += -lSDL2_mixer
+        endif
+    endif
+
+    F_BUILD_LIBS += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --libs)
 endif
 
 #
@@ -115,7 +136,7 @@ endif
 #
 $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O)
 	@ mkdir -p $(@D)
-	$(CC) -o $@ $^ $(F_CONFIG_BUILD_LIBS)
+	$(CC) -o $@ $^ $(F_BUILD_LIBS)
 
 $(F_BUILD_LINK_BIN_MEDIA) :
 	@ mkdir -p $(@D)
