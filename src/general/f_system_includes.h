@@ -68,7 +68,7 @@ typedef volatile int FEvent;
 #include <string.h>
 
 #if CHAR_BIT != 8
-    #error Code needs CHAR_BIT == 8
+    #error Invalid CHAR_BIT != 8
 #endif
 
 #endif // F_INC_GENERAL_SYSTEM_INCLUDES_H

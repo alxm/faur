@@ -41,7 +41,7 @@
 #endif
 
 #if (F_CONFIG_SCREEN_SIZE_WIDTH < 0) != (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
-    #error Invalid screen size
+    #error Invalid F_CONFIG_SCREEN_SIZE_WIDTH, F_CONFIG_SCREEN_SIZE_HEIGHT
 #endif
 
 #define F__SIZE_DYNAMIC (F_CONFIG_SCREEN_SIZE_WIDTH < 0)
