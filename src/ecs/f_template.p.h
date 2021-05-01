@@ -24,6 +24,4 @@
 
 typedef void FCallEntityInit(FEntity* Entity, const void* CallerContext);
 
-extern void f_template_load(const char* Dir);
-
 #endif // F_INC_ECS_TEMPLATE_P_H
