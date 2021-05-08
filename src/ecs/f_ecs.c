@@ -83,7 +83,7 @@ void f_ecs_init(void)
 {
     FList* blocks = f_list_new();
 
-    process_dir("media/ecs", blocks);
+    process_dir(F_CONFIG_DIR_MEDIA_ECS, blocks);
     f_list_sort(blocks, (FCallListCompare*)cmp_blocks);
 
     F_LIST_ITERATE(blocks, const FBlock*, b) {
