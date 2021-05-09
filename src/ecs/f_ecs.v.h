@@ -27,7 +27,6 @@
 extern const FPack f_pack__ecs;
 
 extern void f_ecs__populate(void);
-
 extern void f_ecs__set(FComponent* const* Components, size_t ComponentsNum, FSystem* const* Systems, size_t SystemsNum);
 
 #endif // F_INC_ECS_ECS_V_H

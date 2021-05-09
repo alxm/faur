@@ -62,6 +62,17 @@ const FPack f_pack__embed = {
     f_embed__uninit,
 };
 
+void f_embed__set(const FEmbeddedDir* const* Dirs, size_t DirsNum, const FEmbeddedFile* const* Files, size_t FilesNum)
+{
+    for(size_t d = DirsNum; d--; ) {
+        f_hash_add(g_dirs, Dirs[d]->path, (void*)Dirs[d]);
+    }
+
+    for(size_t f = FilesNum; f--; ) {
+        f_hash_add(g_files, Files[f]->path, (void*)Files[f]);
+    }
+}
+
 FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
 {
     FEmbeddedDir* d = f_mem_malloc(sizeof(FEmbeddedDir));
@@ -81,11 +92,6 @@ void f_embed__dirFree(FEmbeddedDir* Dir)
 
     f_mem_free(Dir->entries);
     f_mem_free(Dir);
-}
-
-void f_embed__dirAdd(const FEmbeddedDir* Dir)
-{
-    f_hash_add(g_dirs, Dir->path, (void*)Dir);
 }
 
 const FEmbeddedDir* f_embed__dirGet(const char* Path)
@@ -111,11 +117,6 @@ void f_embed__fileFree(FEmbeddedFile* File)
     f_hash_removeKey(g_files, File->path);
 
     f_mem_free(File);
-}
-
-void f_embed__fileAdd(const FEmbeddedFile* File)
-{
-    f_hash_add(g_files, File->path, (void*)File);
 }
 
 const FEmbeddedFile* f_embed__fileGet(const char* Path)
