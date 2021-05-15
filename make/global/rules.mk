@@ -17,7 +17,7 @@ F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 F_CONFIG_BUILD_FLAGS_SHARED += -I$(F_BUILD_DIR_GEN_ROOT)
 
 #
-# Generated ECS init code
+# The file that implements f_embed__populate
 #
 F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
@@ -154,13 +154,13 @@ $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur
 #
 # Files that bundle up the generated code
 #
-$(F_BUILD_FILE_GEN_INC_C) : $(F_BUILD_FILES_GEN_C) $(F_FAUR_DIR_BIN)/faur-build-embed-inc
+$(F_BUILD_FILE_GEN_INC_C) : $(F_BUILD_FILES_GEN_C) $(F_FAUR_DIR_BIN)/faur-build-inc
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-inc --include-c $@ $(F_BUILD_FILES_GEN_C:$(F_BUILD_DIR_GEN)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-inc --include-c $@ $(F_BUILD_FILES_GEN_C:$(F_BUILD_DIR_GEN)/%=%)
 
-$(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-embed-inc
+$(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-inc
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-inc --include-h $@ $(F_BUILD_FILES_GEN_H:$(F_BUILD_DIR_GEN)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-inc --include-h $@ $(F_BUILD_FILES_GEN_H:$(F_BUILD_DIR_GEN)/%=%)
 
 #
 # Action targets
