@@ -90,12 +90,9 @@ void* f_mem_mallocz(size_t Size)
 
 void* f_mem_malloca(size_t Size, unsigned AlignExp)
 {
-    #if F_CONFIG_DEBUG
-        if((1u << AlignExp) < sizeof(void*)) {
-            F__FATAL(
-                "f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
-        }
-    #endif
+    if((1u << AlignExp) < sizeof(void*)) {
+        F__FATAL("f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
+    }
 
     uintptr_t mask = (uintptr_t)((1 << AlignExp) - 1);
     void* ptr = f_mem_malloc(sizeof(void*) + Size + mask);

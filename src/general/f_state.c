@@ -93,13 +93,12 @@ static void pending_handle(void)
     FStateEntry* pendingState = f_listintr_pop(&g_pending);
 
     if(pendingState->handler == NULL) {
+        if(current == NULL) {
+            F__FATAL("Pop state: stack is empty");
+        }
+
         #if F_CONFIG_DEBUG
-            if(current == NULL) {
-                F__FATAL("Pop state: stack is empty");
-            }
-
             f_out__state("Pop '%s'", current->name);
-
             f_out__state("'%s' going from %s to %s",
                          current->name,
                          g_stageNames[current->stage],
@@ -112,13 +111,13 @@ static void pending_handle(void)
     } else {
         #if F_CONFIG_DEBUG
             f_out__state("Push '%s'", pendingState->name);
-
-            F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
-                if(pendingState->handler == e->handler) {
-                    F__FATAL("State '%s' already in stack", e->name);
-                }
-            }
         #endif
+
+        F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
+            if(pendingState->handler == e->handler) {
+                F__FATAL("State '%s' already in stack", e->name);
+            }
+        }
 
         f_out__state("New '%s' instance", pendingState->name);
 
@@ -397,11 +396,9 @@ bool f__state_stageCheck(F__StateStage Stage)
 {
     const FStateEntry* e = f_listintr_peek(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(e == NULL) {
-            F__FATAL("%s: state stack is empty", g_stageNames[Stage]);
-        }
-    #endif
+    if(e == NULL) {
+        F__FATAL("State stack is empty");
+    }
 
     return e->stage == Stage;
 }

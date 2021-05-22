@@ -84,11 +84,9 @@ void f_font_pop(void)
 {
     FFontState* state = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(state == NULL) {
-            F__FATAL("f_font_pop: Stack is empty");
-        }
-    #endif
+    if(state == NULL) {
+        F__FATAL("f_font_pop: Stack is empty");
+    }
 
     g_state = *state;
     f_pool_release(state);

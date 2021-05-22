@@ -102,11 +102,9 @@ void f_screen__tick(void)
 
 void f_screen__draw(void)
 {
-    #if F_CONFIG_DEBUG
-        if(!f_listintr_sizeIsEmpty(&g_stack)) {
-            F__FATAL("Screen target stack is not empty");
-        }
-    #endif
+    if(!f_listintr_sizeIsEmpty(&g_stack)) {
+        F__FATAL("Screen target stack is not empty");
+    }
 
     f_platform_api__screenShow();
 }
@@ -144,11 +142,9 @@ void f_screen_clear(void)
 
 void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-            F__FATAL("f_screen_push: Const sprite");
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+        F__FATAL("f_screen_push: Const sprite");
+    }
 
     f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
 
@@ -170,11 +166,9 @@ void f_screen_pop(void)
 {
     FScreen* screen = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(screen == NULL) {
-            F__FATAL("f_screen_pop: Stack is empty");
-        }
-    #endif
+    if(screen == NULL) {
+        F__FATAL("f_screen_pop: Stack is empty");
+    }
 
     #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_sprite__textureUpdate(f__screen.sprite, f__screen.frame);

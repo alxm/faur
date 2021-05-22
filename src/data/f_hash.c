@@ -88,11 +88,9 @@ static unsigned func_djb2(const char* Key)
 
 FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFree* KeyFree, unsigned NumSlots)
 {
-    #if F_CONFIG_DEBUG
-        if(NumSlots == 0) {
-            F__FATAL("f_hash_new: 0 slots");
-        }
-    #endif
+    if(NumSlots == 0) {
+        F__FATAL("f_hash_new: 0 slots");
+    }
 
     if((NumSlots & (NumSlots - 1)) != 0) {
         unsigned slots = 1;
@@ -157,7 +155,7 @@ void f_hash_add(FHash* Hash, const void* Key, void* Content)
     #if F_CONFIG_DEBUG
         for(F__HashEntry* e = Hash->slots[slot]; e; e = e->next) {
             if(Hash->keyEqual(Key, e->key)) {
-                F__FATAL("f_hash_add: Key already in table");
+                f_out__error("f_hash_add: Key already in table");
             }
         }
     #endif

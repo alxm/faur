@@ -49,11 +49,9 @@ void f_align_pop(void)
 {
     FAlign* align = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(align == NULL) {
-            F__FATAL("f_align_pop: Stack is empty");
-        }
-    #endif
+    if(align == NULL) {
+        F__FATAL("f_align_pop: Stack is empty");
+    }
 
     f__align = *align;
     f_pool_release(align);

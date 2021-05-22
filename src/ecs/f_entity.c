@@ -327,18 +327,18 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
                         Entity->id,
                         Parent ? Parent->id : "NULL");
         }
-
-        if(Parent
-            && ((!!Parent->collectionNode != !!Entity->collectionNode)
-                || (Parent->collectionNode
-                    && f_list__nodeGetList(Parent->collectionNode)
-                        != f_list__nodeGetList(Entity->collectionNode)))) {
-
-            F__FATAL("f_entity_parentSet(%s, %s): Different collections",
-                     Entity->id,
-                     Parent->id);
-        }
     #endif
+
+    if(Parent
+        && ((!!Parent->collectionNode != !!Entity->collectionNode)
+            || (Parent->collectionNode
+                && f_list__nodeGetList(Parent->collectionNode)
+                    != f_list__nodeGetList(Entity->collectionNode)))) {
+
+        F__FATAL("f_entity_parentSet(%s, %s): Different collections",
+                 Entity->id,
+                 Parent->id);
+    }
 
     if(Entity->parent) {
         f_entity_refDec(Entity->parent);
@@ -364,15 +364,15 @@ bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
 
 void f_entity_refInc(FEntity* Entity)
 {
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
+        F__FATAL("f_entity_refInc(%s): Entity is removed", Entity->id);
+    }
+
+    if(Entity->references == INT_MAX) {
+        F__FATAL("f_entity_refInc(%s): Count too high", Entity->id);
+    }
+
     #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
-            F__FATAL("f_entity_refInc(%s): Entity is removed", Entity->id);
-        }
-
-        if(Entity->references == INT_MAX) {
-            F__FATAL("f_entity_refInc(%s): Count too high", Entity->id);
-        }
-
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_refInc(%s) %d->%d",
                         Entity->id,
@@ -393,11 +393,11 @@ void f_entity_refDec(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(Entity->references == 0) {
-            F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
-        }
+    if(Entity->references == 0) {
+        F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
+    }
 
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_refDec(%s) %d->%d",
                         Entity->id,
@@ -502,19 +502,19 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 {
+    if(!listIsIn(Entity, F_LIST__NEW)) {
+        F__FATAL("f_entity_componentAdd(%s, %s): Too late",
+                 Entity->id,
+                 Component->stringId);
+    }
+
+    if(Entity->componentsTable[Component->bitId] != NULL) {
+        F__FATAL("f_entity_componentAdd(%s, %s): Already added",
+                 Entity->id,
+                 Component->stringId);
+    }
+
     #if F_CONFIG_DEBUG
-        if(!listIsIn(Entity, F_LIST__NEW)) {
-            F__FATAL("f_entity_componentAdd(%s, %s): Too late",
-                     Entity->id,
-                     Component->stringId);
-        }
-
-        if(Entity->componentsTable[Component->bitId] != NULL) {
-            F__FATAL("f_entity_componentAdd(%s, %s): Already added",
-                     Entity->id,
-                     Component->stringId);
-        }
-
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_componentAdd(%s, %s)",
                         Entity->id,
@@ -541,13 +541,11 @@ void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
 {
     FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
-    #if F_CONFIG_DEBUG
-        if(instance == NULL) {
-            F__FATAL("f_entity_componentReq(%s, %s): Missing component",
-                     Entity->id,
-                     Component->stringId);
-        }
-    #endif
+    if(instance == NULL) {
+        F__FATAL("f_entity_componentReq(%s, %s): Missing component",
+                 Entity->id,
+                 Component->stringId);
+    }
 
     return instance->buffer;
 }
@@ -568,11 +566,11 @@ void f_entity_muteInc(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(Entity->muteCount == INT_MAX) {
-            F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
-        }
+    if(Entity->muteCount == INT_MAX) {
+        F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
+    }
 
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_muteInc(%s) %d->%d",
                         Entity->id,
@@ -597,11 +595,11 @@ void f_entity_muteDec(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(Entity->muteCount == 0) {
-            F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
-        }
+    if(Entity->muteCount == 0) {
+        F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
+    }
 
+    #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_muteDec(%s) %d->%d",
                         Entity->id,

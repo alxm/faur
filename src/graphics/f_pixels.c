@@ -20,11 +20,9 @@
 
 FPixels* f_pixels__new(int W, int H, unsigned Frames, unsigned Flags)
 {
-    #if F_CONFIG_DEBUG
-        if(Frames == 0) {
-            F__FATAL("f_pixels__new(%d, %d): 0 frames", W, H);
-        }
-    #endif
+    if(W <= 0 || H <= 0 || Frames == 0) {
+        F__FATAL("f_pixels__init(%d, %d, %u): Invalid args", W, H, Frames);
+    }
 
     FPixels* p = f_mem_malloc(sizeof(FPixels));
 
@@ -35,11 +33,9 @@ FPixels* f_pixels__new(int W, int H, unsigned Frames, unsigned Flags)
 
 void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, unsigned Flags)
 {
-    #if F_CONFIG_DEBUG
-        if(Frames == 0) {
-            F__FATAL("f_pixels__init(%d, %d): 0 frames", W, H);
-        }
-    #endif
+    if(W <= 0 || H <= 0 || Frames == 0) {
+        F__FATAL("f_pixels__init(%d, %d, %u): Invalid args", W, H, Frames);
+    }
 
     Pixels->size.x = W;
     Pixels->size.y = H;
@@ -183,16 +179,13 @@ static int findNextHorizontalEdge(const FPixels* Pixels, int StartX, int StartY,
 
 FVecInt f_pixels__boundsFind(const FPixels* Pixels, int X, int Y)
 {
-    #if F_CONFIG_DEBUG
-        if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
-            F__FATAL(
-                "f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
+    if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
+        F__FATAL("f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
                  X,
                  Y,
                  Pixels->size.x,
                  Pixels->size.y);
-        }
-    #endif
+    }
 
     FVecInt bounds;
 

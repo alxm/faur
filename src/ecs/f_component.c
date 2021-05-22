@@ -65,13 +65,11 @@ const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
-    #if F_CONFIG_DEBUG
-        if(instance->entity->templ == NULL) {
-            F_FATAL("f_component_dataGet(%s.%s): No template",
-                    instance->entity->id,
-                    instance->component->stringId);
-        }
-    #endif
+    if(instance->entity->templ == NULL) {
+        F__FATAL("f_component_dataGet(%s.%s): No template",
+                 instance->entity->id,
+                 instance->component->stringId);
+    }
 
     return instance->entity->templ->data[instance->component->bitId];
 }

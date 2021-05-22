@@ -30,12 +30,9 @@ struct FPalette {
 
 static FPalette* newPalette(const FPixels* Pixels)
 {
-    #if F_CONFIG_DEBUG
-        if(Pixels->size.x < 1 || Pixels->size.y < 2) {
-            F__FATAL(
-                "Invalid palette size %dx%d", Pixels->size.x, Pixels->size.y);
-        }
-    #endif
+    if(Pixels->size.x < 1 || Pixels->size.y < 2) {
+        F__FATAL("Invalid palette size %dx%d", Pixels->size.x, Pixels->size.y);
+    }
 
     // First pixel sets the non-palette color to ignore; row 0 is reserved
     FColorPixel ignore = f_pixels__bufferGetValue(Pixels, 0, 0, 0);
@@ -109,22 +106,18 @@ void f_palette_free(FPalette* Palette)
 
 FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_DEBUG
-        if(Index >= Palette->size) {
-            F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
-        }
-    #endif
+    if(Index >= Palette->size) {
+        F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
+    }
 
     return Palette->entries[Index].pixel;
 }
 
 FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_DEBUG
-        if(Index >= Palette->size) {
-            F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
-        }
-    #endif
+    if(Index >= Palette->size) {
+        F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
+    }
 
     return Palette->entries[Index].rgb;
 }

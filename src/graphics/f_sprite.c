@@ -31,12 +31,9 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
 {
     FVecInt gridDim;
 
-    #if F_CONFIG_DEBUG
-        if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
-            F__FATAL(
-                "FrameWidth = %d, FrameHeight = %d", FrameWidth, FrameHeight);
-        }
-    #endif
+    if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
+        F__FATAL("FrameWidth = %d, FrameHeight = %d", FrameWidth, FrameHeight);
+    }
 
     // If start is at origin and frame size is negative, use entire image
     if(X == 0 && Y == 0 && FrameWidth < 0) {
@@ -120,7 +117,7 @@ FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWid
 FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
 {
     if(Frames == 0) {
-        F__FATAL("f_sprite_newBlank: Frames == 0");
+        F__FATAL("f_sprite_newBlank: 0 frames");
     }
 
     FSprite* s = f_pool__alloc(F_POOL__SPRITE);
@@ -225,11 +222,9 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
 
 void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-            F__FATAL("f_sprite_swapColor: Const sprite");
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+        F__FATAL("f_sprite_swapColor: Const sprite");
+    }
 
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
@@ -250,11 +245,9 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
 
 void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-            F__FATAL("f_sprite_swapColors: Const sprite");
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+        F__FATAL("f_sprite_swapColors: Const sprite");
+    }
 
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
