@@ -20,11 +20,6 @@
 
 #include <unistd.h>
 
-#ifdef __GLIBC__
-    #define F__BACKTRACE 1
-    #include <execinfo.h>
-#endif
-
 static int g_argsNum;
 static const char** g_args;
 
@@ -74,22 +69,12 @@ const char* f_main_argsGet(int ArgNum)
     return g_args[ArgNum];
 }
 
-F__ATTRIBUTE_NORETURN static void handleFatal(void)
+F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
 {
     #if F_CONFIG_DEBUG_FATAL_SPIN
         while(true);
     #else
-        #if F__BACKTRACE
-            void* addresses[16];
-            int numAddresses = backtrace(addresses, F_ARRAY_LEN(addresses));
-            char** functionNames = backtrace_symbols(addresses, numAddresses);
-
-            for(int i = 0; i < numAddresses; i++) {
-                f_out__error("%s", functionNames[i]);
-            }
-
-            free(functionNames);
-        #endif
+        f_out__backtrace(Source);
 
         #if F_CONFIG_CONSOLE_ENABLED
             if(f_console__isInitialized()) {
@@ -132,7 +117,7 @@ void F__FATAL(const char* Format, ...)
 
     va_end(args);
 
-    handleFatal();
+    handleFatal(F_OUT__SOURCE_FAUR);
 }
 
 void F_FATAL(const char* Format, ...)
@@ -144,5 +129,5 @@ void F_FATAL(const char* Format, ...)
 
     va_end(args);
 
-    handleFatal();
+    handleFatal(F_OUT__SOURCE_APP);
 }

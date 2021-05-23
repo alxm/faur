@@ -18,6 +18,10 @@
 #include "f_out.v.h"
 #include <faur.v.h>
 
+#ifdef __GLIBC__
+    #include <execinfo.h>
+#endif
+
 #define F_OUT__STREAM_STDOUT stdout
 
 #if F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -131,6 +135,8 @@ void f_out__error(const char* Format, ...)
               args);
 
     va_end(args);
+
+    f_out__backtrace(F_OUT__SOURCE_FAUR);
 }
 
 void f_out__errorv(const char* Format, va_list Args)
@@ -140,6 +146,8 @@ void f_out__errorv(const char* Format, va_list Args)
               F_OUT__STREAM_STDERR,
               Format,
               Args);
+
+    f_out__backtrace(F_OUT__SOURCE_FAUR);
 }
 
 void f_out__state(const char* Format, ...)
@@ -204,4 +212,26 @@ void f_out_error(const char* Format, ...)
               args);
 
     va_end(args);
+
+    f_out__backtrace(F_OUT__SOURCE_APP);
+}
+
+void f_out__backtrace(FOutSource Source)
+{
+    #ifdef __GLIBC__
+        void* addresses[16];
+        int numAddresses = backtrace(addresses, F_ARRAY_LEN(addresses));
+        char** functionNames = backtrace_symbols(addresses, numAddresses);
+
+        for(int i = 0; i < numAddresses; i++) {
+            outWorkerPrint(Source,
+                           F_OUT__TYPE_INFO,
+                           F_OUT__STREAM_STDOUT,
+                           functionNames[i]);
+        }
+
+        free(functionNames);
+    #else
+        F_UNUSED(Source);
+    #endif
 }
