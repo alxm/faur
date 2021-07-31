@@ -18,7 +18,7 @@
 #include "f_blob.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_FILES_EMBED_PATHS_MODE_NONE
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB
 struct FBlob {
     FList* dirs; // FList<FEmbeddedDir*>
     FList* files; // FList<FEmbeddedFile*>
@@ -225,4 +225,4 @@ void f_blob_free(FBlob* Blob)
     f_mem_freea(Blob->buffer);
     f_mem_free(Blob);
 }
-#endif // !F_CONFIG_FILES_EMBED_PATHS_MODE_NONE
+#endif // F_CONFIG_FILES_EMBED_PATHS_BLOB

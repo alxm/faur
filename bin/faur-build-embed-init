@@ -51,7 +51,7 @@ def main():
 //
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_PATHS_MODE_C
+#if F_CONFIG_FILES_EMBED_PATHS_C
 {includes}
 
 void f_embed__populate(void)
@@ -66,7 +66,7 @@ void f_embed__populate(void)
 
     f_embed__set(dirs, {dirs_num}, files, {files_num});
 }}
-#endif // F_CONFIG_FILES_EMBED_PATHS_MODE_C
+#endif // F_CONFIG_FILES_EMBED_PATHS_C
 """.format(cmd = g_tool.get_cmd(),
            includes = '\n'.join(includes),
            dirs = '\n'.join([f'        &{cvar_prefix}{d},' for d in dirs]),

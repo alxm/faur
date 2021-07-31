@@ -18,11 +18,11 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_FILES_EMBED_PATHS_MODE_NONE
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
-#if F_CONFIG_FILES_EMBED_PATHS_MODE_BLOB
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB
     static FBlob* g_blob;
 #endif
 
@@ -37,18 +37,20 @@ static void f_embed__init(void)
     g_dirs = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
     g_files = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
 
-    #if F_CONFIG_FILES_EMBED_PATHS_MODE_C
+    #if F_CONFIG_FILES_EMBED_PATHS_C
         f_embed__populate();
-    #elif F_CONFIG_FILES_EMBED_PATHS_MODE_BLOB
-        if(f_path_exists(F_CONFIG_FILES_EMBED_PATHS_BLOB, F_PATH_FILE)) {
-            g_blob = f_blob_new(F_CONFIG_FILES_EMBED_PATHS_BLOB);
+    #endif
+
+    #if F_CONFIG_FILES_EMBED_PATHS_BLOB
+        if(f_path_exists(F_CONFIG_FILES_EMBED_BLOB, F_PATH_FILE)) {
+            g_blob = f_blob_new(F_CONFIG_FILES_EMBED_BLOB);
         }
     #endif
 }
 
 static void f_embed__uninit(void)
 {
-    #if F_CONFIG_FILES_EMBED_PATHS_MODE_BLOB
+    #if F_CONFIG_FILES_EMBED_PATHS_BLOB
         f_blob_free(g_blob);
     #endif
 
@@ -146,7 +148,7 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
 
     return false;
 }
-#else // F_CONFIG_FILES_EMBED_PATHS_MODE_NONE
+#else // !(F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C)
 bool f_embed__stat(const char* Path, FPathInfo* Info)
 {
     F_UNUSED(Path);
@@ -168,4 +170,4 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 
     return NULL;
 }
-#endif // F_CONFIG_FILES_EMBED_PATHS_MODE_NONE
+#endif // !(F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C)
