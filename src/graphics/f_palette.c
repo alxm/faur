@@ -70,10 +70,6 @@ static FPalette* newPalette(const FPixels* Pixels)
         }
     }
 
-    #if F_CONFIG_DEBUG
-        f_out__info("Loaded %u colors from palette", num);
-    #endif
-
     return p;
 }
 

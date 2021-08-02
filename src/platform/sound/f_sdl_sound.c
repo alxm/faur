@@ -225,9 +225,7 @@ void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel,
     }
 
     if(Mix_PlayChannel(Channel, (Mix_Chunk*)Sample, Loop ? -1 : 0) == -1) {
-        #if F_CONFIG_DEBUG
-            f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
-        #endif
+        f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
     }
 }
 
