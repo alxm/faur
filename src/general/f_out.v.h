@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019, 2021 Alex Margarit <alex@alxm.org>
+    Copyright 2016, 2021 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
