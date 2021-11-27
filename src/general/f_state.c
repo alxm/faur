@@ -247,8 +247,7 @@ void f_state_exit(void)
     f_out__state("*** Telling all states to exit ***");
 
     g_exiting = true;
-
-    f_state_blockSet(NULL);
+    g_blockEvent = NULL;
 
     // Clear the pending actions queue
     f_listintr_apply(&g_pending, f_pool_release);
