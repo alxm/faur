@@ -31,7 +31,7 @@ F_CONFIG_BUILD_LIBS += \
     -lm \
     -ldl \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv5te \
     -mtune=arm9tdmi \
     -msoft-float \

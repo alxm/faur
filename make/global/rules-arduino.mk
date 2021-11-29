@@ -22,8 +22,8 @@ F_ARDUINO_BUILDER := \
         -build-path $(F_BUILD_DIR_ARDUINO_BUILD) \
         -build-cache $(F_BUILD_DIR_ARDUINO_CACHE) \
         -prefs=build.warn_data_percentage=75 \
-        -prefs=compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
-        -prefs=compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
+        -prefs=compiler.c.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
+        -prefs=compiler.cpp.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
         $(F_BUILD_FILE_INO)
 
 F_ARDUINO_UPLOAD := \
@@ -35,8 +35,8 @@ F_ARDUINO_UPLOAD := \
         --port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
         --pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
         --pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
-        --pref compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
-        --pref compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
+        --pref compiler.c.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
+        --pref compiler.cpp.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
         $(F_BUILD_FILE_INO)
 
 F_ARDUINO_PRE := \

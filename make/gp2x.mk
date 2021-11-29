@@ -34,7 +34,7 @@ F_CONFIG_BUILD_LIBS += \
     -lstdc++ \
     -ldl \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -mcpu=arm920t \
     -mtune=arm920t \
     -msoft-float \

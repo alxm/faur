@@ -24,7 +24,7 @@ F_CONFIG_BUILD_LIBS += \
     -pie \
     -fsanitize=undefined \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fpie \
     -fsanitize=undefined \
 

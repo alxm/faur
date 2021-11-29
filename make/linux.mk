@@ -12,7 +12,7 @@ F_CONFIG_BUILD_LIBS += \
     -lm \
     -pie \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fpie \
 
 include $(FAUR_PATH)/make/global/config.mk

@@ -74,7 +74,7 @@ F_CONFIG_BUILD_LIBS += \
     $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     $(F_EMSCRIPTEN_OPTIONS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \

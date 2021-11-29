@@ -27,7 +27,7 @@ F_CONFIG_BUILD_LIBS += \
     -lm \
     -ldl \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv7-a \
     -mcpu=cortex-a8 \
     -mtune=cortex-a8 \
