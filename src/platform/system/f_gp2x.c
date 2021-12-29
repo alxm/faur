@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org> and:
+    Copyright 2010 Alex Margarit <alex@alxm.org> and:
 
     - GP2X clock speed from the GP2X Wiki
     - GP2X mmuhack by Squidge and NK

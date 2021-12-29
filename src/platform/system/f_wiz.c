@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018, 2020 Alex Margarit <alex@alxm.org> and:
+    Copyright 2010 Alex Margarit <alex@alxm.org> and:
 
     - Wiz framebuffer direction set code by Orkie
     - Wiz/Caanoo timer code by notaz (https://github.com/notaz/libpicofe)
