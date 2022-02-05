@@ -46,14 +46,14 @@
 
 #define F__SIZE_DYNAMIC (F_CONFIG_SCREEN_SIZE_WIDTH < 0)
 
-#define F__ALLOCATE_LOGICAL_BUFFER \
-    (F_CONFIG_LIB_SDL == 2 \
-        || F_CONFIG_SCREEN_ZOOM > 1 \
-        || (F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD) \
-        || (F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX))
+#define F__ALLOCATE_LOGICAL_BUFFER ( \
+       (F_CONFIG_LIB_SDL == 2) \
+    || (F_CONFIG_SCREEN_SIZE_ZOOM > 1) \
+    || (F_CONFIG_TRAIT_DESKTOP && F_CONFIG_TRAIT_KEYBOARD) \
+    || (F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX))
 
 #define F__HARDWARE_SCREEN \
-    (F_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && F_CONFIG_SCREEN_HARDWARE_HEIGHT > 0)
+    (F_CONFIG_SCREEN_SIZE_WIDTH_HW > 0 && F_CONFIG_SCREEN_SIZE_HEIGHT_HW > 0)
 
 #if F__SIZE_DYNAMIC
 static FVecInt g_size = {
@@ -64,7 +64,7 @@ static const FVecInt g_size = {
     F_CONFIG_SCREEN_SIZE_HEIGHT
 };
 static bool g_fullscreen = F_CONFIG_SCREEN_FULLSCREEN;
-static int g_zoom = F_CONFIG_SCREEN_ZOOM;
+static int g_zoom = F_CONFIG_SCREEN_SIZE_ZOOM;
 static FPixels g_pixels;
 
 void f_platform_sdl_video__init(void)
@@ -128,8 +128,8 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 static FVecInt sdlScreenSizeGetNative(void)
 {
     #if F__HARDWARE_SCREEN
-        return (FVecInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
-                         F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+        return (FVecInt){F_CONFIG_SCREEN_SIZE_WIDTH_HW,
+                         F_CONFIG_SCREEN_SIZE_HEIGHT_HW};
     #elif F_CONFIG_SYSTEM_EMSCRIPTEN
         return f_platform_emscripten__windowSizeGet();
     #elif F_CONFIG_LIB_SDL == 1
@@ -204,11 +204,11 @@ void f_platform_api__screenInit(void)
         #endif
 
         #if F__HARDWARE_SCREEN
-            w = F_CONFIG_SCREEN_HARDWARE_WIDTH;
-            h = F_CONFIG_SCREEN_HARDWARE_HEIGHT;
+            w = F_CONFIG_SCREEN_SIZE_WIDTH_HW;
+            h = F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
         #else
-            w = g_size.x * F_CONFIG_SCREEN_ZOOM;
-            h = g_size.y * F_CONFIG_SCREEN_ZOOM;
+            w = g_size.x * F_CONFIG_SCREEN_SIZE_ZOOM;
+            h = g_size.y * F_CONFIG_SCREEN_SIZE_ZOOM;
         #endif
 
         if(!sdl1ScreenSet(w, h, videoFlags)) {
@@ -245,8 +245,8 @@ void f_platform_api__screenInit(void)
         g_sdlWindow = SDL_CreateWindow(NULL,
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       g_size.x * F_CONFIG_SCREEN_ZOOM,
-                                       g_size.y * F_CONFIG_SCREEN_ZOOM,
+                                       g_size.x * F_CONFIG_SCREEN_SIZE_ZOOM,
+                                       g_size.y * F_CONFIG_SCREEN_SIZE_ZOOM,
                                        windowFlags);
 
         if(g_sdlWindow == NULL) {
@@ -466,19 +466,20 @@ void f_platform_api__screenShow(void)
                 }
             }
 
-            #define F__SCREEN_TOTAL (F_CONFIG_SCREEN_HARDWARE_WIDTH \
-                                        * F_CONFIG_SCREEN_HARDWARE_HEIGHT)
-
             FColorPixel* dst =
-                (FColorPixel*)g_sdlScreen->pixels + F__SCREEN_TOTAL;
+                (FColorPixel*)g_sdlScreen->pixels
+                    + F_CONFIG_SCREEN_SIZE_WIDTH_HW
+                        * F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
             const FColorPixel* src = g_pixels.buffer;
 
-            for(int i = F_CONFIG_SCREEN_HARDWARE_HEIGHT;
+            for(int i = F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
                 i--;
-                dst += F__SCREEN_TOTAL + 1) {
+                dst += F_CONFIG_SCREEN_SIZE_WIDTH_HW
+                        * F_CONFIG_SCREEN_SIZE_HEIGHT_HW
+                            + 1) {
 
-                for(int j = F_CONFIG_SCREEN_HARDWARE_WIDTH; j--; ) {
-                    dst -= F_CONFIG_SCREEN_HARDWARE_HEIGHT;
+                for(int j = F_CONFIG_SCREEN_SIZE_WIDTH_HW; j--; ) {
+                    dst -= F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
                     *dst = *src++;
                 }
             }
