@@ -1,10 +1,10 @@
 # [![Faur](./media/faur.png "Faur")](https://www.alxm.org)
 
-*Faur* is a personal C framework for my [video games](https://www.alxm.org).
+*Faur* is my personal C framework for my [hobby video games](https://www.alxm.org).
 
-Features include 2D graphics, sound, inputs, state management, ECS model, and utilities to help with data, files, math, memory, strings, time, and more.
+Features include software 2D graphics, abstractions for inputs and sound, application state management, entity-component-system model, and utilities to help with data, files, math, memory, strings, time, and more.
 
-Faur builds native on Linux and [cross-compiles](#cross-compile-for-other-platforms) for Web, Windows, and some embedded devices. The build system uses GNU Make 4.1 and Python 3.6 or later.
+Faur builds native on Linux and [cross-compiles](#cross-compile-for-other-platforms) for Web, Windows, and some embedded devices I like. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
 ## Dependencies & Path Setup
 
@@ -27,6 +27,8 @@ export PATH="$PATH:$FAUR_PATH/bin"
 
 ## Hello, World
 
+The sample project has two files, `main.c` and `Makefile`:
+
 ```sh
 $ faur-new hello
 
@@ -42,9 +44,9 @@ $ cd hello/build/make/
 $ make run
 ```
 
-![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")
+Move the square with the arrow keys or with a game controller:
 
-You can move the square with the arrow keys or a controller.
+![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")
 
 ### hello/src/main.c
 
@@ -129,7 +131,7 @@ include $(FAUR_PATH)/make/default.mk
 
 ## Cross-Compile for Other Platforms
 
-I started Faur to make games for the Linux-based [GP2X](https://www.alxm.org/games/gamepark.html). These are the supported platforms now:
+I started Faur by collecting my [GP2X games](https://www.alxm.org/games/gamepark.html)' shared code into a library. Over time I added support for more platforms:
 
 Platform | Toolchain | Support Libraries
 --- | --- | ---
@@ -145,11 +147,11 @@ Open Pandora | Pandora SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2
 Gamebuino META | Arduino SAMD | Gamebuino META 1.3
 Odroid-GO | Arduino ESP32 | Odroid-GO 1.0
 
-The default toolchain paths are in `faur/make/global/sdk.mk` and they can be overridden in the application Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to other files from `$(FAUR_PATH)/make`.
+The default toolchain paths are in `make/global/sdk.mk`, and they can be overridden in a project Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to use other files from `$(FAUR_PATH)/make`.
 
 ## License
 
-Copyright 2010-2021 Alex Margarit (alex@alxm.org)
+Copyright 2010-2022 Alex Margarit (alex@alxm.org)
 
 * Source code licensed under [GNU GPL 3.0](https://www.gnu.org/licenses/gpl.html) (file `LICENSE`)
 * Other content licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (file `media/CC-BY-NC-ND`)
@@ -158,4 +160,4 @@ Faur is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 ### Contributing
 
-This is a personal framework and playground, and to that end it is a solo project. You are welcome to use it under the terms of the license, but I do not take pull requests to this repo.
+This is my personal framework and test bed for ideas, and to that end it is a solo project. You are welcome to check it out and use it under the terms of the license, but I do not take pull requests to this repo.
