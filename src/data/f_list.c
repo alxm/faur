@@ -145,6 +145,10 @@ void* f_list_getByIndex(const FList* List, unsigned Index)
             }
         }
     } else {
+        if(Index >= List->items) {
+            F__FATAL("f_list_getByIndex(%u): Invalid index", Index);
+        }
+
         Index = List->items - 1 - Index;
 
         F__ITERATE_REV(List, n) {
