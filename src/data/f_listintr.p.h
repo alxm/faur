@@ -50,6 +50,7 @@ extern void f_listintr_init(FListIntr* List, size_t NodeOffset);
 #endif
 
 extern void f_listintr_clear(FListIntr* List);
+extern void f_listintr_clearEx(FListIntr* List, FCallFree* Free);
 
 extern void f_listintr_addFirst(FListIntr* List, void* Item);
 extern void f_listintr_addLast(FListIntr* List, void* Item);

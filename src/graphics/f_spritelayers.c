@@ -70,13 +70,9 @@ void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites)
 
 void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites)
 {
-    if(FreeSprites) {
-        f_listintr_apply(Layers, (FCallFree*)layer_freeEx);
-    } else {
-        f_listintr_apply(Layers, (FCallFree*)layer_free);
-    }
-
-    f_listintr_clear(Layers);
+    f_listintr_clearEx(Layers,
+                       FreeSprites
+                        ? (FCallFree*)layer_freeEx : (FCallFree*)layer_free);
 }
 
 void f_spritelayers_add(FSpriteLayers* Layers, FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha)

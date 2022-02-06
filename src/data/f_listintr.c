@@ -40,6 +40,20 @@ void f_listintr_init(FListIntr* List, size_t NodeOffset)
 
 void f_listintr_clear(FListIntr* List)
 {
+    f_listintr_clearEx(List, NULL);
+}
+
+void f_listintr_clearEx(FListIntr* List, FCallFree* Free)
+{
+    if(Free) {
+        for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
+            n1 != &List->root;
+            n1 = n2, n2 = n2->next) {
+
+            Free(nodeToItem(List, n1));
+        }
+    }
+
     List->root.prev = &List->root;
     List->root.next = &List->root;
 }
