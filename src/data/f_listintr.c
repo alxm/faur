@@ -93,6 +93,17 @@ void* f_listintr_getFirst(const FListIntr* List)
     return nodeToItem(List, first);
 }
 
+void* f_listintr_getLast(const FListIntr* List)
+{
+    FListIntrNode* last = List->root.prev;
+
+    if(last == &List->root) {
+        return NULL;
+    }
+
+    return nodeToItem(List, last);
+}
+
 void* f_listintr_removeFirst(FListIntr* List)
 {
     FListIntrNode* first = List->root.next;

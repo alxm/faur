@@ -56,6 +56,7 @@ extern void f_listintr_addFirst(FListIntr* List, void* Item);
 extern void f_listintr_addLast(FListIntr* List, void* Item);
 
 extern void* f_listintr_getFirst(const FListIntr* List);
+extern void* f_listintr_getLast(const FListIntr* List);
 
 extern void* f_listintr_removeFirst(FListIntr* List);
 extern void f_listintr_removeItem(FListIntr* List, void* Item);
