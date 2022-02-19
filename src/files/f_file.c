@@ -63,11 +63,11 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 
     if(!ret) {
         f_out__error("f_file_bufferWrite(%s, %zu): Failed", Path, Size);
+    } else {
+        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
+            f_platform_api__fileSync();
+        #endif
     }
-
-    #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-        f_platform_api__fileSync();
-    #endif
 
     return ret;
 }
@@ -190,11 +190,11 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
         f_out__error("f_file_write(%s): Could not write %zu bytes",
                      f_path_getFull(File->path),
                      Size);
+    } else {
+        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
+            f_platform_api__fileSync();
+        #endif
     }
-
-    #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-        f_platform_api__fileSync();
-    #endif
 
     return ret;
 }
@@ -211,11 +211,11 @@ bool f_file_writef(FFile* File, const char* Format, ...)
     if(!ret) {
         f_out__error(
             "f_file_writef(%s): Could not write", f_path_getFull(File->path));
+    } else {
+        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
+            f_platform_api__fileSync();
+        #endif
     }
-
-    #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-        f_platform_api__fileSync();
-    #endif
 
     return ret;
 }
