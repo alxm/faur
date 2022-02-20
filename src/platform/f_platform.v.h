@@ -132,4 +132,7 @@ extern bool f_platform_api__fileFlush(FPlatformFile* File);
 extern int f_platform_api__fileReadChar(FPlatformFile* File);
 extern int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char);
 extern void f_platform_api__fileSync(void);
+
+extern void* f_platform_api__malloc(size_t Size);
+extern void* f_platform_api__mallocz(size_t Size);
 #endif // F_INC_PLATFORM_PLATFORM_V_H
