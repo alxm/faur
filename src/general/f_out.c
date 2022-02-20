@@ -57,7 +57,7 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
     if(f_str_fmt(headerTag,
                  sizeof(headerTag),
                  false,
-#if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
+#if F_CONFIG_OUT_COLOR_TEXT
                  "\033[1;%dm[%s][%s][%08x]\033[0m ",
                  g_types[Type].color,
 #else
