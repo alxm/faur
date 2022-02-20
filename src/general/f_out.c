@@ -22,14 +22,6 @@
     #include <execinfo.h>
 #endif
 
-#define F_OUT__STREAM_STDOUT stdout
-
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-    #define F_OUT__STREAM_STDERR stdout
-#else
-    #define F_OUT__STREAM_STDERR stderr
-#endif
-
 typedef enum {
     F_COLOR__INVALID = -1,
     F_COLOR__BLACK = 30,
@@ -81,7 +73,7 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
     f_platform_api__filePrint(Stream, Text);
     f_platform_api__filePrint(Stream, "\n");
 
-    #if F_CONFIG_CONSOLE_ENABLED
+    #if F_CONFIG_OUT_CONSOLE_ENABLED
         f_console__write(Source, Type, Text);
     #endif
 }
@@ -102,7 +94,7 @@ void f_out__info(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_INFO,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -116,7 +108,7 @@ void f_out__warning(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_WARNING,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -130,7 +122,7 @@ void f_out__error(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -143,7 +135,7 @@ void f_out__errorv(const char* Format, va_list Args)
 {
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               Args);
 
@@ -157,7 +149,7 @@ void f_out__state(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_STATE,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -168,7 +160,7 @@ void f_out_text(const char* Text)
 {
     outWorkerPrint(F_OUT__SOURCE_APP,
                    F_OUT__TYPE_INFO,
-                   F_OUT__STREAM_STDOUT,
+                   F_CONFIG_OUT_STDOUT,
                    Text);
 }
 
@@ -179,7 +171,7 @@ void f_out_info(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_INFO,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -193,7 +185,7 @@ void f_out_warning(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_WARNING,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -207,7 +199,7 @@ void f_out_error(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -226,7 +218,7 @@ void f_out__backtrace(FOutSource Source)
         for(int i = 0; i < numAddresses; i++) {
             outWorkerPrint(Source,
                            F_OUT__TYPE_INFO,
-                           F_OUT__STREAM_STDOUT,
+                           F_CONFIG_OUT_STDOUT,
                            functionNames[i]);
         }
 

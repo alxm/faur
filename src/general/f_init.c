@@ -20,7 +20,7 @@
 
 static const FPack* g_packs[] = {
     &f_pack__pool,
-#if F_CONFIG_CONSOLE_ENABLED
+#if F_CONFIG_OUT_CONSOLE_ENABLED
     &f_pack__console_0,
 #endif
 #if F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C
@@ -47,7 +47,7 @@ static const FPack* g_packs[] = {
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
-#if F_CONFIG_CONSOLE_ENABLED
+#if F_CONFIG_OUT_CONSOLE_ENABLED
     &f_pack__console_1,
 #endif
 };

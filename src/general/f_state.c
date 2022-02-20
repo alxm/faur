@@ -321,7 +321,7 @@ bool f_state__runStep(void)
                 f_sound__tick();
             #endif
 
-            #if F_CONFIG_CONSOLE_ENABLED
+            #if F_CONFIG_OUT_CONSOLE_ENABLED
                 f_console__tick();
             #endif
 
@@ -372,7 +372,7 @@ bool f_state__runStep(void)
             f_sound__draw();
         #endif
 
-        #if F_CONFIG_CONSOLE_ENABLED
+        #if F_CONFIG_OUT_CONSOLE_ENABLED
             f_console__draw();
         #endif
 

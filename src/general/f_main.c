@@ -76,7 +76,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
     #else
         f_out__backtrace(Source);
 
-        #if F_CONFIG_CONSOLE_ENABLED
+        #if F_CONFIG_OUT_CONSOLE_ENABLED
             if(f_console__isInitialized()) {
                 f_console_showSet(true);
                 f_console__draw();
@@ -90,7 +90,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
                 f_time_msSpin(1000);
             }
         #elif !F_CONFIG_TRAIT_DESKTOP
-            #if F_CONFIG_CONSOLE_ENABLED
+            #if F_CONFIG_OUT_CONSOLE_ENABLED
                 if(f_console__isInitialized()) {
                     f_out__info("Exiting in 10s");
                     f_console__draw();
