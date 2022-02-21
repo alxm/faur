@@ -34,7 +34,7 @@
     #elif F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_ABGR_8888
         #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_ABGR8888
     #else
-        #error Invalid F_CONFIG_SCREEN_FORMAT
+        #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
     #endif
 #endif
 

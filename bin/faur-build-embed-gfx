@@ -151,7 +151,7 @@ def process_c(VarName, ImageFile, ColorKey):
 
     pixel_buffers += """\
     #else
-        #error Invalid F_CONFIG_SCREEN_FORMAT
+        #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
     #endif
 """
 

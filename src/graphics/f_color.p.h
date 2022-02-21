@@ -47,7 +47,7 @@
     #define F_COLOR_BPP 32
     typedef uint32_t FColorPixel;
 #else
-    #error Invalid F_CONFIG_SCREEN_FORMAT
+    #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
 #endif
 
 typedef struct {
@@ -72,7 +72,7 @@ typedef struct {
     #define F__PX_BITS_B 8
     #define F__PX_BITS_A 8
 #else
-    #error Invalid F_CONFIG_SCREEN_FORMAT
+    #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
 #endif
 
 #if F_CONFIG_SCREEN_FORMAT & F__C_RGBA
@@ -91,7 +91,7 @@ typedef struct {
     #define F__PX_SHIFT_G (F__PX_BITS_R)
     #define F__PX_SHIFT_R (0)
 #else
-    #error Invalid F_CONFIG_SCREEN_FORMAT
+    #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
 #endif
 
 #define F__PX_PACK_R (8 - F__PX_BITS_R)
@@ -110,7 +110,7 @@ static inline FColorPixel f__color_flipEndianness(FColorPixel Pixel)
     #if F_CONFIG_SCREEN_FORMAT & F__C_16
         return (FColorPixel)((Pixel << 8) | (Pixel >> 8));
     #else
-        #error Invalid F_CONFIG_SCREEN_FORMAT
+        #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
     #endif
 }
 #endif
