@@ -38,14 +38,10 @@
 
 #define F__ATTRIBUTE_ALIGN(AlignExp) __attribute__((aligned (1 << (AlignExp))))
 #define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
-
-#if F_CONFIG_SYSTEM_MINGW
-    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
-        __attribute__((format (gnu_printf, FormatIndex, FormatIndex + 1)))
-#else
-    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
-        __attribute__((format (printf, FormatIndex, FormatIndex + 1)))
-#endif
+#define F__ATTRIBUTE_FORMAT(FormatIndex) \
+    __attribute__((format (F_CONFIG_BUILD_ATTRIBUTE_FORMAT_PRINTF, \
+                           FormatIndex, \
+                           FormatIndex + 1)))
 
 #define F__APP_VERSION_STRING \
     F_STRINGIFY(F_CONFIG_APP_VERSION_MAJOR) \
