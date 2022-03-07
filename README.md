@@ -4,24 +4,22 @@
 
 Features include software 2D graphics, abstractions for inputs and sound, application state management, entity-component-system model, and utilities to help with data, files, math, memory, strings, time, and more.
 
-Faur builds native on Linux and [cross-compiles](#cross-compile-for-other-platforms) for Web, Windows, and some embedded devices I like. The build system uses GNU Make 4.1 and Python 3.6 or later.
+Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices I like, including Arduino-based. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
 ## Dependencies & Path Setup
 
 ```sh
 # Required
-sudo apt install build-essential git python3 python3-pil
+sudo apt install build-essential git python3
 sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 
 # Optional
-sudo apt install ffmpeg libsdl1.2-dev libsdl-mixer1.2-dev
+sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev
+sudo apt install ffmpeg python3-pil python3-serial python-is-python3
 
-# Clone repo to ~/faur
-cd ~
-git clone git://github.com/alxm/faur.git
-
-# Set FAUR_PATH environment var and add tools to PATH
+# Set FAUR_PATH, clone repo, and add tools to path
 export FAUR_PATH="$HOME/faur"
+git clone git://github.com/alxm/faur.git $FAUR_PATH
 export PATH="$PATH:$FAUR_PATH/bin"
 ```
 
@@ -144,8 +142,8 @@ GP2X, GP2X Wiz | Open2x SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2
 Caanoo | GPH SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2
 Open Pandora | Pandora SDK | SDL 1.2, SDL_mixer 1.2, libpng 1.2
 ***Arduino***
-Gamebuino META | Arduino SAMD | Gamebuino META 1.3
-Odroid-GO | Arduino ESP32 | Odroid-GO 1.0
+Gamebuino META | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | Gamebuino META 1.3
+Odroid-GO | Arduino 1.8.13, Arduino ESP32 1.0.6 | ODROID-GO 1.0.0
 
 The default toolchain paths are in `make/global/sdk.mk`, and they can be overridden in a project Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to use other files from `$(FAUR_PATH)/make`.
 
