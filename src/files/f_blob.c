@@ -18,6 +18,7 @@
 #include "f_blob.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB
 struct FBlob {
     FList* dirs; // FList<FEmbeddedDir*>
     FList* files; // FList<FEmbeddedFile*>
@@ -90,11 +91,6 @@ static void read_padding(FBlobReader* Reader)
 
 FBlob* f_blob_new(const char* Path)
 {
-    #if !F_CONFIG_FILES_EMBED_PATHS_ENABLED
-        F__FATAL(
-            "f_blob_new(%s): Need F_CONFIG_FILES_EMBED_PATHS_ENABLED", Path);
-    #endif
-
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
@@ -229,3 +225,4 @@ void f_blob_free(FBlob* Blob)
     f_mem_freea(Blob->buffer);
     f_mem_free(Blob);
 }
+#endif // F_CONFIG_FILES_EMBED_PATHS_BLOB

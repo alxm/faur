@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,12 +18,8 @@
 #include "f_out.v.h"
 #include <faur.v.h>
 
-#define F_OUT__STREAM_STDOUT stdout
-
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-    #define F_OUT__STREAM_STDERR stdout
-#else
-    #define F_OUT__STREAM_STDERR stderr
+#ifdef __GLIBC__
+    #include <execinfo.h>
 #endif
 
 typedef enum {
@@ -61,7 +57,7 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
     if(f_str_fmt(headerTag,
                  sizeof(headerTag),
                  false,
-#if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
+#if F_CONFIG_OUT_COLOR_TEXT
                  "\033[1;%dm[%s][%s][%08x]\033[0m ",
                  g_types[Type].color,
 #else
@@ -77,7 +73,9 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
     f_platform_api__filePrint(Stream, Text);
     f_platform_api__filePrint(Stream, "\n");
 
-    f_console__write(Source, Type, Text);
+    #if F_CONFIG_OUT_CONSOLE_ENABLED
+        f_console__write(Source, Type, Text);
+    #endif
 }
 
 static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char* Format, va_list Args)
@@ -96,7 +94,7 @@ void f_out__info(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_INFO,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -110,7 +108,7 @@ void f_out__warning(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_WARNING,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -124,20 +122,24 @@ void f_out__error(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
     va_end(args);
+
+    f_out__backtrace(F_OUT__SOURCE_FAUR);
 }
 
 void f_out__errorv(const char* Format, va_list Args)
 {
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               Args);
+
+    f_out__backtrace(F_OUT__SOURCE_FAUR);
 }
 
 void f_out__state(const char* Format, ...)
@@ -147,7 +149,7 @@ void f_out__state(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_FAUR,
               F_OUT__TYPE_STATE,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -158,7 +160,7 @@ void f_out_text(const char* Text)
 {
     outWorkerPrint(F_OUT__SOURCE_APP,
                    F_OUT__TYPE_INFO,
-                   F_OUT__STREAM_STDOUT,
+                   F_CONFIG_OUT_STDOUT,
                    Text);
 }
 
@@ -169,7 +171,7 @@ void f_out_info(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_INFO,
-              F_OUT__STREAM_STDOUT,
+              F_CONFIG_OUT_STDOUT,
               Format,
               args);
 
@@ -183,7 +185,7 @@ void f_out_warning(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_WARNING,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
@@ -197,9 +199,31 @@ void f_out_error(const char* Format, ...)
 
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_ERROR,
-              F_OUT__STREAM_STDERR,
+              F_CONFIG_OUT_STDERR,
               Format,
               args);
 
     va_end(args);
+
+    f_out__backtrace(F_OUT__SOURCE_APP);
+}
+
+void f_out__backtrace(FOutSource Source)
+{
+    #ifdef __GLIBC__
+        void* addresses[16];
+        int numAddresses = backtrace(addresses, F_ARRAY_LEN(addresses));
+        char** functionNames = backtrace_symbols(addresses, numAddresses);
+
+        for(int i = 0; i < numAddresses; i++) {
+            outWorkerPrint(Source,
+                           F_OUT__TYPE_INFO,
+                           F_CONFIG_OUT_STDOUT,
+                           functionNames[i]);
+        }
+
+        free(functionNames);
+    #else
+        F_UNUSED(Source);
+    #endif
 }

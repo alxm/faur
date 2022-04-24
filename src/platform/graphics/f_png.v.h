@@ -15,16 +15,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_FADE_V_H
-#define F_INC_GRAPHICS_FADE_V_H
+#ifndef F_INC_PLATFORM_GRAPHICS_PNG_V_H
+#define F_INC_PLATFORM_GRAPHICS_PNG_V_H
 
-#include "f_fade.p.h"
+#include "f_png.p.h"
 
-#include "../general/f_init.v.h"
+#include "../../graphics/f_pixels.v.h"
 
-extern const FPack f_pack__fade;
+extern FPixels* f_png__read(const char* Path);
+extern void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
 
-extern void f_fade__tick(void);
-extern void f_fade__draw(void);
-
-#endif // F_INC_GRAPHICS_FADE_V_H
+#endif // F_INC_PLATFORM_GRAPHICS_PNG_V_H

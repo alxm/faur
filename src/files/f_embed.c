@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2021 Alex Margarit <alex@alxm.org>
+    Copyright 2017 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,13 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_PATHS_ENABLED
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
+
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB
+    static FBlob* g_blob;
+#endif
 
 #if F_CONFIG_TRAIT_LOW_MEM
     #define F__EMBED_HASH_SLOTS 8
@@ -33,11 +37,23 @@ static void f_embed__init(void)
     g_dirs = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
     g_files = f_hash_newStr(F__EMBED_HASH_SLOTS, false);
 
-    f_embed__populate();
+    #if F_CONFIG_FILES_EMBED_PATHS_C
+        f_embed__populate();
+    #endif
+
+    #if F_CONFIG_FILES_EMBED_PATHS_BLOB
+        if(f_path_exists(F_CONFIG_FILES_EMBED_BLOB, F_PATH_FILE)) {
+            g_blob = f_blob_new(F_CONFIG_FILES_EMBED_BLOB);
+        }
+    #endif
 }
 
 static void f_embed__uninit(void)
 {
+    #if F_CONFIG_FILES_EMBED_PATHS_BLOB
+        f_blob_free(g_blob);
+    #endif
+
     f_hash_free(g_dirs);
     f_hash_free(g_files);
 }
@@ -47,6 +63,17 @@ const FPack f_pack__embed = {
     f_embed__init,
     f_embed__uninit,
 };
+
+void f_embed__set(const FEmbeddedDir* const* Dirs, size_t DirsNum, const FEmbeddedFile* const* Files, size_t FilesNum)
+{
+    for(size_t d = DirsNum; d--; ) {
+        f_hash_add(g_dirs, Dirs[d]->path, (void*)Dirs[d]);
+    }
+
+    for(size_t f = FilesNum; f--; ) {
+        f_hash_add(g_files, Files[f]->path, (void*)Files[f]);
+    }
+}
 
 FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
 {
@@ -67,11 +94,6 @@ void f_embed__dirFree(FEmbeddedDir* Dir)
 
     f_mem_free(Dir->entries);
     f_mem_free(Dir);
-}
-
-void f_embed__dirAdd(const FEmbeddedDir* Dir)
-{
-    f_hash_add(g_dirs, Dir->path, (void*)Dir);
 }
 
 const FEmbeddedDir* f_embed__dirGet(const char* Path)
@@ -97,11 +119,6 @@ void f_embed__fileFree(FEmbeddedFile* File)
     f_hash_removeKey(g_files, File->path);
 
     f_mem_free(File);
-}
-
-void f_embed__fileAdd(const FEmbeddedFile* File)
-{
-    f_hash_add(g_files, File->path, (void*)File);
 }
 
 const FEmbeddedFile* f_embed__fileGet(const char* Path)
@@ -131,9 +148,7 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
 
     return false;
 }
-#else // !F_CONFIG_FILES_EMBED_PATHS_ENABLED
-const FPack f_pack__embed;
-
+#else // !(F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C)
 bool f_embed__stat(const char* Path, FPathInfo* Info)
 {
     F_UNUSED(Path);
@@ -155,4 +170,4 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 
     return NULL;
 }
-#endif // !F_CONFIG_FILES_EMBED_PATHS_ENABLED
+#endif // !(F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C)

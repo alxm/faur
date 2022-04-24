@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2011 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -60,19 +60,6 @@ static int dirSort(const FPath* A, const FPath* B)
     return a - b;
 }
 
-static void dirRealCreate(const char* Path)
-{
-    #if F_CONFIG_SYSTEM_MINGW
-        int ret = mkdir(Path);
-    #else
-        int ret = mkdir(Path, S_IRWXU);
-    #endif
-
-    if(ret != 0) {
-        F__FATAL("mkdir(%s) failed", Path);
-    }
-}
-
 static FList* dirRealOpen(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
@@ -113,8 +100,8 @@ static FList* dirEmbeddedOpen(FPath* Path)
 
 FDir* f_dir_new(const char* Path)
 {
-    if(!f_path_exists(Path, F_PATH_DIR)) {
-        dirRealCreate(Path);
+    if(!f_path_exists(Path, F_PATH_DIR) && !f_platform_api__dirCreate(Path)) {
+        F__FATAL("f_dir_new(%s): mkdir failed", Path);
     }
 
     FList* files;

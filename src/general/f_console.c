@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_CONSOLE_ENABLED
+#if F_CONFIG_OUT_CONSOLE_ENABLED
 #include <faur_v/faur_gfx/g_console_19x7.png.h>
 
 #include <unistd.h>
@@ -74,7 +74,7 @@ static void f_console__init1(void)
     g_toggle = f_button_new();
     f_button_bindKey(g_toggle, F_KEY_F10);
     f_button_bindCombo(
-        g_toggle, NULL, F_CONFIG_CONSOLE_TOGGLE, F_BUTTON_INVALID);
+        g_toggle, NULL, F_CONFIG_OUT_CONSOLE_TOGGLE, F_BUTTON_INVALID);
 
     g_state = F_CONSOLE__STATE_FULL;
 }
@@ -107,7 +107,7 @@ void f_console__tick(void)
     }
 }
 
-#if F_CONFIG_DEBUG_ALLOC
+#if F_CONFIG_DEBUG_MEM_MALLOC
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -244,7 +244,7 @@ void f_console__draw(void)
         f_font_printf("PID %d\n", getpid());
         f_font_printf("%u ticks\n", f_fps_ticksGet());
 
-        #if F_CONFIG_DEBUG_ALLOC
+        #if F_CONFIG_DEBUG_MEM_MALLOC
             printBytes(f_mem__tally, "now");
             printBytes(f_mem__top, "top");
         #endif
@@ -286,32 +286,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F_CONFIG_CONSOLE_ENABLED
-const FPack f_pack__console_0;
-const FPack f_pack__console_1;
-
-void f_console_showSet(bool Show)
-{
-    F_UNUSED(Show);
-}
-
-void f_console__tick(void)
-{
-}
-
-void f_console__draw(void)
-{
-}
-
-bool f_console__isInitialized(void)
-{
-    return false;
-}
-
-void f_console__write(FOutSource Source, FOutType Type, const char* Text)
-{
-    F_UNUSED(Source);
-    F_UNUSED(Type);
-    F_UNUSED(Text);
-}
-#endif // !F_CONFIG_CONSOLE_ENABLED
+#endif // F_CONFIG_OUT_CONSOLE_ENABLED

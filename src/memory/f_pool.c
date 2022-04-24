@@ -148,6 +148,10 @@ void f_pool_free(FPool* Pool)
 
 void* f_pool_alloc(FPool* Pool)
 {
+    #if F_CONFIG_DEBUG_MEM_POOL
+        return f_mem_mallocz(Pool->objSize);
+    #endif
+
     if(Pool->freeEntryList == NULL) {
         slab_new(Pool);
     }
@@ -166,6 +170,12 @@ void* f_pool_alloc(FPool* Pool)
 
 void f_pool_release(void* Buffer)
 {
+    #if F_CONFIG_DEBUG_MEM_POOL
+        f_mem_free(Buffer);
+
+        return;
+    #endif
+
     if(Buffer == NULL) {
         return;
     }

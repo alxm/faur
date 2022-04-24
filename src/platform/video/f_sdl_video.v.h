@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@
     #elif F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_ABGR_8888
         #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_ABGR8888
     #else
-        #error Cannot match F_CONFIG_SCREEN_FORMAT to a SDL format
+        #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
     #endif
 #endif
 

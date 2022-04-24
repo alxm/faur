@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2021 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -145,6 +145,10 @@ void* f_list_getByIndex(const FList* List, unsigned Index)
             }
         }
     } else {
+        if(Index >= List->items) {
+            F__FATAL("f_list_getByIndex(%u): Invalid index", Index);
+        }
+
         Index = List->items - 1 - Index;
 
         F__ITERATE_REV(List, n) {

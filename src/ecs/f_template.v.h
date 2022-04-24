@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2018 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -42,5 +42,7 @@ extern void f_template__uninit(void);
 extern const FTemplate* f_template__get(const char* Id);
 
 extern void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context);
+
+extern FTemplate* f_template__new(const char* Id, const FBlock* Block);
 
 #endif // F_INC_ECS_TEMPLATE_V_H

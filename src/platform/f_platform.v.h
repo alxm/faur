@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -117,6 +117,7 @@ extern bool f_platform_api__inputTouchTapGet(void);
 extern FPlatformController* f_platform_api__inputControllerClaim(FCallControllerBind* Callback);
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
+extern bool f_platform_api__dirCreate(const char* Path);
 extern bool f_platform_api__fileStat(const char* Path, FPathInfo* Info);
 extern bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size);
 extern bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
@@ -132,4 +133,6 @@ extern int f_platform_api__fileReadChar(FPlatformFile* File);
 extern int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char);
 extern void f_platform_api__fileSync(void);
 
+extern void* f_platform_api__malloc(size_t Size);
+extern void* f_platform_api__mallocz(size_t Size);
 #endif // F_INC_PLATFORM_PLATFORM_V_H

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -42,5 +42,7 @@ extern void f_out__warning(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_out__error(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_out__errorv(const char* Format, va_list Args);
 extern void f_out__state(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
+
+extern void f_out__backtrace(FOutSource Source);
 
 #endif // F_INC_GENERAL_OUT_V_H

@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2018 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 static FHash* g_templates; // FHash<char*, FTemplate*>
 
-static FTemplate* templateNew(const char* Id, const FBlock* Block)
+FTemplate* f_template__new(const char* Id, const FBlock* Block)
 {
     FTemplate* t = f_mem_mallocz(
                     sizeof(FTemplate) + sizeof(void*) * (f_component__num - 1));
@@ -39,7 +39,7 @@ static FTemplate* templateNew(const char* Id, const FBlock* Block)
         FTemplate* parentTemplate = f_hash_get(g_templates, parentId);
 
         if(parentTemplate == NULL) {
-            parentTemplate = templateNew(parentId, NULL);
+            parentTemplate = f_template__new(parentId, NULL);
         }
 
         t->parent = parentTemplate;
@@ -111,54 +111,6 @@ void f_template__init(void)
 void f_template__uninit(void)
 {
     f_hash_freeEx(g_templates, (FCallFree*)templateFree);
-}
-
-static void process_file(const char* FilePath, FList* Blocks)
-{
-    FBlock* root = f_block_new(FilePath);
-
-    F_LIST_ITERATE(f_block_blocksGet(root), FBlock*, b) {
-        f_list_addLast(Blocks, b);
-        f_block__refInc(b);
-    }
-
-    f_block_free(root);
-}
-
-static void process_dir(const char* Path, FList* Blocks)
-{
-    FDir* dir = f_dir_new(Path);
-
-    F_LIST_ITERATE(f_dir_entriesGet(dir), const FPath*, p) {
-        const char* path = f_path_getFull(p);
-
-        if(f_path_test(p, F_PATH_DIR)) {
-            process_dir(path, Blocks);
-        } else if(f_str_endsWith(f_path_getName(p), ".txt")) {
-            process_file(path, Blocks);
-        }
-    }
-
-    f_dir_free(dir);
-}
-
-static int cmp_blocks(const FBlock* A, const FBlock* B)
-{
-    return strcmp(f_block_lineGetString(A, 0), f_block_lineGetString(B, 0));
-}
-
-void f_template_load(const char* Dir)
-{
-    FList* blocks = f_list_new();
-
-    process_dir(Dir, blocks);
-    f_list_sort(blocks, (FCallListCompare*)cmp_blocks);
-
-    F_LIST_ITERATE(blocks, const FBlock*, b) {
-        templateNew(f_block_lineGetString(b, 0), b);
-    }
-
-    f_list_freeEx(blocks, (FCallFree*)f_block_free);
 }
 
 const FTemplate* f_template__get(const char* Id)

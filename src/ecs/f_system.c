@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -33,14 +33,12 @@ void f_system__init(FSystem* const* Systems, size_t SystemsNum)
         sys->componentBits = f_bitfield_new(f_component__num);
 
         for(unsigned c = sys->componentsNum; c--; ) {
-            #if F_CONFIG_DEBUG
-                if(sys->components[c] == NULL) {
-                    F__FATAL("%s component %u/%u is NULL",
-                             sys->stringId,
-                             c + 1,
-                             sys->componentsNum);
-                }
-            #endif
+            if(sys->components[c] == NULL) {
+                F__FATAL("%s component %u/%u is NULL",
+                         sys->stringId,
+                         c + 1,
+                         sys->componentsNum);
+            }
 
             f_bitfield_set(sys->componentBits, sys->components[c]->bitId);
         }

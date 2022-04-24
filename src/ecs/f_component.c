@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -65,13 +65,11 @@ const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
-    #if F_CONFIG_DEBUG
-        if(instance->entity->templ == NULL) {
-            F_FATAL("f_component_dataGet(%s.%s): No template",
-                    instance->entity->id,
-                    instance->component->stringId);
-        }
-    #endif
+    if(instance->entity->templ == NULL) {
+        F__FATAL("f_component_dataGet(%s.%s): No template",
+                 instance->entity->id,
+                 instance->component->stringId);
+    }
 
     return instance->entity->templ->data[instance->component->bitId];
 }

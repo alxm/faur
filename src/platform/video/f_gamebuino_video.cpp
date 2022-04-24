@@ -1,5 +1,5 @@
 /*
-    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ static const FVecInt g_lightsSize = {F__NEOPIXELS_W, F__NEOPIXELS_H};
 #include <Gamebuino-Meta.h>
 
 static FPixels g_pixels, g_lights;
-static const FVecInt g_screenSize = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
-                                     F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH_HW,
+                                     F_CONFIG_SCREEN_SIZE_HEIGHT_HW};
 
 void f_platform_api__screenInit(void)
 {
@@ -75,7 +75,7 @@ FPixels* f_platform_api__screenPixelsGet(void)
 
 int f_platform_api__screenZoomGet(void)
 {
-    return F_CONFIG_SCREEN_ZOOM;
+    return F_CONFIG_SCREEN_SIZE_ZOOM;
 }
 
 bool f_platform_api__screenFullscreenGet(void)

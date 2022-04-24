@@ -1,5 +1,5 @@
 /*
-    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,12 +30,9 @@ struct FPalette {
 
 static FPalette* newPalette(const FPixels* Pixels)
 {
-    #if F_CONFIG_DEBUG
-        if(Pixels->size.x < 1 || Pixels->size.y < 2) {
-            F__FATAL(
-                "Invalid palette size %dx%d", Pixels->size.x, Pixels->size.y);
-        }
-    #endif
+    if(Pixels->size.x < 1 || Pixels->size.y < 2) {
+        F__FATAL("Invalid palette size %dx%d", Pixels->size.x, Pixels->size.y);
+    }
 
     // First pixel sets the non-palette color to ignore; row 0 is reserved
     FColorPixel ignore = f_pixels__bufferGetValue(Pixels, 0, 0, 0);
@@ -73,10 +70,6 @@ static FPalette* newPalette(const FPixels* Pixels)
         }
     }
 
-    #if F_CONFIG_DEBUG
-        f_out__info("Loaded %u colors from palette", num);
-    #endif
-
     return p;
 }
 
@@ -109,22 +102,18 @@ void f_palette_free(FPalette* Palette)
 
 FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_DEBUG
-        if(Index >= Palette->size) {
-            F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
-        }
-    #endif
+    if(Index >= Palette->size) {
+        F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
+    }
 
     return Palette->entries[Index].pixel;
 }
 
 FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index)
 {
-    #if F_CONFIG_DEBUG
-        if(Index >= Palette->size) {
-            F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
-        }
-    #endif
+    if(Index >= Palette->size) {
+        F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
+    }
 
     return Palette->entries[Index].rgb;
 }

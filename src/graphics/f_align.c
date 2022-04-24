@@ -1,5 +1,5 @@
 /*
-    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -49,11 +49,9 @@ void f_align_pop(void)
 {
     FAlign* align = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(align == NULL) {
-            F__FATAL("f_align_pop: Stack is empty");
-        }
-    #endif
+    if(align == NULL) {
+        F__FATAL("f_align_pop: Stack is empty");
+    }
 
     f__align = *align;
     f_pool_release(align);

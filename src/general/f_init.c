@@ -1,5 +1,5 @@
 /*
-    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,24 +20,36 @@
 
 static const FPack* g_packs[] = {
     &f_pack__pool,
+#if F_CONFIG_OUT_CONSOLE_ENABLED
     &f_pack__console_0,
+#endif
+#if F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C
     &f_pack__embed,
+#endif
     &f_pack__platform,
     &f_pack__screen,
     &f_pack__align,
     &f_pack__color,
     &f_pack__fps,
+#if F_CONFIG_LIB_PNG
     &f_pack__screenshot,
+#endif
+#if F_CONFIG_SOUND_ENABLED
     &f_pack__sound,
+#endif
     &f_pack__random,
+#if F_CONFIG_BUILD_GEN_LUTS
     &f_pack__fix,
     &f_pack__hash,
+#endif
     &f_pack__state,
     &f_pack__sym,
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
+#if F_CONFIG_OUT_CONSOLE_ENABLED
     &f_pack__console_1,
+#endif
 };
 
 void f_init__init(void)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2011 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -161,10 +161,4 @@ void f_screenshot_take(void)
 {
     takeScreenshot();
 }
-#else // !F_CONFIG_LIB_PNG
-const FPack f_pack__screenshot;
-
-void f_screenshot__tick(void)
-{
-}
-#endif // !F_CONFIG_LIB_PNG
+#endif // F_CONFIG_LIB_PNG

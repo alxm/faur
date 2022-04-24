@@ -26,6 +26,7 @@ F_CONFIG_FILES_SYNC_AFTER_WRITE := 1
 F_CONFIG_LIB_PNG := 1
 F_CONFIG_LIB_SDL ?= 2
 F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 2048
+F_CONFIG_OUT_STDERR := stdout
 F_CONFIG_SCREEN_VSYNC ?= 1
 F_CONFIG_SYSTEM_EMSCRIPTEN := 1
 F_CONFIG_TRAIT_CUSTOM_EXIT := 1
@@ -71,10 +72,10 @@ F_CONFIG_BUILD_LIBS += \
     --shell-file $(F_EMSCRIPTEN_SHELL) \
     -lidbfs.js \
     --use-preload-plugins \
-    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_EMSCRIPTEN), \
+    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     $(F_EMSCRIPTEN_OPTIONS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \

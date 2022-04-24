@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2018 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -50,11 +50,13 @@ extern void f_listintr_init(FListIntr* List, size_t NodeOffset);
 #endif
 
 extern void f_listintr_clear(FListIntr* List);
+extern void f_listintr_clearEx(FListIntr* List, FCallFree* Free);
 
 extern void f_listintr_addFirst(FListIntr* List, void* Item);
 extern void f_listintr_addLast(FListIntr* List, void* Item);
 
 extern void* f_listintr_getFirst(const FListIntr* List);
+extern void* f_listintr_getLast(const FListIntr* List);
 
 extern void* f_listintr_removeFirst(FListIntr* List);
 extern void f_listintr_removeItem(FListIntr* List, void* Item);

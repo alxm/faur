@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,11 +19,6 @@
 #include <faur.v.h>
 
 #include <unistd.h>
-
-#ifdef __GLIBC__
-    #define F__BACKTRACE 1
-    #include <execinfo.h>
-#endif
 
 static int g_argsNum;
 static const char** g_args;
@@ -74,43 +69,35 @@ const char* f_main_argsGet(int ArgNum)
     return g_args[ArgNum];
 }
 
-F__ATTRIBUTE_NORETURN static void handleFatal(void)
+F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
 {
     #if F_CONFIG_DEBUG_FATAL_SPIN
         while(true);
     #else
-        #if F__BACKTRACE
-            void* addresses[16];
-            int numAddresses = backtrace(addresses, F_ARRAY_LEN(addresses));
-            char** functionNames = backtrace_symbols(addresses, numAddresses);
+        f_out__backtrace(Source);
 
-            for(int i = 0; i < numAddresses; i++) {
-                f_out__error("%s", functionNames[i]);
+        #if F_CONFIG_OUT_CONSOLE_ENABLED
+            if(f_console__isInitialized()) {
+                f_console_showSet(true);
+                f_console__draw();
+                f_screen__draw();
             }
-
-            free(functionNames);
         #endif
 
-        bool console = f_console__isInitialized();
-
-        if(console) {
-            f_console_showSet(true);
-            f_console__draw();
-            f_screen__draw();
-        }
-
-        #if F_CONFIG_DEBUG_WAIT
+        #if F_CONFIG_DEBUG_FATAL_WAIT
             while(true) {
                 printf("Waiting to attach debugger: PID %d\n", getpid());
                 f_time_msSpin(1000);
             }
         #elif !F_CONFIG_TRAIT_DESKTOP
-            if(console) {
-                f_out__info("Exiting in 10s");
-                f_console__draw();
-                f_screen__draw();
-                f_time_msWait(10 * 1000);
-            }
+            #if F_CONFIG_OUT_CONSOLE_ENABLED
+                if(f_console__isInitialized()) {
+                    f_out__info("Exiting in 10s");
+                    f_console__draw();
+                    f_screen__draw();
+                    f_time_msWait(10 * 1000);
+                }
+            #endif
         #endif
 
         #if F_CONFIG_TRAIT_CUSTOM_EXIT
@@ -130,7 +117,7 @@ void F__FATAL(const char* Format, ...)
 
     va_end(args);
 
-    handleFatal();
+    handleFatal(F_OUT__SOURCE_FAUR);
 }
 
 void F_FATAL(const char* Format, ...)
@@ -142,5 +129,5 @@ void F_FATAL(const char* Format, ...)
 
     va_end(args);
 
-    handleFatal();
+    handleFatal(F_OUT__SOURCE_APP);
 }

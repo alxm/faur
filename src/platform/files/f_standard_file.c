@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,19 @@
 struct FPlatformFile {
     FILE* handle;
 };
+
+bool f_platform_api__dirCreate(const char* Path)
+{
+    int ret;
+
+    #if F_CONFIG_SYSTEM_MINGW
+        ret = mkdir(Path);
+    #else
+        ret = mkdir(Path, S_IRWXU);
+    #endif
+
+    return ret != 0;
+}
 
 bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
 {

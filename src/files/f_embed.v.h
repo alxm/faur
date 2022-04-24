@@ -1,5 +1,5 @@
 /*
-    Copyright 2017, 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2017 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -39,15 +39,14 @@ typedef struct {
 extern const FPack f_pack__embed;
 
 extern void f_embed__populate(void);
+extern void f_embed__set(const FEmbeddedDir* const* Dirs, size_t DirsNum, const FEmbeddedFile* const* Files, size_t FilesNum);
 
 extern FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size);
 extern void f_embed__dirFree(FEmbeddedDir* Dir);
-extern void f_embed__dirAdd(const FEmbeddedDir* Dir);
 extern const FEmbeddedDir* f_embed__dirGet(const char* Path);
 
 extern FEmbeddedFile* f_embed__fileNew(const char* Path, size_t Size, const uint8_t* Buffer);
 extern void f_embed__fileFree(FEmbeddedFile* File);
-extern void f_embed__fileAdd(const FEmbeddedFile* File);
 extern const FEmbeddedFile* f_embed__fileGet(const char* Path);
 
 extern bool f_embed__stat(const char* Path, FPathInfo* Info);

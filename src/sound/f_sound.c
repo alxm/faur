@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -151,14 +151,4 @@ void f_sound__draw(void)
         f_color_pop();
     #endif
 }
-#else // !F_CONFIG_SOUND_ENABLED
-const FPack f_pack__sound;
-
-void f_sound__tick(void)
-{
-}
-
-void f_sound__draw(void)
-{
-}
-#endif // !F_CONFIG_SOUND_ENABLED
+#endif // F_CONFIG_SOUND_ENABLED

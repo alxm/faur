@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 extern const FPack f_pack__ecs;
 
 extern void f_ecs__populate(void);
-
 extern void f_ecs__set(FComponent* const* Components, size_t ComponentsNum, FSystem* const* Systems, size_t SystemsNum);
 
 #endif // F_INC_ECS_ECS_V_H

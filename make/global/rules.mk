@@ -14,10 +14,13 @@ F_BUILD_DIR_GEN_FAUR_MEDIA := $(F_BUILD_DIR_GEN)/faur_gfx
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
 F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 
-F_CONFIG_BUILD_FLAGS_SHARED += -I$(F_BUILD_DIR_GEN_ROOT)
+F_BUILD_FLAGS_SHARED_C_AND_CPP := \
+    $(F_CONFIG_BUILD_FLAGS_SETTINGS) \
+    $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP) \
+    -I$(F_BUILD_DIR_GEN_ROOT) \
 
 #
-# Generated ECS init code
+# The file that implements f_embed__populate
 #
 F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
@@ -35,9 +38,10 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 #
 # Project root-relative paths
 #
-F_BUILD_FILES_EMBED_BIN := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
-F_BUILD_FILES_EMBED_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
-F_BUILD_FILES_EMBED_TARGET := $(F_BUILD_FILES_EMBED_NAMES:%=$(F_BUILD_DIR_GEN_EMBED)/%)
+F_BUILD_FILES_EMBED_BIN_PATHS_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_BIN_PATHS_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_ABS:%=%.h)
+F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 
 #
 # The file that implements f_embed__populate
@@ -53,8 +57,8 @@ F_BUILD_FILES_SFX_C := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX
 F_BUILD_FILES_SFX_H := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
 F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
+F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c)
 F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h)
-F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_H:%.h=%.c)
 
 #
 # All generated source code
@@ -80,7 +84,6 @@ F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 # Default make targets
 #
 F_MAKE_ALL :=
-F_MAKE_PREREQS := $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H)
 
 #
 # Declare default target first
@@ -102,6 +105,11 @@ endif
 all_build : $(F_MAKE_ALL)
 
 #
+# Code generation target
+#
+gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
+
+#
 # ECS init code
 #
 $(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
@@ -115,9 +123,9 @@ $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
-$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-build-embed-init
+$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_BIN_H)
 
 #
 # Embedded objects
@@ -149,13 +157,13 @@ $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur
 #
 # Files that bundle up the generated code
 #
-$(F_BUILD_FILE_GEN_INC_C) : $(F_BUILD_FILES_GEN_C) $(F_FAUR_DIR_BIN)/faur-build-embed-inc
+$(F_BUILD_FILE_GEN_INC_C) : $(F_BUILD_FILES_GEN_C) $(F_FAUR_DIR_BIN)/faur-build-inc
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-inc --include-c $@ $(F_BUILD_FILES_GEN_C:$(F_BUILD_DIR_GEN)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-inc --include-c $@ $(F_BUILD_FILES_GEN_C:$(F_BUILD_DIR_GEN)/%=%)
 
-$(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-embed-inc
+$(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-inc
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-inc --include-h $@ $(F_BUILD_FILES_GEN_H:$(F_BUILD_DIR_GEN)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-build-inc --include-h $@ $(F_BUILD_FILES_GEN_H:$(F_BUILD_DIR_GEN)/%=%)
 
 #
 # Action targets
@@ -176,4 +184,4 @@ cleanall : clean cleangen
 #
 # Not file targets
 #
-.PHONY : all all_build clean cleanall cleangen
+.PHONY : all all_build clean cleanall cleangen gen

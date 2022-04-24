@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -61,11 +61,9 @@ void f_color_pop(void)
 {
     FColorState* state = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(state == NULL) {
-            F__FATAL("f_color_pop: Stack is empty");
-        }
-    #endif
+    if(state == NULL) {
+        F__FATAL("f_color_pop: Stack is empty");
+    }
 
     f__color = *state;
     f_pool_release(state);
@@ -207,11 +205,9 @@ void f_color_colorSetPixel(FColorPixel Pixel)
 
 void f_color_colorSetIndex(unsigned ColorIndex)
 {
-    #if F_CONFIG_DEBUG
-        if(f__color.palette == NULL) {
-            F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
-        }
-    #endif
+    if(f__color.palette == NULL) {
+        F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
+    }
 
     f_color_colorSetPixel(f_palette_getPixel(f__color.palette, ColorIndex));
 }

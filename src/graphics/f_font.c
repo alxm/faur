@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -84,11 +84,9 @@ void f_font_pop(void)
 {
     FFontState* state = f_listintr_pop(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(state == NULL) {
-            F__FATAL("f_font_pop: Stack is empty");
-        }
-    #endif
+    if(state == NULL) {
+        F__FATAL("f_font_pop: Stack is empty");
+    }
 
     g_state = *state;
     f_pool_release(state);

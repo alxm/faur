@@ -20,4 +20,6 @@
 
 #include "../general/f_system_includes.h"
 
+extern void f_ecs_init(void);
+
 #endif // F_INC_ECS_ECS_P_H

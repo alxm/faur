@@ -1,15 +1,15 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-F_CONFIG_BUILD_FLAGS_AR := T
 F_CONFIG_BUILD_OPT ?= 0
 F_CONFIG_DEBUG ?= 1
 F_CONFIG_LIB_PNG ?= 1
 F_CONFIG_LIB_SDL ?= 2
+F_CONFIG_OUT_COLOR_TEXT := 1
 F_CONFIG_SYSTEM_LINUX := 1
 F_CONFIG_TRAIT_DESKTOP := 1
 
 ifneq ($(F_CONFIG_DEBUG), 0)
-    F_CONFIG_DEBUG_ALLOC ?= 1
+    F_CONFIG_DEBUG_MEM_MALLOC ?= 1
 endif
 
 ifeq ($(F_CONFIG_LIB_SDL), 1)
@@ -25,7 +25,7 @@ F_CONFIG_BUILD_LIBS += \
     -pie \
     -fsanitize=undefined \
 
-F_CONFIG_BUILD_FLAGS_SHARED += \
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fpie \
     -fsanitize=undefined \
 

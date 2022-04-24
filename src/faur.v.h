@@ -1,5 +1,5 @@
 /*
-    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -47,7 +47,6 @@ F_EXTERN_C_START
 #include "graphics/f_fade.v.h"
 #include "graphics/f_font.v.h"
 #include "graphics/f_pixels.v.h"
-#include "graphics/f_png.v.h"
 #include "graphics/f_screenshot.v.h"
 #include "graphics/f_screen.v.h"
 #include "graphics/f_sprite.v.h"
@@ -59,6 +58,7 @@ F_EXTERN_C_START
 #include "memory/f_mem.v.h"
 #include "memory/f_pool.v.h"
 #include "platform/f_platform.v.h"
+#include "platform/graphics/f_png.v.h"
 #include "platform/graphics/f_software_blit.v.h"
 #include "platform/video/f_sdl_video.v.h"
 #include "platform/input/f_odroid_go_input.v.h"

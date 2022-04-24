@@ -22,8 +22,8 @@ F_ARDUINO_BUILDER := \
         -build-path $(F_BUILD_DIR_ARDUINO_BUILD) \
         -build-cache $(F_BUILD_DIR_ARDUINO_CACHE) \
         -prefs=build.warn_data_percentage=75 \
-        -prefs=compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
-        -prefs=compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
+        -prefs=compiler.c.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
+        -prefs=compiler.cpp.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
         $(F_BUILD_FILE_INO)
 
 F_ARDUINO_UPLOAD := \
@@ -35,12 +35,18 @@ F_ARDUINO_UPLOAD := \
         --port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
         --pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
         --pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
-        --pref compiler.c.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
-        --pref compiler.cpp.extra_flags="$(F_CONFIG_BUILD_FLAGS_SHARED)" \
+        --pref compiler.c.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
+        --pref compiler.cpp.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
         $(F_BUILD_FILE_INO)
 
+F_ARDUINO_PRE := \
+    arduino_dirs \
+    $(F_BUILD_FILE_INO) \
+    $(F_BUILD_FILE_GEN_INC_C) \
+    $(F_BUILD_FILE_GEN_INC_H) \
+    $(F_BUILD_FILES_FAUR_GFX_H) \
+
 F_MAKE_ALL += arduino_build
-F_MAKE_PREREQS += arduino_dirs $(F_BUILD_FILE_INO) $(F_BUILD_FILES_FAUR_GFX_H)
 
 #
 # Arduino files and paths
@@ -52,16 +58,16 @@ arduino_dirs :
 $(F_BUILD_FILE_INO) :
 	echo "//" > $@
 
-arduino_build : $(F_MAKE_PREREQS)
+arduino_build : $(F_ARDUINO_PRE)
 	$(F_ARDUINO_BUILDER)
 
 #
 # Action targets
 #
-run : $(F_MAKE_PREREQS)
+run : $(F_ARDUINO_PRE)
 	$(F_ARDUINO_UPLOAD)
 
 #
 # Not file targets
 #
-.PHONY :  arduino_build arduino_dirs run
+.PHONY : arduino_build arduino_dirs run

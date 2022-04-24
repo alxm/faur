@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2018 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,20 @@ void f_listintr_init(FListIntr* List, size_t NodeOffset)
 
 void f_listintr_clear(FListIntr* List)
 {
+    f_listintr_clearEx(List, NULL);
+}
+
+void f_listintr_clearEx(FListIntr* List, FCallFree* Free)
+{
+    if(Free) {
+        for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
+            n1 != &List->root;
+            n1 = n2, n2 = n2->next) {
+
+            Free(nodeToItem(List, n1));
+        }
+    }
+
     List->root.prev = &List->root;
     List->root.next = &List->root;
 }
@@ -77,6 +91,17 @@ void* f_listintr_getFirst(const FListIntr* List)
     }
 
     return nodeToItem(List, first);
+}
+
+void* f_listintr_getLast(const FListIntr* List)
+{
+    FListIntrNode* last = List->root.prev;
+
+    if(last == &List->root) {
+        return NULL;
+    }
+
+    return nodeToItem(List, last);
 }
 
 void* f_listintr_removeFirst(FListIntr* List)

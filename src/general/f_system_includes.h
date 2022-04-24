@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2011 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -38,14 +38,10 @@
 
 #define F__ATTRIBUTE_ALIGN(AlignExp) __attribute__((aligned (1 << (AlignExp))))
 #define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
-
-#if F_CONFIG_SYSTEM_MINGW
-    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
-        __attribute__((format (gnu_printf, FormatIndex, FormatIndex + 1)))
-#else
-    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
-        __attribute__((format (printf, FormatIndex, FormatIndex + 1)))
-#endif
+#define F__ATTRIBUTE_FORMAT(FormatIndex) \
+    __attribute__((format (F_CONFIG_BUILD_ATTRIBUTE_FORMAT_PRINTF, \
+                           FormatIndex, \
+                           FormatIndex + 1)))
 
 #define F__APP_VERSION_STRING \
     F_STRINGIFY(F_CONFIG_APP_VERSION_MAJOR) \
@@ -68,7 +64,7 @@ typedef volatile int FEvent;
 #include <string.h>
 
 #if CHAR_BIT != 8
-    #error Code needs CHAR_BIT == 8
+    #error FAUR_ERROR: Invalid CHAR_BIT != 8
 #endif
 
 #endif // F_INC_GENERAL_SYSTEM_INCLUDES_H

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -93,13 +93,12 @@ static void pending_handle(void)
     FStateEntry* pendingState = f_listintr_pop(&g_pending);
 
     if(pendingState->handler == NULL) {
+        if(current == NULL) {
+            F__FATAL("Pop state: stack is empty");
+        }
+
         #if F_CONFIG_DEBUG
-            if(current == NULL) {
-                F__FATAL("Pop state: stack is empty");
-            }
-
             f_out__state("Pop '%s'", current->name);
-
             f_out__state("'%s' going from %s to %s",
                          current->name,
                          g_stageNames[current->stage],
@@ -112,13 +111,13 @@ static void pending_handle(void)
     } else {
         #if F_CONFIG_DEBUG
             f_out__state("Push '%s'", pendingState->name);
-
-            F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
-                if(pendingState->handler == e->handler) {
-                    F__FATAL("State '%s' already in stack", e->name);
-                }
-            }
         #endif
+
+        F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
+            if(pendingState->handler == e->handler) {
+                F__FATAL("State '%s' already in stack", e->name);
+            }
+        }
 
         f_out__state("New '%s' instance", pendingState->name);
 
@@ -248,9 +247,10 @@ void f_state_exit(void)
     f_out__state("*** Telling all states to exit ***");
 
     g_exiting = true;
+    g_blockEvent = NULL;
 
     // Clear the pending actions queue
-    f_listintr_apply(&g_pending, f_pool_release);
+    f_listintr_clearEx(&g_pending, f_pool_release);
 
     // Queue a pop for every state in the stack
     F_LISTINTR_ITERATE(&g_stack, const FStateEntry*, e) {
@@ -281,6 +281,7 @@ bool f_state_blockGet(void)
             return true;
         }
 
+        // Forget event if not set
         g_blockEvent = NULL;
     }
 
@@ -289,6 +290,10 @@ bool f_state_blockGet(void)
 
 void f_state_blockSet(const FEvent* Event)
 {
+    if(g_exiting) {
+        return;
+    }
+
     g_blockEvent = Event;
 }
 
@@ -306,10 +311,20 @@ bool f_state__runStep(void)
         while(f_fps__tick()) {
             f_timer__tick();
             f_input__tick();
-            f_sound__tick();
             f_screen__tick();
-            f_screenshot__tick();
-            f_console__tick();
+
+            #if F_CONFIG_LIB_PNG
+                f_screenshot__tick();
+            #endif
+
+            #if F_CONFIG_SOUND_ENABLED
+                f_sound__tick();
+            #endif
+
+            #if F_CONFIG_OUT_CONSOLE_ENABLED
+                f_console__tick();
+            #endif
+
             f_entity__tick();
             f_fade__tick();
 
@@ -352,8 +367,15 @@ bool f_state__runStep(void)
         f_screen_clipReset();
 
         f_fade__draw();
-        f_sound__draw();
-        f_console__draw();
+
+        #if F_CONFIG_SOUND_ENABLED
+            f_sound__draw();
+        #endif
+
+        #if F_CONFIG_OUT_CONSOLE_ENABLED
+            f_console__draw();
+        #endif
+
         f_screen__draw();
 
         f_fps__frame();
@@ -372,11 +394,9 @@ bool f__state_stageCheck(F__StateStage Stage)
 {
     const FStateEntry* e = f_listintr_peek(&g_stack);
 
-    #if F_CONFIG_DEBUG
-        if(e == NULL) {
-            F__FATAL("%s: state stack is empty", g_stageNames[Stage]);
-        }
-    #endif
+    if(e == NULL) {
+        F__FATAL("State stack is empty");
+    }
 
     return e->stage == Stage;
 }

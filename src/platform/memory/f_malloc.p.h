@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit <alex@alxm.org>
+    Copyright 2022 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_FADE_V_H
-#define F_INC_GRAPHICS_FADE_V_H
+#ifndef F_INC_PLATFORM_MEMORY_MALLOC_P_H
+#define F_INC_PLATFORM_MEMORY_MALLOC_P_H
 
-#include "f_fade.p.h"
+#include "../../general/f_system_includes.h"
 
-#include "../general/f_init.v.h"
-
-extern const FPack f_pack__fade;
-
-extern void f_fade__tick(void);
-extern void f_fade__draw(void);
-
-#endif // F_INC_GRAPHICS_FADE_V_H
+#endif // F_INC_PLATFORM_MEMORY_MALLOC_P_H

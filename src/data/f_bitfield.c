@@ -29,11 +29,9 @@ struct FBitfield {
 
 FBitfield* f_bitfield_new(unsigned NumBits)
 {
-    #if F_CONFIG_DEBUG
-        if(NumBits < 1) {
-            F__FATAL("f_bitfield_new(0): Invalid size");
-        }
-    #endif
+    if(NumBits == 0) {
+        F__FATAL("f_bitfield_new: 0 bits");
+    }
 
     unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
     FBitfield* b = f_mem_mallocz(

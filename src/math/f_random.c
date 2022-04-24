@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2016 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -67,33 +67,27 @@ void f_random_seedSet(unsigned Seed)
 
 int f_random_int(int Max)
 {
-    #if F_CONFIG_DEBUG
-        if(Max <= 0) {
-            F__FATAL("f_random_int(%d): Invalid arg", Max);
-        }
-    #endif
+    if(Max <= 0) {
+        F__FATAL("f_random_int(%d): Invalid arg", Max);
+    }
 
     return g_rand() % Max;
 }
 
 unsigned f_random_intu(unsigned Max)
 {
-    #if F_CONFIG_DEBUG
-        if(Max == 0) {
-            F__FATAL("f_random_intu(0): Invalid arg");
-        }
-    #endif
+    if(Max == 0) {
+        F__FATAL("f_random_intu(0): Invalid arg");
+    }
 
     return (unsigned)g_rand() % Max;
 }
 
 int f_random_range(int Min, int Max)
 {
-    #if F_CONFIG_DEBUG
-        if(Min >= Max) {
-            F__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
-        }
-    #endif
+    if(Min >= Max) {
+        F__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
+    }
 
     return Min + (g_rand() % (Max - Min));
 }
@@ -105,23 +99,18 @@ unsigned f_random_rangeu(unsigned Min, unsigned Max)
 
 bool f_random_chance(int Something, int OutOf)
 {
-    #if F_CONFIG_DEBUG
-        if(Something > OutOf) {
-            F__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
-        }
-    #endif
+    if(Something > OutOf) {
+        F__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
+    }
 
     return f_random_int(OutOf) < Something;
 }
 
 bool f_random_chanceu(unsigned Something, unsigned OutOf)
 {
-    #if F_CONFIG_DEBUG
-        if(Something > OutOf) {
-            F__FATAL(
-                "f_random_chanceu(%d, %d): Invalid args", Something, OutOf);
-        }
-    #endif
+    if(Something > OutOf) {
+        F__FATAL("f_random_chanceu(%d, %d): Invalid args", Something, OutOf);
+    }
 
     return f_random_intu(OutOf) < Something;
 }

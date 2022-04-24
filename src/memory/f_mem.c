@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017, 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2010 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #include "f_mem.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_DEBUG_ALLOC
+#if F_CONFIG_DEBUG_MEM_MALLOC
 size_t f_mem__tally, f_mem__top;
 
 static inline void tallyAdd(size_t Size)
@@ -28,19 +28,11 @@ static inline void tallyAdd(size_t Size)
 }
 #endif
 
-#if F_CONFIG_SYSTEM_ODROID_GO
-    extern void *ps_malloc(size_t size);
-    extern void *ps_calloc(size_t n, size_t size);
-
-    #define malloc ps_malloc
-    #define calloc ps_calloc
-#endif
-
 void* f_mem_malloc(size_t Size)
 {
-    #if F_CONFIG_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_MEM_MALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
-        FMaxMemAlignType* ptr = malloc(total);
+        FMaxMemAlignType* ptr = f_platform_api__malloc(total);
 
         if(ptr == NULL) {
             F__FATAL("malloc(%zu) failed", total);
@@ -52,7 +44,7 @@ void* f_mem_malloc(size_t Size)
 
         return ptr + 1;
     #else
-        void* ptr = malloc(Size);
+        void* ptr = f_platform_api__malloc(Size);
 
         if(ptr == NULL) {
             F__FATAL("malloc(%zu) failed", Size);
@@ -64,9 +56,9 @@ void* f_mem_malloc(size_t Size)
 
 void* f_mem_mallocz(size_t Size)
 {
-    #if F_CONFIG_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_MEM_MALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
-        FMaxMemAlignType* ptr = calloc(1, total);
+        FMaxMemAlignType* ptr = f_platform_api__mallocz(total);
 
         if(ptr == NULL) {
             F__FATAL("calloc(1, %zu) failed", total);
@@ -78,7 +70,7 @@ void* f_mem_mallocz(size_t Size)
 
         return ptr + 1;
     #else
-        void* ptr = calloc(1, Size);
+        void* ptr = f_platform_api__mallocz(Size);
 
         if(ptr == NULL) {
             F__FATAL("calloc(1, %zu) failed", Size);
@@ -90,12 +82,9 @@ void* f_mem_mallocz(size_t Size)
 
 void* f_mem_malloca(size_t Size, unsigned AlignExp)
 {
-    #if F_CONFIG_DEBUG
-        if((1u << AlignExp) < sizeof(void*)) {
-            F__FATAL(
-                "f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
-        }
-    #endif
+    if((1u << AlignExp) < sizeof(void*)) {
+        F__FATAL("f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
+    }
 
     uintptr_t mask = (uintptr_t)((1 << AlignExp) - 1);
     void* ptr = f_mem_malloc(sizeof(void*) + Size + mask);
@@ -121,7 +110,7 @@ void f_mem_free(void* Buffer)
         return;
     }
 
-    #if F_CONFIG_DEBUG_ALLOC
+    #if F_CONFIG_DEBUG_MEM_MALLOC
         FMaxMemAlignType* header = (FMaxMemAlignType*)Buffer - 1;
 
         f_mem__tally -= header->u_size;
