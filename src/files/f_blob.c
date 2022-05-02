@@ -19,12 +19,6 @@
 #include <faur.v.h>
 
 #if F_CONFIG_FILES_EMBED_PATHS_BLOB
-struct FBlob {
-    FList* dirs; // FList<FEmbeddedDir*>
-    FList* files; // FList<FEmbeddedFile*>
-    void* buffer; // NULL if blob itself is an embedded file
-};
-
 typedef struct {
     const char* path; // blob file path
     const uint8_t *buffer, *bufferEnd; // blob file buffer

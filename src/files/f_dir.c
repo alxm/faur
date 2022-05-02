@@ -22,11 +22,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-struct FDir {
-    FPath* path;
-    FList* files; // FList<FPath*>
-};
-
 static int dirSort(const FPath* A, const FPath* B)
 {
     const char* nameA = f_path_getName(A);

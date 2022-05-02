@@ -18,11 +18,6 @@
 #include "f_analog.v.h"
 #include <faur.v.h>
 
-struct FAnalog {
-    const char* name; // friendly name
-    FList* platformInputs; // FList<FPlatformAnalog*>
-};
-
 static const char* g_analogNames[F_AXIS_NUM] = {
     #if F_CONFIG_SYSTEM_CAANOO
         [F_AXIS_LEFTX] = "Stick",

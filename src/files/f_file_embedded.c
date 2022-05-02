@@ -18,11 +18,6 @@
 #include "f_file_embedded.v.h"
 #include <faur.v.h>
 
-struct FFileEmbedded {
-    const FEmbeddedFile* data;
-    size_t index;
-};
-
 FFileEmbedded* f_file_embedded__new(const FPath* Path)
 {
     FFileEmbedded* f = f_mem_malloc(sizeof(FFileEmbedded));

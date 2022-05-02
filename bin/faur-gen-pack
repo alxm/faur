@@ -23,6 +23,8 @@ import time
 from faur.tool.tool import Tool
 
 """
+Design pattern:
+
 category/f_sample.p.h
     #include "../general/f_system_includes.h"
     #include "../foo/f_bar.p.h"
@@ -34,7 +36,7 @@ category/f_sample.p.h
 
 category/f_sample.v.h
     #include "f_sample.p.h"
-    <private typedefs>
+    <private typedefs implementations>
     #include "../foo/f_bar.v.h"
     <private typedef implementations>
     <private api prototypes>
@@ -44,7 +46,7 @@ category/f_sample.c
     #include "f_sample.v.h"
     #include <faur.v.h>
     #include <system headers>
-    <private types>
+    <private typedef implementations>
     <implementations>
 """
 

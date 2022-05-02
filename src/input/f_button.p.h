@@ -86,7 +86,7 @@ typedef enum {
     F_KEY_NUM,
 } FKeyId;
 
-#include "../input/f_controller.v.h"
+#include "../input/f_controller.p.h"
 
 extern FButton* f_button_new(void);
 extern FButton* f_button_dup(const FButton* Button);

@@ -20,6 +20,21 @@
 
 #include "f_button.p.h"
 
+#include "../data/f_list.v.h"
+#include "../data/f_listintr.v.h"
+#include "../time/f_timer.v.h"
+
+struct FButton {
+    FListIntrNode listNode;
+    const char* name; // friendly name
+    FList* platformInputs; // FList<FPlatformButton*>
+    FListIntr combos; // FListIntr<FButtonCombo*>
+    FTimer* autoRepeat;
+    bool isClone;
+    bool waitForRelease;
+    bool pressed;
+};
+
 extern void f_input_button__tick(void);
 
 #endif // F_INC_INPUTS_BUTTON_V_H

@@ -33,7 +33,7 @@ typedef enum {
     F_AXIS_NUM
 } FAnalogId;
 
-#include "../input/f_controller.v.h"
+#include "../input/f_controller.p.h"
 #include "../math/f_fix.p.h"
 
 extern FAnalog* f_analog_new(void);

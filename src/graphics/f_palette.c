@@ -18,16 +18,6 @@
 #include "f_palette.v.h"
 #include <faur.v.h>
 
-typedef struct {
-    FColorPixel pixel;
-    FColorRgb rgb;
-} FPaletteEntry;
-
-struct FPalette {
-    unsigned size;
-    FPaletteEntry entries[];
-};
-
 static FPalette* newPalette(const FPixels* Pixels)
 {
     if(Pixels->size.x < 1 || Pixels->size.y < 2) {

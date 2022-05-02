@@ -21,10 +21,6 @@
 #if F_CONFIG_FILES_STANDARD
 #include <sys/stat.h>
 
-struct FPlatformFile {
-    FILE* handle;
-};
-
 bool f_platform_api__dirCreate(const char* Path)
 {
     int ret;

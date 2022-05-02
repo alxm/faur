@@ -20,4 +20,11 @@
 
 #include "f_bitfield.p.h"
 
+typedef unsigned long FChunk;
+
+struct FBitfield {
+    unsigned numChunks;
+    FChunk bits[1];
+};
+
 #endif // F_INC_DATA_BITFIELD_V_H
