@@ -41,7 +41,8 @@ static FPalette* newPalette(const FPixels* Pixels)
         F__FATAL("Palette has no colors");
     }
 
-    FPalette* p = f_mem_malloc(sizeof(FPalette) + num * sizeof(FPaletteEntry));
+    FPalette* p = f_mem_malloc(
+                    sizeof(FPalette) + (num - 1) * sizeof(FPaletteEntry));
 
     p->size = num;
 

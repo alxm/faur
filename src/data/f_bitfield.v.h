@@ -24,7 +24,7 @@ typedef unsigned long FChunk;
 
 struct FBitfield {
     unsigned numChunks;
-    FChunk bits[1];
+    FChunk bits[1]; // [numChunks]
 };
 
 #endif // F_INC_DATA_BITFIELD_V_H

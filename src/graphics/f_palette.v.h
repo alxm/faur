@@ -29,7 +29,7 @@ struct FPaletteEntry {
 
 struct FPalette {
     unsigned size;
-    FPaletteEntry entries[];
+    FPaletteEntry entries[1]; // [size]
 };
 
 #endif // F_INC_GRAPHICS_PALETTE_V_H
