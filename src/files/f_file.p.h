@@ -22,11 +22,11 @@
 
 typedef struct FFile FFile;
 
+#include "../files/f_path.p.h"
+
 #define F_FILE_READ F_FLAGS_BIT(0)
 #define F_FILE_WRITE F_FLAGS_BIT(1)
 #define F_FILE_BINARY F_FLAGS_BIT(2)
-
-#include "../files/f_path.p.h"
 
 extern bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size);
 extern const void* f_file_bufferReadConst(const char* Path);

@@ -20,8 +20,6 @@
 
 #include "f_pool.p.h"
 
-#include "../memory/f_mem.v.h"
-
 typedef enum {
     F_POOL__INVALID = -1,
     F_POOL__BLOCK,
@@ -46,6 +44,9 @@ typedef enum {
 typedef union FPoolEntryHeader FPoolEntryHeader;
 typedef struct FPoolSlab FPoolSlab;
 
+#include "../general/f_init.v.h"
+#include "../memory/f_mem.v.h"
+
 union FPoolEntryHeader {
     FPoolEntryHeader* nextFreeEntry; // Next free entry in a slab
     FPool* parentPool; // Pool this active entry belongs to
@@ -64,8 +65,6 @@ struct FPool {
     FPoolSlab* slabList; // Keeps track of all allocated slabs
     FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
 };
-
-#include "../general/f_init.v.h"
 
 extern const FPack f_pack__pool;
 

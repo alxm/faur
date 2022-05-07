@@ -23,11 +23,13 @@
 typedef void FCallPackInit(void);
 typedef void FCallPackUninit(void);
 
-typedef struct {
+typedef struct FPack FPack;
+
+struct FPack {
     const char* name;
     FCallPackInit* init;
     FCallPackUninit* uninit;
-} FPack;
+};
 
 extern void f_init__init(void);
 extern void f_init__uninit(void);

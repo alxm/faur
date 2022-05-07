@@ -20,8 +20,6 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FButton FButton;
-
 typedef enum {
     F_BUTTON_INVALID = -1,
     F_BUTTON_UP,
@@ -87,6 +85,8 @@ typedef enum {
 } FKeyId;
 
 #include "../input/f_controller.p.h"
+
+typedef struct FButton FButton;
 
 extern FButton* f_button_new(void);
 extern FButton* f_button_dup(const FButton* Button);

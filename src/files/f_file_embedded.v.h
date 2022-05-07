@@ -20,12 +20,14 @@
 
 #include "f_file_embedded.p.h"
 
+typedef struct FFileEmbedded FFileEmbedded;
+
 #include "../files/f_embed.v.h"
 
-typedef struct FFileEmbedded {
+struct FFileEmbedded {
     const FEmbeddedFile* data;
     size_t index;
-} FFileEmbedded;
+};
 
 #include "../files/f_file.v.h"
 

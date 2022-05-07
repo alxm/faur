@@ -20,10 +20,12 @@
 
 #include "f_palette.p.h"
 
-typedef struct {
+typedef struct FPaletteEntry FPaletteEntry;
+
+struct FPaletteEntry {
     FColorPixel pixel;
     FColorRgb rgb;
-} FPaletteEntry;
+};
 
 struct FPalette {
     unsigned size;

@@ -20,15 +20,18 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FListIntrNode {
-    struct FListIntrNode* prev;
-    struct FListIntrNode* next;
-} FListIntrNode;
+typedef struct FListIntrNode FListIntrNode;
+typedef struct FListIntr FListIntr;
 
-typedef struct {
+struct FListIntrNode {
+    FListIntrNode* prev;
+    FListIntrNode* next;
+};
+
+struct FListIntr {
     FListIntrNode root;
     size_t itemNodeOffset;
-} FListIntr;
+};
 
 typedef struct {
     const FListIntr* list;
