@@ -18,19 +18,6 @@
 #include "f_file.v.h"
 #include <faur.v.h>
 
-struct FFile {
-    FPath* path;
-    union {
-        void* file;
-        FPlatformFile* platform;
-        FFileEmbedded* embedded;
-    } f;
-    char* lineBuffer;
-    unsigned lineBufferSize;
-    unsigned lineNumber;
-    bool eof;
-};
-
 bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
 {
     bool ret;

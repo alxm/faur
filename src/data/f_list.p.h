@@ -22,7 +22,16 @@
 
 typedef struct FList FList;
 typedef struct FListNode FListNode;
+typedef struct F__ListIt F__ListIt;
+
 typedef int FCallListCompare(const void* A, const void* B);
+
+struct F__ListIt {
+    const FListNode* sentinelNode;
+    const FListNode* nextNode;
+    unsigned index;
+    bool reversed;
+};
 
 extern FList* f_list_new(void);
 extern void f_list_free(FList* List);
@@ -77,13 +86,6 @@ static inline void* f_list_peek(const FList* List)
 {
     return f_list_getFirst(List);
 }
-
-typedef struct {
-    const FListNode* sentinelNode;
-    const FListNode* nextNode;
-    unsigned index;
-    bool reversed;
-} F__ListIt;
 
 extern F__ListIt f__listit_new(const FList* List, bool Reversed);
 

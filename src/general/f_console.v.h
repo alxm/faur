@@ -20,14 +20,16 @@
 
 #include "f_console.p.h"
 
+typedef struct FConsoleLine FConsoleLine;
+
 #include "../general/f_init.v.h"
 #include "../general/f_out.v.h"
 
-typedef struct {
+struct FConsoleLine {
     FOutSource source;
     FOutType type;
     char* text;
-} FConsoleLine;
+};
 
 extern const FPack f_pack__console_0;
 extern const FPack f_pack__console_1;

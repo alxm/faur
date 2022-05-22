@@ -20,10 +20,12 @@
 
 #include "f_path.p.h"
 
-typedef struct {
+typedef struct FPathInfo FPathInfo;
+
+struct FPathInfo {
     unsigned flags;
     size_t size;
-} FPathInfo;
+};
 
 struct FPath {
     FPathInfo info;

@@ -21,10 +21,6 @@
 #if F_CONFIG_FILES_STANDARD
 #include <sys/stat.h>
 
-struct FPlatformFile {
-    FILE* handle;
-};
-
 bool f_platform_api__dirCreate(const char* Path)
 {
     int ret;
@@ -35,7 +31,7 @@ bool f_platform_api__dirCreate(const char* Path)
         ret = mkdir(Path, S_IRWXU);
     #endif
 
-    return ret != 0;
+    return ret == 0;
 }
 
 bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)

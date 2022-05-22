@@ -20,15 +20,18 @@
 
 #include "../general/f_system_includes.h"
 
+typedef struct FVecFix FVecFix;
+typedef struct FVecInt FVecInt;
+
 #include "../math/f_fix.p.h"
 
-typedef struct {
+struct FVecFix {
     FFix x, y;
-} FVecFix;
+};
 
-typedef struct {
+struct FVecInt {
     int x, y;
-} FVecInt;
+};
 
 extern FVecFix f_vecfix_rotateCounter(FVecFix Vec, unsigned Angle);
 extern FVecFix f_vecfix_rotateClockwise(FVecFix Vec, unsigned Angle);

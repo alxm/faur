@@ -20,14 +20,14 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FMenu FMenu;
-
 typedef enum {
     F_MENU_STATE_INVALID = -1,
     F_MENU_STATE_RUNNING,
     F_MENU_STATE_SELECTED,
     F_MENU_STATE_CANCELED
 } FMenuState;
+
+typedef struct FMenu FMenu;
 
 #include "../data/f_list.p.h"
 #include "../input/f_button.p.h"

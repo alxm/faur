@@ -28,4 +28,20 @@ typedef enum {
     F_FILE__OFFSET_NUM
 } FFileOffset;
 
+#include "../files/f_file_embedded.v.h"
+#include "../platform/f_platform.v.h"
+
+struct FFile {
+    FPath* path;
+    union {
+        void* file;
+        FPlatformFile* platform;
+        FFileEmbedded* embedded;
+    } f;
+    char* lineBuffer;
+    unsigned lineBufferSize;
+    unsigned lineNumber;
+    bool eof;
+};
+
 #endif // F_INC_FILES_FILE_V_H

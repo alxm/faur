@@ -20,21 +20,23 @@
 
 #include "f_embed.p.h"
 
-typedef struct {
+typedef struct FEmbeddedDir FEmbeddedDir;
+typedef struct FEmbeddedFile FEmbeddedFile;
+
+#include "../files/f_path.v.h"
+#include "../general/f_init.v.h"
+
+struct FEmbeddedDir {
     const char* path;
     size_t size;
     const char** entries;
-} FEmbeddedDir;
+};
 
-typedef struct {
+struct FEmbeddedFile {
     const char* path;
     size_t size;
     const uint8_t* buffer;
-} FEmbeddedFile;
-
-#include "../general/f_init.v.h"
-
-#include "../files/f_path.v.h"
+};
 
 extern const FPack f_pack__embed;
 

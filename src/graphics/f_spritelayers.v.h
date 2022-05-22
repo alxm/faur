@@ -20,11 +20,15 @@
 
 #include "f_spritelayers.p.h"
 
-typedef struct {
+typedef struct FSpriteLayersLayer FSpriteLayersLayer;
+
+#include "../data/f_listintr.v.h"
+
+struct FSpriteLayersLayer {
     FListIntrNode listNode;
     FSprite* sprite;
     FColorBlend blend;
     int r, g, b, a;
-} FSpriteLayersLayer;
+};
 
 #endif // F_INC_GRAPHICS_SPRITELAYERS_V_H

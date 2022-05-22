@@ -18,14 +18,8 @@
 #include "f_bitfield.v.h"
 #include <faur.v.h>
 
-typedef unsigned long FChunk;
 #define F__BITS_PER_CHUNK (unsigned)(sizeof(FChunk) * 8)
 #define f__BITS_PER_CHUNK_MASK (F__BITS_PER_CHUNK - 1)
-
-struct FBitfield {
-    unsigned numChunks;
-    FChunk bits[];
-};
 
 FBitfield* f_bitfield_new(unsigned NumBits)
 {
@@ -35,7 +29,7 @@ FBitfield* f_bitfield_new(unsigned NumBits)
 
     unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
     FBitfield* b = f_mem_mallocz(
-                    sizeof(FBitfield) + numChunks * sizeof(FChunk));
+                    sizeof(FBitfield) + (numChunks - 1) * sizeof(FChunk));
 
     b->numChunks = numChunks;
 

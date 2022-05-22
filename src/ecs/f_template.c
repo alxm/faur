@@ -23,7 +23,7 @@ static FHash* g_templates; // FHash<char*, FTemplate*>
 FTemplate* f_template__new(const char* Id, const FBlock* Block)
 {
     FTemplate* t = f_mem_mallocz(
-                    sizeof(FTemplate) + sizeof(void*) * (f_component__num - 1));
+                    sizeof(FTemplate) + (f_component__num - 1) * sizeof(void*));
 
     if(f_sym_test(Id)) {
         t->init = (FCallEntityInit*)f_sym_address(Id);

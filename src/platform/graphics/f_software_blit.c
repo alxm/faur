@@ -33,7 +33,7 @@ typedef struct {
 
 typedef struct {
     FSpriteWord framesNum;
-    FSpriteWord* spans[]; // [framesNum]
+    FSpriteWord* spans[1]; // [framesNum]
 } FTexture;
 
 typedef void (*FCallBlitter)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
@@ -382,8 +382,9 @@ static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
 
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 {
-    FTexture* t = f_mem_malloc(sizeof(FTexture)
-                                + Pixels->framesNum * sizeof(FSpriteWord*));
+    FTexture* t = f_mem_malloc(
+                    sizeof(FTexture)
+                        + (Pixels->framesNum - 1) * sizeof(FSpriteWord*));
 
     t->framesNum = (FSpriteWord)Pixels->framesNum;
 

@@ -20,6 +20,22 @@
 
 #include "../general/f_system_includes.h"
 
+typedef enum {
+    F_COLOR_BLEND_INVALID = -1,
+    F_COLOR_BLEND_SOLID,
+    F_COLOR_BLEND_ALPHA,
+    F_COLOR_BLEND_ALPHA_25,
+    F_COLOR_BLEND_ALPHA_50,
+    F_COLOR_BLEND_ALPHA_75,
+    F_COLOR_BLEND_ALPHA_MASK,
+    F_COLOR_BLEND_INVERSE,
+    F_COLOR_BLEND_MOD,
+    F_COLOR_BLEND_ADD,
+    F_COLOR_BLEND_NUM
+} FColorBlend;
+
+typedef struct FColorRgb FColorRgb;
+
 #define F__C_RGBA (1 << 30)
 #define F__C_ARGB (1 << 29)
 #define F__C_ABGR (1 << 28)
@@ -50,9 +66,9 @@
     #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_FORMAT
 #endif
 
-typedef struct {
+struct FColorRgb {
     int r, g, b;
-} FColorRgb;
+};
 
 #include "../graphics/f_palette.p.h"
 
@@ -169,20 +185,6 @@ static inline int f_color_pixelToRgbAny(FColorPixel Pixel)
 
     return (int)((Pixel >> F__PX_SHIFT_B) << F__PX_PACK_B) & 0xff;
 }
-
-typedef enum {
-    F_COLOR_BLEND_INVALID = -1,
-    F_COLOR_BLEND_SOLID,
-    F_COLOR_BLEND_ALPHA,
-    F_COLOR_BLEND_ALPHA_25,
-    F_COLOR_BLEND_ALPHA_50,
-    F_COLOR_BLEND_ALPHA_75,
-    F_COLOR_BLEND_ALPHA_MASK,
-    F_COLOR_BLEND_INVERSE,
-    F_COLOR_BLEND_MOD,
-    F_COLOR_BLEND_ADD,
-    F_COLOR_BLEND_NUM
-} FColorBlend;
 
 extern void f_color_push(void);
 extern void f_color_pop(void);

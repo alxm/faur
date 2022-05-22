@@ -20,4 +20,11 @@
 
 #include "f_grid.p.h"
 
+struct FGrid {
+    int shift; // right-shift item coords to get cell index
+    int w, h; // width and height of grid in cells
+    FList*** cells; // FList*[h][w] of void*
+    FList** cellsData; // FList*[h * w] of void*
+};
+
 #endif // F_INC_COLLISION_GRID_V_H

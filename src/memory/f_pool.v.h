@@ -41,7 +41,30 @@ typedef enum {
     F_POOL__NUM
 } FPoolId;
 
+typedef union FPoolEntryHeader FPoolEntryHeader;
+typedef struct FPoolSlab FPoolSlab;
+
 #include "../general/f_init.v.h"
+#include "../memory/f_mem.v.h"
+
+union FPoolEntryHeader {
+    FPoolEntryHeader* nextFreeEntry; // Next free entry in a slab
+    FPool* parentPool; // Pool this active entry belongs to
+    FMaxMemAlignType alignment; // Used to prompt max alignment padding
+};
+
+struct FPoolSlab {
+    FPoolSlab* nextSlab; // Next slab in a pool's slab list
+    FPoolEntryHeader buffer[1]; // Memory space for objects
+};
+
+struct FPool {
+    unsigned objSize; // Size of a user object within a pool entry
+    unsigned entrySize; // Size of each pool entry in a slab
+    unsigned numEntriesPerSlab; // Grows with usage
+    FPoolSlab* slabList; // Keeps track of all allocated slabs
+    FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
+};
 
 extern const FPack f_pack__pool;
 

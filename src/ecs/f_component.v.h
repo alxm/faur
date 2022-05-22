@@ -20,14 +20,16 @@
 
 #include "f_component.p.h"
 
+typedef struct FComponentInstance FComponentInstance;
+
 #include "../data/f_hash.v.h"
 #include "../memory/f_mem.v.h"
 
-typedef struct {
+struct FComponentInstance {
     const FComponent* component; // shared data for all components of same type
     FEntity* entity; // entity this component belongs to
     FMaxMemAlignType buffer[1];
-} FComponentInstance;
+};
 
 extern FComponent* const* f_component__array;
 extern unsigned f_component__num;

@@ -20,8 +20,6 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FAnalog FAnalog;
-
 typedef enum {
     F_AXIS_INVALID = -1,
     F_AXIS_LEFTX,
@@ -33,7 +31,9 @@ typedef enum {
     F_AXIS_NUM
 } FAnalogId;
 
-#include "../input/f_controller.v.h"
+typedef struct FAnalog FAnalog;
+
+#include "../input/f_controller.p.h"
 #include "../math/f_fix.p.h"
 
 extern FAnalog* f_analog_new(void);

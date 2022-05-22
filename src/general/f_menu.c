@@ -18,20 +18,6 @@
 #include "f_menu.v.h"
 #include <faur.v.h>
 
-struct FMenu {
-    FMenuState state;
-    FList* items;
-    void* selectedItem;
-    unsigned selectedIndex;
-    FSample* soundAccept;
-    FSample* soundCancel;
-    FSample* soundBrowse;
-    FButton* next;
-    FButton* back;
-    FButton* select;
-    FButton* cancel;
-};
-
 FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel)
 {
     FMenu* m = f_mem_malloc(sizeof(FMenu));

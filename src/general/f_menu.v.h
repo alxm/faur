@@ -20,4 +20,18 @@
 
 #include "f_menu.p.h"
 
+struct FMenu {
+    FMenuState state;
+    FList* items;
+    void* selectedItem;
+    unsigned selectedIndex;
+    FSample* soundAccept;
+    FSample* soundCancel;
+    FSample* soundBrowse;
+    FButton* next;
+    FButton* back;
+    FButton* select;
+    FButton* cancel;
+};
+
 #endif // F_INC_GENERAL_MENU_V_H

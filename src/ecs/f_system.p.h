@@ -22,8 +22,8 @@
 
 typedef struct FSystem FSystem;
 
-#include "../data/f_bitfield.v.h"
-#include "../data/f_list.v.h"
+#include "../data/f_bitfield.p.h"
+#include "../data/f_list.p.h"
 #include "../ecs/f_component.p.h"
 #include "../ecs/f_entity.p.h"
 

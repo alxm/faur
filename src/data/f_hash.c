@@ -18,16 +18,6 @@
 #include "f_hash.v.h"
 #include <faur.v.h>
 
-struct FHash {
-    FCallHashFunction* function;
-    FCallHashEqual* keyEqual;
-    FCallFree* keyFree;
-    unsigned numSlots;
-    unsigned numEntries;
-    FListIntr entries; // FListIntr<F__HashEntry*>
-    F__HashEntry* slots[]; // [numSlots]
-};
-
 #if F_CONFIG_BUILD_GEN_LUTS
 static uint8_t g_crc8[256];
 
@@ -102,7 +92,8 @@ FHash* f_hash_new(FCallHashFunction* Function, FCallHashEqual* KeyEqual, FCallFr
         NumSlots = slots;
     }
 
-    FHash* h = f_mem_mallocz(sizeof(FHash) + NumSlots * sizeof(F__HashEntry*));
+    FHash* h = f_mem_mallocz(
+                sizeof(FHash) + (NumSlots - 1) * sizeof(F__HashEntry*));
 
     h->function = Function;
     h->keyEqual = KeyEqual ? KeyEqual : keyEqual;

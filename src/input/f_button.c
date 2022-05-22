@@ -23,17 +23,6 @@ typedef struct {
     FList* andButtons; // FList<FPlatformButton*>
 } FButtonCombo;
 
-struct FButton {
-    FListIntrNode listNode;
-    const char* name; // friendly name
-    FList* platformInputs; // FList<FPlatformButton*>
-    FListIntr combos; // FListIntr<FButtonCombo*>
-    FTimer* autoRepeat;
-    bool isClone;
-    bool waitForRelease;
-    bool pressed;
-};
-
 #if F_CONFIG_TRAIT_KEYBOARD
 static const char* g_keyNames[F_KEY_NUM] = {
     [F_KEY_UP] = "Up",

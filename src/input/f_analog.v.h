@@ -20,4 +20,11 @@
 
 #include "f_analog.p.h"
 
+#include "../data/f_list.v.h"
+
+struct FAnalog {
+    const char* name; // friendly name
+    FList* platformInputs; // FList<FPlatformAnalog*>
+};
+
 #endif // F_INC_INPUTS_ANALOG_V_H

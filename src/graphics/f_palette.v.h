@@ -20,4 +20,16 @@
 
 #include "f_palette.p.h"
 
+typedef struct FPaletteEntry FPaletteEntry;
+
+struct FPaletteEntry {
+    FColorPixel pixel;
+    FColorRgb rgb;
+};
+
+struct FPalette {
+    unsigned size;
+    FPaletteEntry entries[1]; // [size]
+};
+
 #endif // F_INC_GRAPHICS_PALETTE_V_H

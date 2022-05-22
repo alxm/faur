@@ -20,10 +20,6 @@
 
 #include "f_color.p.h"
 
-#define F__OPTIMIZE_ALPHA (F_CONFIG_SCREEN_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
-
-typedef struct FColorState FColorState;
-
 typedef enum {
     F_COLOR__PAL_BROWN1,
     F_COLOR__PAL_BROWN2,
@@ -38,9 +34,14 @@ typedef enum {
     F_COLOR__PAL_NUM
 } FColorPaletteInternal;
 
+typedef struct FColorState FColorState;
+
 #include "../data/f_listintr.v.h"
 #include "../general/f_init.v.h"
 #include "../math/f_math.v.h"
+
+#define F__OPTIMIZE_ALPHA \
+    (F_CONFIG_SCREEN_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
 
 struct FColorState {
     FListIntrNode listNode;

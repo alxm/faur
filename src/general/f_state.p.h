@@ -20,6 +20,15 @@
 
 #include "../general/f_system_includes.h"
 
+typedef enum {
+    F__STATE_STAGE_INVALID = -1,
+    F__STATE_STAGE_INIT,
+    F__STATE_STAGE_TICK,
+    F__STATE_STAGE_DRAW,
+    F__STATE_STAGE_FREE,
+    F__STATE_STAGE_NUM
+} F__StateStage;
+
 typedef void FCallState(void);
 typedef void FCallStatePrePost(void);
 
@@ -43,15 +52,6 @@ extern bool f_state_currentChanged(void);
 
 extern bool f_state_blockGet(void);
 extern void f_state_blockSet(const FEvent* Event);
-
-typedef enum {
-    F__STATE_STAGE_INVALID = -1,
-    F__STATE_STAGE_INIT,
-    F__STATE_STAGE_TICK,
-    F__STATE_STAGE_DRAW,
-    F__STATE_STAGE_FREE,
-    F__STATE_STAGE_NUM
-} F__StateStage;
 
 extern bool f__state_stageCheck(F__StateStage Stage);
 

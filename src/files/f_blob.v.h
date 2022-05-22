@@ -20,6 +20,14 @@
 
 #include "f_blob.p.h"
 
+#include "../data/f_list.v.h"
+
 #define F_BLOB__BUFFER_ALIGN_MAX 4
+
+struct FBlob {
+    FList* dirs; // FList<FEmbeddedDir*>
+    FList* files; // FList<FEmbeddedFile*>
+    void* buffer; // NULL if blob itself is an embedded file
+};
 
 #endif // F_INC_FILES_BLOB_V_H

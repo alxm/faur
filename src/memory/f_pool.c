@@ -26,28 +26,6 @@
     #define F__ENTRIES_NUM_MAX 1024
 #endif
 
-typedef union FPoolEntryHeader FPoolEntryHeader;
-typedef struct FPoolSlab FPoolSlab;
-
-union FPoolEntryHeader {
-    FPoolEntryHeader* nextFreeEntry; // Next free entry in a slab
-    FPool* parentPool; // Pool this active entry belongs to
-    FMaxMemAlignType alignment; // Used to prompt max alignment padding
-};
-
-struct FPoolSlab {
-    FPoolSlab* nextSlab; // Next slab in a pool's slab list
-    FPoolEntryHeader buffer[]; // Memory space for objects
-};
-
-struct FPool {
-    unsigned objSize; // Size of a user object within a pool entry
-    unsigned entrySize; // Size of each pool entry in a slab
-    unsigned numEntriesPerSlab; // Grows with usage
-    FPoolSlab* slabList; // Keeps track of all allocated slabs
-    FPoolEntryHeader* freeEntryList; // Head of the free pool entries list
-};
-
 static const unsigned g_sizes[F_POOL__NUM] = {
     [F_POOL__BLOCK] = sizeof(FBlock),
     [F_POOL__CONSOLE] = sizeof(FConsoleLine),
@@ -92,8 +70,8 @@ const FPack f_pack__pool = {
 static void slab_new(FPool* Pool)
 {
     FPoolSlab* s =
-        f_mem_malloc(
-            sizeof(FPoolSlab) + Pool->entrySize * Pool->numEntriesPerSlab);
+        f_mem_malloc(sizeof(FPoolSlab) - sizeof(FPoolEntryHeader)
+                        + Pool->numEntriesPerSlab * Pool->entrySize);
 
     s->nextSlab = Pool->slabList;
 

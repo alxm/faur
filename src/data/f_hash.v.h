@@ -31,4 +31,14 @@ struct F__HashEntry {
     void* content;
 };
 
+struct FHash {
+    FCallHashFunction* function;
+    FCallHashEqual* keyEqual;
+    FCallFree* keyFree;
+    unsigned numSlots;
+    unsigned numEntries;
+    FListIntr entries; // FListIntr<F__HashEntry*>
+    F__HashEntry* slots[1]; // [numSlots]
+};
+
 #endif // F_INC_DATA_HASH_V_H

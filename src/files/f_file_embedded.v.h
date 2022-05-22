@@ -22,6 +22,13 @@
 
 typedef struct FFileEmbedded FFileEmbedded;
 
+#include "../files/f_embed.v.h"
+
+struct FFileEmbedded {
+    const FEmbeddedFile* data;
+    size_t index;
+};
+
 #include "../files/f_file.v.h"
 
 extern FFileEmbedded* f_file_embedded__new(const FPath* Path);

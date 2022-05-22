@@ -23,20 +23,24 @@ import time
 from faur.tool.tool import Tool
 
 """
+Design pattern:
+
 category/f_sample.p.h
     #include "../general/f_system_includes.h"
     #include "../foo/f_bar.p.h"
-    <public typedefs>
+    <public enums>
+    <public forward types>
     #include "../foo/f_bar.p.h"
-    <public typedef implementations>
+    <public type implementations>
     <public api prototypes>
     <static inline functions>
 
 category/f_sample.v.h
     #include "f_sample.p.h"
-    <private typedefs>
+    <private enums>
+    <private forward types>
     #include "../foo/f_bar.v.h"
-    <private typedef implementations>
+    <private type implementations>
     <private api prototypes>
     <static inline functions>
 
@@ -44,8 +48,8 @@ category/f_sample.c
     #include "f_sample.v.h"
     #include <faur.v.h>
     #include <system headers>
-    <private types>
-    <implementations>
+    <private type implementations>
+    <api implementations>
 """
 
 g_tool = Tool('Folder Name')

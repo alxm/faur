@@ -18,13 +18,6 @@
 #include "f_grid.v.h"
 #include <faur.v.h>
 
-struct FGrid {
-    int shift; // right-shift item coords to get cell index
-    int w, h; // width and height of grid in cells
-    FList*** cells; // FList*[h][w] of void*
-    FList** cellsData; // FList*[h * w] of void*
-};
-
 FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxItemDiameter)
 {
     FGrid* g = f_mem_malloc(sizeof(FGrid));

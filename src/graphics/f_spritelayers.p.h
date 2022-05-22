@@ -20,10 +20,9 @@
 
 #include "../general/f_system_includes.h"
 
-#include "../data/f_listintr.p.h"
-#include "../graphics/f_sprite.p.h"
+typedef struct FListIntr FSpriteLayers;
 
-typedef FListIntr FSpriteLayers;
+#include "../graphics/f_sprite.p.h"
 
 extern FSpriteLayers* f_spritelayers_new(void);
 extern void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites);

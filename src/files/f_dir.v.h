@@ -20,4 +20,9 @@
 
 #include "f_dir.p.h"
 
+struct FDir {
+    FPath* path;
+    FList* files; // FList<FPath*>
+};
+
 #endif // F_INC_FILES_DIR_V_H
