@@ -31,7 +31,7 @@ bool f_platform_api__dirCreate(const char* Path)
         ret = mkdir(Path, S_IRWXU);
     #endif
 
-    return ret != 0;
+    return ret == 0;
 }
 
 bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
