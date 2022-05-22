@@ -18,7 +18,6 @@
 #include "f_blob.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_PATHS_BLOB
 typedef struct {
     const char* path; // blob file path
     const uint8_t *buffer, *bufferEnd; // blob file buffer
@@ -219,4 +218,3 @@ void f_blob_free(FBlob* Blob)
     f_mem_freea(Blob->buffer);
     f_mem_free(Blob);
 }
-#endif // F_CONFIG_FILES_EMBED_PATHS_BLOB

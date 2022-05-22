@@ -40,8 +40,8 @@ struct FEmbeddedFile {
 
 extern const FPack f_pack__embed;
 
-extern void f_embed__populate(void);
-extern void f_embed__set(const FEmbeddedDir* const* Dirs, size_t DirsNum, const FEmbeddedFile* const* Files, size_t FilesNum);
+extern const FEmbeddedDir* f__embed_dirs[];
+extern const FEmbeddedFile* f__embed_files[];
 
 extern FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size);
 extern void f_embed__dirFree(FEmbeddedDir* Dir);

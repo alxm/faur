@@ -23,9 +23,7 @@ static const FPack* g_packs[] = {
 #if F_CONFIG_OUT_CONSOLE_ENABLED
     &f_pack__console_0,
 #endif
-#if F_CONFIG_FILES_EMBED_PATHS_BLOB || F_CONFIG_FILES_EMBED_PATHS_C
     &f_pack__embed,
-#endif
     &f_pack__platform,
     &f_pack__screen,
     &f_pack__align,

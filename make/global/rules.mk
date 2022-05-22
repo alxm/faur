@@ -20,7 +20,7 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     -I$(F_BUILD_DIR_GEN_ROOT) \
 
 #
-# The file that implements f_embed__populate
+# The file that initializes ECS
 #
 F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
@@ -36,15 +36,16 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 					{} +)
 
 #
-# Project root-relative paths
+# Project root-relative paths to embedded files
 #
-F_BUILD_FILES_EMBED_BIN_PATHS_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
-F_BUILD_FILES_EMBED_BIN_PATHS_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
-F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_ABS:%=%.h)
+F_BUILD_FILES_EMBED_BIN_PATHS_C_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_C), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
+F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS:%=%.h)
 F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 
 #
-# The file that implements f_embed__populate
+# The file that contains embedded file entries
 #
 F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
