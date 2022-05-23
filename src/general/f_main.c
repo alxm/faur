@@ -71,11 +71,11 @@ const char* f_main_argsGet(int ArgNum)
 
 F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
 {
+    f_out__backtrace(Source);
+
     #if F_CONFIG_DEBUG_FATAL_SPIN
         while(true);
     #else
-        f_out__backtrace(Source);
-
         #if F_CONFIG_OUT_CONSOLE_ENABLED
             if(f_console__isInitialized()) {
                 f_console_showSet(true);
