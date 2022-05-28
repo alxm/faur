@@ -27,7 +27,7 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 #
 # All application source code and resulting objects
 #
-F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)/*")
+F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN_ROOT)/*")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
 F_BUILD_FILES_PROJ_C := $(F_BUILD_FILES_SRC_C) $(F_BUILD_FILES_GEN_C) $(F_BUILD_FILE_GEN_INC_C)

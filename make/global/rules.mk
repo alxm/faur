@@ -8,7 +8,8 @@ F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_B
 #
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
 F_BUILD_DIR_GEN_ROOT := $(F_BUILD_DIR_SRC)/faur_gen
-F_BUILD_DIR_GEN := $(F_BUILD_DIR_GEN_ROOT)/faur_v
+F_BUILD_DIR_GEN_UID := $(F_BUILD_DIR_GEN_ROOT)/$(F_CONFIG_BUILD_UID)
+F_BUILD_DIR_GEN := $(F_BUILD_DIR_GEN_UID)/faur_v
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
 F_BUILD_DIR_GEN_FAUR_MEDIA := $(F_BUILD_DIR_GEN)/faur_gfx
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
@@ -17,7 +18,7 @@ F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     $(F_CONFIG_BUILD_FLAGS_SETTINGS) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP) \
-    -I$(F_BUILD_DIR_GEN_ROOT) \
+    -I$(F_BUILD_DIR_GEN_UID) \
 
 #
 # The file that initializes ECS
@@ -26,7 +27,7 @@ F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 				-type f \
 				-name "*.h" \
-				-not -path "$(F_BUILD_DIR_GEN)/*" \
+				-not -path "$(F_BUILD_DIR_GEN_ROOT)/*" \
 				-exec \
 				    grep \
 					-l \
@@ -173,7 +174,7 @@ clean :
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :
-	rm -rf $(F_BUILD_DIR_GEN_ROOT)
+	rm -rf $(F_BUILD_DIR_GEN_UID)
 
 cleanall : clean cleangen
 
