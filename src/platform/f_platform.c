@@ -20,7 +20,8 @@
 
 #if F_CONFIG_SYSTEM_ARDUINO
     //
-    // Arduino build system workaround
+    // arduino-builder workaround: for apps, only the source files from the
+    // root source directory are built, so include nested generated files here.
     //
     #include <faur_v/include.c>
 #endif
