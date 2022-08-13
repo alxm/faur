@@ -218,13 +218,16 @@ void f_platform_api__soundSampleFree(FPlatformSample* Sample)
     Mix_FreeChunk(Sample);
 }
 
-void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop)
+void f_platform_api__soundSamplePlay(const FSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
     }
 
-    if(Mix_PlayChannel(Channel, (Mix_Chunk*)Sample, Loop ? -1 : 0) == -1) {
+    Mix_Chunk* chunk = (Mix_Chunk*)Sample->platform;
+    int loop = Loop ? -1 : 0;
+
+    if(Mix_PlayChannel(Channel, chunk, loop) == -1) {
         f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
     }
 }

@@ -38,12 +38,16 @@ void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
         return;
     }
 
-    #if F_CONFIG_FILES_EMBED_OBJ_SAMPLE_LAZY_INIT
-        f_sample__lazyInit((FSample*)Sample);
+    #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+        if(Sample->platform == NULL) {
+            ((FSample*)Sample)->platform =
+                f_platform_api__soundSampleNewFromData(
+                    Sample->buffer, Sample->size);
+        }
     #endif
 
     f_platform_api__soundSamplePlay(
-        Sample->platform,
+        Sample,
         Channel,
         F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_LOOP));
 }
