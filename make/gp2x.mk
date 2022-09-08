@@ -43,6 +43,8 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fomit-frame-pointer \
     -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/include \
     -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/arm-open2x-linux/include \
+
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-conversion \
 
 F_TOOLCHAIN_PREFIX := arm-open2x-linux-

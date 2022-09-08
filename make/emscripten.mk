@@ -77,6 +77,8 @@ F_CONFIG_BUILD_LIBS += \
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     $(F_EMSCRIPTEN_OPTIONS) \
+
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
