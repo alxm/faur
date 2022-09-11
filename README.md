@@ -4,21 +4,17 @@
 
 Features include software or accelerated 2D graphics, abstractions for inputs and sound, application state management, entity-component-system model, and utilities to help with data, files, math, memory, strings, time, and more.
 
-Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices I like, including some Arduino compatibles. The build system uses GNU Make 4.1 and Python 3.6 or later.
+Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices I like, including the GP2X handheld and a few Arduino compatibles. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
 ## Install & New Project
 
-### Dependencies
+### Install Dependencies & Clone Repo
 
 ```sh
-sudo apt install build-essential git python3 python3-pil
-sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
-```
+$ sudo apt install build-essential git python3 python3-pil
+$ sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 
-### Clone Repo
-
-```sh
-git clone https://github.com/alxm/faur.git
+$ git clone https://github.com/alxm/faur.git
 ```
 
 ### New Project
@@ -130,7 +126,7 @@ include $(FAUR_PATH)/make/default.mk
 
 I started Faur by collecting my [GP2X games'](https://www.alxm.org/games/gamepark.html) shared code into a library. Over time I added support for more platforms:
 
-Platform | Toolchain | Dependencies | Info
+Platform | Toolchain | Dependencies | More Info
 --- | --- | --- | ---
 ***Desktop***
 Linux | OS build tools | `libsdl2-dev` `libsdl2-mixer-dev` `libpng-dev`
@@ -139,12 +135,12 @@ FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on
 Windows | MinGW-w64 | `mingw-w64` `libz-mingw-w64-dev` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
 Web (Wasm) | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
 ***Embedded Linux***
-GP2X, GP2X Wiz | Open2x SDK
-Caanoo | GPH SDK
-Open Pandora | Pandora SDK | `ia32-libs`
+GP2X, GP2X Wiz | Open2x SDK | `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
+Caanoo | GPH SDK | `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)
+Open Pandora | Pandora SDK | `ia32-libs` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
 ***Arduino***
-Gamebuino META | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | `Gamebuino META 1.3` `ffmpeg`
-Odroid-GO | Arduino 1.8.13, Arduino ESP32 1.0.6 | `ODROID-GO 1.0.0` `python3-serial` `python-is-python3`
+Gamebuino META | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | `Gamebuino META 1.3` `ffmpeg` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
+ODROID-GO | Arduino 1.8.13, Arduino ESP32 1.0.6 | `ODROID-GO 1.0.0` `python3-serial` `python-is-python3` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
 
 The default toolchain paths are in `make/global/sdk.mk`, and they can be overridden in a project Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to use other files from `$(FAUR_PATH)/make`.
 
