@@ -33,10 +33,11 @@ def main():
 //
 #include <faur.v.h>
 
-//
-// Arduino only builds C files from the root dir
-//
 #if F_CONFIG_SYSTEM_ARDUINO
+//
+// arduino-builder workaround: for apps, only the source files from the
+// root source directory are built, so include nested generated files here.
+//
 {}
 #endif
 """.format(g_tool.get_cmd(),

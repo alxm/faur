@@ -25,7 +25,9 @@
 struct FSample {
     unsigned size;
     const uint8_t* buffer;
-    FPlatformSample* platform;
+    #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+        FPlatformSample* platform;
+    #endif
 };
 
 extern void f_sample__lazyInit(FSample* Sample);

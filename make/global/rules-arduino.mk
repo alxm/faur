@@ -19,6 +19,7 @@ F_ARDUINO_BUILDER := \
         -tools $(F_SDK_ARDUINO_DIR_15)/packages \
         -built-in-libraries $(F_SDK_ARDUINO_DIR_INSTALL)/libraries \
         -libraries $(F_SDK_ARDUINO_DIR_SKETCHBOOK)/libraries \
+        -libraries $(F_FAUR_DIR_ROOT)/.. \
         -build-path $(F_BUILD_DIR_ARDUINO_BUILD) \
         -build-cache $(F_BUILD_DIR_ARDUINO_CACHE) \
         -prefs=build.warn_data_percentage=75 \

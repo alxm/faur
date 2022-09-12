@@ -8,7 +8,8 @@ F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_B
 #
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
 F_BUILD_DIR_GEN_ROOT := $(F_BUILD_DIR_SRC)/faur_gen
-F_BUILD_DIR_GEN := $(F_BUILD_DIR_GEN_ROOT)/faur_v
+F_BUILD_DIR_GEN_UID := $(F_BUILD_DIR_GEN_ROOT)/$(F_CONFIG_BUILD_UID)
+F_BUILD_DIR_GEN := $(F_BUILD_DIR_GEN_UID)/faur_v
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
 F_BUILD_DIR_GEN_FAUR_MEDIA := $(F_BUILD_DIR_GEN)/faur_gfx
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
@@ -17,16 +18,16 @@ F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     $(F_CONFIG_BUILD_FLAGS_SETTINGS) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP) \
-    -I$(F_BUILD_DIR_GEN_ROOT) \
+    -I$(F_BUILD_DIR_GEN_UID) \
 
 #
-# The file that implements f_embed__populate
+# The file that initializes ECS
 #
 F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 				-type f \
 				-name "*.h" \
-				-not -path "$(F_BUILD_DIR_GEN)/*" \
+				-not -path "$(F_BUILD_DIR_GEN_ROOT)/*" \
 				-exec \
 				    grep \
 					-l \
@@ -36,15 +37,16 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 					{} +)
 
 #
-# Project root-relative paths
+# Project root-relative paths to embedded files
 #
-F_BUILD_FILES_EMBED_BIN_PATHS_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
-F_BUILD_FILES_EMBED_BIN_PATHS_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
-F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_ABS:%=%.h)
+F_BUILD_FILES_EMBED_BIN_PATHS_C_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_C), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
+F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS:%=%.h)
 F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 
 #
-# The file that implements f_embed__populate
+# The file that contains embedded file entries
 #
 F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
@@ -119,9 +121,9 @@ $(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-
 #
 # Embedded files
 #
-$(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-bin
+$(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-file
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
+	$(F_FAUR_DIR_BIN)/faur-build-embed-file $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
 $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
@@ -132,11 +134,11 @@ $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_
 #
 $(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY) $(F_CONFIG_SCREEN_FORMAT)
 
 $(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY) $(F_CONFIG_SCREEN_FORMAT)
 
 $(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
@@ -148,11 +150,11 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-bu
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY) $(F_CONFIG_SCREEN_FORMAT)
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY) $(F_CONFIG_SCREEN_FORMAT)
 
 #
 # Files that bundle up the generated code
@@ -172,7 +174,7 @@ clean :
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :
-	rm -rf $(F_BUILD_DIR_GEN_ROOT)
+	rm -rf $(F_BUILD_DIR_GEN_UID)
 
 cleanall : clean cleangen
 

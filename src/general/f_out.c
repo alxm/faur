@@ -72,10 +72,6 @@ static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const
 
     f_platform_api__filePrint(Stream, Text);
     f_platform_api__filePrint(Stream, "\n");
-
-    #if F_CONFIG_OUT_CONSOLE_ENABLED
-        f_console__write(Source, Type, Text);
-    #endif
 }
 
 static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char* Format, va_list Args)
@@ -84,6 +80,10 @@ static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char
 
     if(f_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
         outWorkerPrint(Source, Type, Stream, buffer);
+
+        #if F_CONFIG_OUT_CONSOLE_ENABLED
+            f_console__write(Source, Type, buffer);
+        #endif
     }
 }
 
@@ -128,7 +128,9 @@ void f_out__error(const char* Format, ...)
 
     va_end(args);
 
-    f_out__backtrace(F_OUT__SOURCE_FAUR);
+    #if F_CONFIG_DEBUG
+        f_out__backtrace(F_OUT__SOURCE_FAUR);
+    #endif
 }
 
 void f_out__errorv(const char* Format, va_list Args)
@@ -139,7 +141,9 @@ void f_out__errorv(const char* Format, va_list Args)
               Format,
               Args);
 
-    f_out__backtrace(F_OUT__SOURCE_FAUR);
+    #if F_CONFIG_DEBUG
+        f_out__backtrace(F_OUT__SOURCE_FAUR);
+    #endif
 }
 
 void f_out__state(const char* Format, ...)
@@ -154,14 +158,6 @@ void f_out__state(const char* Format, ...)
               args);
 
     va_end(args);
-}
-
-void f_out_text(const char* Text)
-{
-    outWorkerPrint(F_OUT__SOURCE_APP,
-                   F_OUT__TYPE_INFO,
-                   F_CONFIG_OUT_STDOUT,
-                   Text);
 }
 
 void f_out_info(const char* Format, ...)
@@ -205,7 +201,9 @@ void f_out_error(const char* Format, ...)
 
     va_end(args);
 
-    f_out__backtrace(F_OUT__SOURCE_APP);
+    #if F_CONFIG_DEBUG
+        f_out__backtrace(F_OUT__SOURCE_APP);
+    #endif
 }
 
 void f_out__backtrace(FOutSource Source)

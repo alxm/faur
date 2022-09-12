@@ -18,7 +18,7 @@
 #include "f_sample.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED
+#if F_CONFIG_SOUND_ENABLED && !F_CONFIG_SOUND_SAMPLE_PRE_INIT
 FSample* f_sample_new(const char* Path)
 {
     FSample* s = f_pool__alloc(F_POOL__SAMPLE);
@@ -55,24 +55,4 @@ void f_sample_free(FSample* Sample)
         Sample->platform = NULL;
     }
 }
-
-void f_sample__lazyInit(FSample* Sample)
-{
-    if(Sample->size > 0 && Sample->platform == NULL) {
-        Sample->platform = f_platform_api__soundSampleNewFromData(
-                            Sample->buffer, Sample->size);
-    }
-}
-#else // !F_CONFIG_SOUND_ENABLED
-FSample* f_sample_new(const char* Path)
-{
-    F_UNUSED(Path);
-
-    return NULL;
-}
-
-void f_sample_free(FSample* Sample)
-{
-    F_UNUSED(Sample);
-}
-#endif // !F_CONFIG_SOUND_ENABLED
+#endif // F_CONFIG_SOUND_ENABLED && !F_CONFIG_SOUND_SAMPLE_PRE_INIT

@@ -30,12 +30,7 @@ bool f_platform_api__soundMuteGet(void)
     return false;
 }
 
-void f_platform_api__soundSampleFree(FPlatformSample* Sample)
-{
-    F_UNUSED(Sample);
-}
-
-void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop)
+void f_platform_api__soundSamplePlay(const FSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
@@ -44,10 +39,8 @@ void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel,
     F_UNUSED(Channel);
     F_UNUSED(Loop);
 
-    const FSample* sample = (const FSample*)Sample;
-
     gb.sound.stop(0);
-    gb.sound.play(sample->buffer, sample->size);
+    gb.sound.play(Sample->buffer, Sample->size);
 }
 
 void f_platform_api__soundSampleStop(int Channel)

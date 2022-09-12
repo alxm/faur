@@ -15,6 +15,9 @@ F_BUILD_LINK_BIN_SCREENSHOTS := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_SCREENSHOTS)
 #
 F_BUILD_FILE_BLOB := $(F_BUILD_DIR_BIN)/$(F_CONFIG_FILES_EMBED_BLOB)
 
+F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_BLOB), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
+F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
 #
 # Object dirs
 #
@@ -24,7 +27,7 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 #
 # All application source code and resulting objects
 #
-F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)/*")
+F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN_ROOT)/*")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
 F_BUILD_FILES_PROJ_C := $(F_BUILD_FILES_SRC_C) $(F_BUILD_FILES_GEN_C) $(F_BUILD_FILE_GEN_INC_C)
@@ -78,6 +81,8 @@ F_BUILD_FLAGS_C := \
     $(F_BUILD_FLAGS_SHARED_C_AND_CPP) \
     $(F_CONFIG_BUILD_FLAGS_C) \
     -std=$(F_CONFIG_BUILD_FLAGS_C_STANDARD) \
+    $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_C_OVERRIDE) \
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_C_PEDANTIC), 0)
     F_BUILD_FLAGS_C += -pedantic -pedantic-errors
@@ -87,6 +92,8 @@ F_BUILD_FLAGS_CPP := \
     $(F_BUILD_FLAGS_SHARED_C_AND_CPP) \
     $(F_CONFIG_BUILD_FLAGS_CPP) \
     -std=$(F_CONFIG_BUILD_FLAGS_CPP_STANDARD) \
+    $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_CPP_OVERRIDE) \
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC), 0)
     F_BUILD_FLAGS_CPP += -pedantic -pedantic-errors
@@ -121,7 +128,7 @@ ifdef F_CONFIG_FILES_COPY_STATIC
     F_MAKE_ALL += copystatic
 endif
 
-ifneq ($(F_CONFIG_FILES_EMBED_PATHS_BLOB), 0)
+ifdef F_CONFIG_FILES_EMBED_BLOB
     F_MAKE_ALL += $(F_BUILD_FILE_BLOB)
 endif
 
@@ -146,9 +153,9 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 	@ mkdir -p $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS)
 	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
 
-$(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_REL) $(F_FAUR_DIR_BIN)/faur-blob
+$(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL) $(F_FAUR_DIR_BIN)/faur-blob
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-blob $@ $(F_DIR_ROOT_FROM_MAKE) $(F_BUILD_FILES_EMBED_BIN_PATHS_ABS)
+	$(F_FAUR_DIR_BIN)/faur-blob $@ $(F_DIR_ROOT_FROM_MAKE) $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS)
 
 #
 # Project source code, including generated code
@@ -191,7 +198,7 @@ valgrind : all
 	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind ./$(F_BUILD_FILE_BIN)
 
 valgrindall : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)

@@ -41,11 +41,15 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -isystem$(F_SDK_CAANOO_ROOT)/DGE/include \
     -isystem$(F_SDK_CAANOO_TOOLCHAIN)/include \
     -isystem$(F_SDK_CAANOO_TOOLCHAIN)/arm-gph-linux-gnueabi/include \
+
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-conversion \
 
 F_CONFIG_BUILD_FLAGS_C += \
-    -Wno-override-init \
     -fgnu89-inline \
+
+F_CONFIG_BUILD_FLAGS_C_OVERRIDE += \
+    -Wno-override-init \
 
 F_TOOLCHAIN_PREFIX := arm-gph-linux-gnueabi-
 

@@ -72,11 +72,13 @@ F_CONFIG_BUILD_LIBS += \
     --shell-file $(F_EMSCRIPTEN_SHELL) \
     -lidbfs.js \
     --use-preload-plugins \
-    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS), \
+    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_EMSCRIPTEN), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     $(F_EMSCRIPTEN_OPTIONS) \
+
+F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
