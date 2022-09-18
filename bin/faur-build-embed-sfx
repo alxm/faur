@@ -21,12 +21,13 @@ import subprocess
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('Sound.wav GenFile.c/.h VarName')
+g_tool = Tool('Sound.wav GenFile.c/.h VarName SoundFormat')
 
 def main():
     wav_file = g_tool.args.get('Sound.wav')
     target_file = g_tool.args.get('GenFile.c/.h')
     var_name = g_tool.sanitize_c_var(g_tool.args.get('VarName'))
+    sfx_format = g_tool.args.get('SoundFormat')
 
     if not wav_file.endswith('.wav'):
         g_tool.usage('Sound file must be a .wav file')
@@ -34,7 +35,7 @@ def main():
     if target_file.endswith('.h'):
         content = process_h(var_name)
     elif target_file.endswith('.c'):
-        content = process_c(var_name, wav_file)
+        content = process_c(var_name, wav_file, sfx_format)
     else:
         g_tool.usage('GenFile must be a .c or .h file')
 
@@ -51,22 +52,26 @@ extern const FSample* const f_sfx_{VarName};
 
     return content
 
-def process_c(VarName, WavFile):
-    ret = subprocess.run(['ffmpeg',
-                            '-loglevel', 'quiet',
-                            '-i', WavFile,
-                            '-ac', '1',
-                            '-ar', '22050',
-                            '-acodec', 'pcm_u8',
-                            '-f', 'u8',
-                            'pipe:1'],
-                         stdout = subprocess.PIPE)
+def process_c(VarName, WavFile, SoundFormat):
+    sfx_bytes = []
 
-    if ret.returncode != 0:
-        g_tool.out.error(f'ffmpeg error code {ret.returncode}')
+    if SoundFormat == 'F_SOUND_FORMAT_GAMEBUINO_META':
+        ret = subprocess.run(['ffmpeg',
+                                '-loglevel', 'quiet',
+                                '-i', WavFile,
+                                '-ac', '1',
+                                '-ar', '22050',
+                                '-acodec', 'pcm_u8',
+                                '-f', 'u8',
+                                'pipe:1'],
+                             stdout = subprocess.PIPE)
 
-    wav_bytes = g_tool.files.read_bytes(WavFile)
-    gbm_bytes = ret.stdout
+        if ret.returncode != 0:
+            g_tool.out.error(f'ffmpeg error code {ret.returncode}')
+
+        sfx_bytes = ret.stdout
+    else:
+        sfx_bytes = g_tool.files.read_bytes(WavFile)
 
     def format_bytes(Bytes):
         return ','.join(['0x{:0>2x}'.format(b) for b in Bytes])
@@ -85,13 +90,8 @@ def process_c(VarName, WavFile):
     #endif
 #endif
 
-#if F_CONFIG_SYSTEM_GAMEBUINO
-    #define F__GEN_BUFFER_SIZE__{VarName} {len(gbm_bytes)}
-    #define F__GEN_BUFFER_DATA__{VarName} {format_bytes(gbm_bytes)}
-#else
-    #define F__GEN_BUFFER_SIZE__{VarName} {len(wav_bytes)}
-    #define F__GEN_BUFFER_DATA__{VarName} {format_bytes(wav_bytes)}
-#endif
+#define F__GEN_BUFFER_SIZE__{VarName} {len(sfx_bytes)}
+#define F__GEN_BUFFER_DATA__{VarName} {format_bytes(sfx_bytes)}
 
 static const uint8_t f__sfx_buffer__{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {{F__GEN_BUFFER_DATA__{VarName}}};
 
