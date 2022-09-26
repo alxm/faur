@@ -289,14 +289,14 @@ static const struct {
     F__INIT_BLEND(F_COLOR_BLEND_ADD, add)
 };
 
-void f_platform_api__drawPixel(int X, int Y)
+void f_platform_api_software__drawPixel(int X, int Y)
 {
     if(f_screen_boxInsideClip(X, Y, 1, 1)) {
         g_draw[f__color.blend].pixel(X, Y);
     }
 }
 
-void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
+void f_platform_api_software__drawLine(int X1, int Y1, int X2, int Y2)
 {
     int x = f_math_min(X1, X2);
     int y = f_math_min(Y1, Y2);
@@ -312,7 +312,7 @@ void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
     g_draw[f__color.blend].line(X1, Y1, X2, Y2);
 }
 
-void f_platform_api__drawLineH(int X1, int X2, int Y)
+void f_platform_api_software__drawLineH(int X1, int X2, int Y)
 {
     if(!f_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
         return;
@@ -324,7 +324,7 @@ void f_platform_api__drawLineH(int X1, int X2, int Y)
     g_draw[f__color.blend].hline(X1, X2, Y);
 }
 
-void f_platform_api__drawLineV(int X, int Y1, int Y2)
+void f_platform_api_software__drawLineV(int X, int Y1, int Y2)
 {
     if(!f_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
         return;
@@ -360,12 +360,12 @@ static void drawRectangle(int X, int Y, int Width, int Height)
     g_draw[f__color.blend].rectangle[f__color.fillDraw](X, Y, Width, Height);
 }
 
-void f_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
+void f_platform_api_software__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
 
-void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
+void f_platform_api_software__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
@@ -384,12 +384,12 @@ static void drawCircle(int X, int Y, int Radius)
     }
 }
 
-void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
+void f_platform_api_software__drawCircleOutline(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
 
-void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
+void f_platform_api_software__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }

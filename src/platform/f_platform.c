@@ -26,6 +26,37 @@
     #include <faur_v/include.c>
 #endif
 
+#include "files/f_gamebuino_file.v.h"
+#include "files/f_odroid_go_file.v.h"
+#include "files/f_standard_file.v.h"
+
+#include "graphics/f_sdl_blit.v.h"
+#include "graphics/f_sdl_draw.v.h"
+#include "graphics/f_software_blit.v.h"
+#include "graphics/f_software_draw.v.h"
+
+#include "input/f_gamebuino_input.v.h"
+#include "input/f_odroid_go_input.v.h"
+#include "input/f_sdl_input.v.h"
+
+#include "memory/f_malloc.v.h"
+
+#include "sound/f_gamebuino_sound.v.h"
+#include "sound/f_sdl_sound.v.h"
+
+#include "system/f_emscripten.v.h"
+#include "system/f_gamebuino.v.h"
+#include "system/f_gp2x.v.h"
+#include "system/f_linux.v.h"
+#include "system/f_odroid_go.v.h"
+#include "system/f_pandora.v.h"
+#include "system/f_sdl.v.h"
+#include "system/f_wiz.v.h"
+
+#include "video/f_gamebuino_video.v.h"
+#include "video/f_odroid_go_video.v.h"
+#include "video/f_sdl_video.v.h"
+
 static void f_platform__init(void)
 {
     #if F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -65,7 +96,7 @@ static void f_platform__init(void)
     #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_out__info("Using S/W graphics");
         f_platform_software_blit__init();
-    #elif F_CONFIG_SCREEN_RENDER_SDL2
+    #elif F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
         f_out__info("Using SDL2 graphics");
     #endif
 }
@@ -97,7 +128,179 @@ const FPack f_pack__platform = {
     f_platform__uninit,
 };
 
-FPlatformApi f__platform_api;
+static const FPlatformApi f__platform_api = {
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
+        .customExit = f_platform_api_emscripten__customExit,
+    #endif
+
+    #if F_CONFIG_LIB_SDL && F_CONFIG_LIB_SDL_TIME
+        .timeMsGet = f_platform_api_sdl__timeMsGet,
+        .timeMsWait = f_platform_api_sdl__timeMsWait,
+    #elif F_CONFIG_SYSTEM_GAMEBUINO
+        .timeMsGet = f_platform_api_gamebuino__timeMsGet,
+        .timeMsWait = f_platform_api_gamebuino__timeMsWait,
+    #elif F_CONFIG_SYSTEM_ODROID_GO
+        .timeMsGet = f_platform_api_odroidgo__timeMsGet,
+        .timeMsWait = f_platform_api_odroidgo__timeMsWait,
+    #elif F_CONFIG_SYSTEM_WIZ
+        .timeMsGet = f_platform_api_wiz__timeMsGet,
+        .timeMsWait = f_platform_api_wiz___timeMsWait,
+    #endif
+
+    #if F_CONFIG_LIB_SDL
+        .screenInit = f_platform_api_sdl___screenInit,
+        .screenUninit = f_platform_api_sdl__screenUninit,
+        .screenClear = f_platform_api_sdl__screenClear,
+        #if F_CONFIG_LIB_SDL == 2
+            .screenTextureGet = f_platform_api_sdl__screenTextureGet,
+            .screenTextureSet = f_platform_api_sdl__screenTextureSet,
+            .screenTextureSync = f_platform_api_sdl__screenTextureSync,
+            #if F_CONFIG_SCREEN_RENDER_SDL2
+                .screenToTexture = f_platform_api_sdl__screenToTexture,
+                .screenClipSet = f_platform_api_sdl__screenClipSet,
+            #endif
+        #endif
+        .screenShow = f_platform_api_sdl__screenShow,
+        .screenPixelsGet = f_platform_api_sdl__screenPixelsGet,
+        .screenSizeGet = f_platform_api_sdl__screenSizeGet,
+        .screenVsyncGet = f_platform_api_sdl__screenVsyncGet,
+        .screenZoomGet = f_platform_api_sdl__screenZoomGet,
+        .screenZoomSet = f_platform_api_sdl__screenZoomSet,
+        .screenFullscreenGet = f_platform_api_sdl__screenFullscreenGet,
+        .screenFullscreenFlip = f_platform_api_sdl__screenFullscreenFlip,
+    #elif F_CONFIG_SYSTEM_GAMEBUINO
+        .screenInit = f_platform_api_gamebuino__screenInit,
+        .screenPixelsGet = f_platform_api_gamebuino__screenPixelsGet,
+        .screenSizeGet = f_platform_api_gamebuino__screenSizeGet,
+        .screenVsyncGet = f_platform_api_gamebuino__screenVsyncGet,
+    #elif F_CONFIG_SYSTEM_ODROID_GO
+        .screenInit = f_platform_api_odroidgo__screenInit,
+        .screenClear = f_platform_api_odroidgo__screenClear,
+        .screenShow = f_platform_api_odroidgo__screenShow,
+        .screenPixelsGet = f_platform_api_odroidgo__screenPixelsGet,
+        .screenSizeGet = f_platform_api_odroidgo__screenSizeGet,
+    #endif
+
+    #if F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
+        .drawSetColor = f_platform_api_sdl__drawSetColor,
+        .drawSetBlend = f_platform_api_sdl__drawSetBlend,
+        .drawPixel = f_platform_api_sdl__drawPixel,
+        .drawLine = f_platform_api_sdl__drawLine,
+        .drawLineH = f_platform_api_sdl__drawLineH,
+        .drawLineV = f_platform_api_sdl__drawLineV,
+        .drawRectangleOutline = f_platform_api_sdl__drawRectangleOutline,
+        .drawRectangleFilled = f_platform_api_sdl__drawRectangleFilled,
+        .drawCircleOutline = f_platform_api_sdl__drawCircleOutline,
+        .drawCircleFilled = f_platform_api_sdl__drawCircleFilled,
+    #elif F_CONFIG_SCREEN_RENDER_SOFTWARE
+        .drawPixel = f_platform_api_software__drawPixel,
+        .drawLine = f_platform_api_software__drawLine,
+        .drawLineH = f_platform_api_software__drawLineH,
+        .drawLineV = f_platform_api_software__drawLineV,
+        .drawRectangleOutline = f_platform_api_software__drawRectangleOutline,
+        .drawRectangleFilled = f_platform_api_software__drawRectangleFilled,
+        .drawCircleOutline = f_platform_api_software__drawCircleOutline,
+        .drawCircleFilled = f_platform_api_software__drawCircleFilled,
+#endif
+
+    #if F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
+        .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
+        .textureNew = f_platform_api_sdl__textureNew,
+        .textureDup = f_platform_api_sdl__textureDup,
+        .textureFree = f_platform_api_sdl__textureFree,
+        .textureBlit = f_platform_api_sdl__textureBlit,
+        .textureBlitEx = f_platform_api_sdl__textureBlitEx,
+    #elif F_CONFIG_SCREEN_RENDER_SOFTWARE
+        .textureNew = f_platform_api_software__textureNew,
+        .textureDup = f_platform_api_software__textureDup,
+        .textureFree = f_platform_api_software__textureFree,
+        .textureUpdate = f_platform_api_software__textureUpdate,
+        .textureBlit = f_platform_api_software__textureBlit,
+        .textureBlitEx = f_platform_api_software__textureBlitEx,
+    #endif
+
+    #if F_CONFIG_SOUND_ENABLED && F_CONFIG_LIB_SDL
+        .soundMuteGet = f_platform_api_sdl__soundMuteGet,
+        .soundMuteFlip = f_platform_api_sdl__soundMuteFlip,
+        .soundVolumeGetMax = f_platform_api_sdl__soundVolumeGetMax,
+        .soundVolumeSet = f_platform_api_sdl__soundVolumeSet,
+        .soundMusicNew = f_platform_api_sdl__soundMusicNew,
+        .soundMusicFree = f_platform_api_sdl__soundMusicFree,
+        .soundMusicPlay = f_platform_api_sdl__soundMusicPlay,
+        .soundMusicStop = f_platform_api_sdl__soundMusicStop,
+        .soundSampleNewFromFile = f_platform_api_sdl__soundSampleNewFromFile,
+        .soundSampleNewFromData = f_platform_api_sdl__soundSampleNewFromData,
+        .soundSampleFree = f_platform_api_sdl__soundSampleFree,
+        .soundSamplePlay = f_platform_api_sdl__soundSamplePlay,
+        .soundSampleStop = f_platform_api_sdl__soundSampleStop,
+        .soundSampleIsPlaying = f_platform_api_sdl__soundSampleIsPlaying,
+        .soundSampleChannelGet = f_platform_api_sdl__soundSampleChannelGet,
+    #elif F_CONFIG_SOUND_ENABLED && F_CONFIG_SYSTEM_GAMEBUINO
+        .soundSamplePlay = f_platform_api_gamebuino__soundSamplePlay,
+        .soundSampleStop = f_platform_api_gamebuino__soundSampleStop,
+        .soundSampleIsPlaying = f_platform_api_gamebuino__soundSampleIsPlaying,
+    #endif
+
+    #if F_CONFIG_LIB_SDL
+        .inputPoll = f_platform_api_sdl__inputPoll,
+        #if F_CONFIG_TRAIT_KEYBOARD
+            .inputKeyGet = f_platform_api_sdl__inputKeyGet,
+        #endif
+        .inputButtonGet = f_platform_api_sdl__inputButtonGet,
+        .inputButtonPressGet = f_platform_api_sdl__inputButtonPressGet,
+        .inputAnalogGet = f_platform_api_sdl__inputAnalogGet,
+        .inputAnalogValueGet = f_platform_api_sdl__inputAnalogValueGet,
+        .inputTouchCoordsGet = f_platform_api_sdl__inputTouchCoordsGet,
+        .inputTouchDeltaGet = f_platform_api_sdl__inputTouchDeltaGet,
+        .inputTouchTapGet = f_platform_api_sdl__inputTouchTapGet,
+        .inputControllerClaim = f_platform_api_sdl__inputControllerClaim,
+        .inputControllerRelease = f_platform_api_sdl__inputControllerRelease,
+    #elif F_CONFIG_SYSTEM_GAMEBUINO
+        .inputButtonGet = f_platform_api_gamebuino__inputButtonGet,
+        .inputButtonPressGet = f_platform_api_gamebuino__inputButtonPressGet,
+    #elif F_CONFIG_SYSTEM_ODROID_GO
+        .inputPoll = f_platform_api_odroidgo__inputPoll,
+        .inputButtonGet = f_platform_api_odroidgo__inputButtonGet,
+        .inputButtonPressGet = f_platform_api_odroidgo__inputButtonPressGet,
+    #endif
+
+    #if F_CONFIG_FILES_STANDARD
+        .dirCreate = f_platform_api_std__dirCreate,
+        .fileStat = f_platform_api_std__fileStat,
+        .fileBufferRead = f_platform_api_std__fileBufferRead,
+        .fileBufferWrite = f_platform_api_std__fileBufferWrite,
+        .fileNew = f_platform_api_std__fileNew,
+        .fileFree = f_platform_api_std__fileFree,
+        .fileSeek = f_platform_api_std__fileSeek,
+        .fileRead = f_platform_api_std__fileRead,
+        .fileWrite = f_platform_api_std__fileWrite,
+        .fileWritef = f_platform_api_std__fileWritef,
+        .filePrint = f_platform_api_std__filePrint,
+        .fileFlush = f_platform_api_std__fileFlush,
+        .fileReadChar = f_platform_api_std__fileReadChar,
+        .fileReadCharUndo = f_platform_api_std__fileReadCharUndo,
+        #if F_CONFIG_SYSTEM_EMSCRIPTEN
+            .fileSync = f_platform_api_emscripten__fileSync,
+        #endif
+    #elif F_CONFIG_SYSTEM_GAMEBUINO
+        .fileStat = f_platform_api_gamebuino__fileStat,
+        .fileBufferRead = f_platform_api_gamebuino__fileBufferRead,
+        .fileBufferWrite = f_platform_api_gamebuino__fileBufferWrite,
+        .fileNew = f_platform_api_gamebuino__fileNew,
+        .fileFree = f_platform_api_gamebuino__fileFree,
+        .fileRead = f_platform_api_gamebuino__fileRead,
+        .fileWrite = f_platform_api_gamebuino__fileWrite,
+        .filePrint = f_platform_api_gamebuino__filePrint,
+    #elif F_CONFIG_SYSTEM_ODROID_GO
+        .fileStat = f_platform_api_odroidgo__fileStat,
+        .fileBufferRead = f_platform_api_odroidgo__fileBufferRead,
+        .fileBufferWrite = f_platform_api_odroidgo__fileBufferWrite,
+        .filePrint = f_platform_api_odroidgo__filePrint,
+    #endif
+
+    .malloc = f_platform_api_common__malloc,
+    .mallocz = f_platform_api_common__mallocz,
+};
 
 void f_platform_api__customExit(int Status)
 {
@@ -237,7 +440,7 @@ bool f_platform_api__screenVsyncGet(void)
 int f_platform_api__screenZoomGet(void)
 {
     if(f__platform_api.screenZoomGet == NULL) {
-        return 0;
+        return F_CONFIG_SCREEN_SIZE_ZOOM;
     }
 
     return f__platform_api.screenZoomGet();
@@ -255,7 +458,7 @@ void f_platform_api__screenZoomSet(int Zoom)
 bool f_platform_api__screenFullscreenGet(void)
 {
     if(f__platform_api.screenFullscreenGet == NULL) {
-        return false;
+        return F_CONFIG_SCREEN_FULLSCREEN;
     }
 
     return f__platform_api.screenFullscreenGet();

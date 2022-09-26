@@ -380,7 +380,7 @@ static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
     return spansStart;
 }
 
-FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
+FPlatformTexture* f_platform_api_software__textureNew(const FPixels* Pixels)
 {
     FTexture* t = f_mem_malloc(
                     sizeof(FTexture)
@@ -395,7 +395,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
     return t;
 }
 
-FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
+FPlatformTexture* f_platform_api_software__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
     F_UNUSED(Pixels);
 
@@ -418,7 +418,7 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
     return texDst;
 }
 
-void f_platform_api__textureFree(FPlatformTexture* Texture)
+void f_platform_api_software__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -433,7 +433,7 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
     f_mem_free(texture);
 }
 
-void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
+void f_platform_api_software__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
 {
     FTexture* texture = Texture;
 
@@ -442,7 +442,7 @@ void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pix
     texture->spans[Frame] = spansNew(Pixels, Frame);
 }
 
-void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+void f_platform_api_software__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     if(!f_screen_boxOnClip(X, Y, Pixels->size.x, Pixels->size.y)) {
         return;
@@ -456,7 +456,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
             (Texture, Pixels, Frame, X, Y);
 }
 
-void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
+void f_platform_api_software__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     const FVecInt size = Pixels->size;
     const FVecFix sizeScaled = {size.x * Scale, size.y * Scale};

@@ -35,7 +35,7 @@ static FPixels g_pixels, g_lights;
 static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH_HW,
                                      F_CONFIG_SCREEN_SIZE_HEIGHT_HW};
 
-void f_platform_api__screenInit(void)
+void f_platform_api_gamebuino__screenInit(void)
 {
     f_pixels__init(&g_pixels, g_screenSize.x, g_screenSize.y, 1, 0);
     f_pixels__bufferSet(
@@ -46,41 +46,19 @@ void f_platform_api__screenInit(void)
         &g_lights, gb.lights._buffer, g_lightsSize.x, g_lightsSize.y);
 }
 
-void f_platform_api__screenUninit(void)
-{
-}
-
-void f_platform_api__screenClear(void)
-{
-}
-
-void f_platform_api__screenShow(void)
-{
-}
-
-bool f_platform_api__screenVsyncGet(void)
+bool f_platform_api_gamebuino__screenVsyncGet(void)
 {
     return true;
 }
 
-FVecInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api_gamebuino__screenSizeGet(void)
 {
     return g_screenSize;
 }
 
-FPixels* f_platform_api__screenPixelsGet(void)
+FPixels* f_platform_api_gamebuino__screenPixelsGet(void)
 {
     return &g_pixels;
-}
-
-int f_platform_api__screenZoomGet(void)
-{
-    return F_CONFIG_SCREEN_SIZE_ZOOM;
-}
-
-bool f_platform_api__screenFullscreenGet(void)
-{
-    return F_CONFIG_SCREEN_FULLSCREEN;
 }
 #else // !F_CONFIG_SYSTEM_GAMEBUINO
 static FColorPixel g_buffer[F__NEOPIXELS_W * F__NEOPIXELS_H] = {0};

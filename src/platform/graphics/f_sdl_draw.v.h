@@ -20,4 +20,16 @@
 
 #include "f_sdl_draw.p.h"
 
+extern void f_platform_api_sdl__drawSetColor(void);
+extern void f_platform_api_sdl__drawSetBlend(void);
+
+extern void f_platform_api_sdl__drawPixel(int X, int Y);
+extern void f_platform_api_sdl__drawLine(int X1, int Y1, int X2, int Y2);
+extern void f_platform_api_sdl__drawLineH(int X1, int X2, int Y);
+extern void f_platform_api_sdl__drawLineV(int X, int Y1, int Y2);
+extern void f_platform_api_sdl__drawRectangleOutline(int X, int Y, int Width, int Height);
+extern void f_platform_api_sdl__drawRectangleFilled(int X, int Y, int Width, int Height);
+extern void f_platform_api_sdl__drawCircleOutline(int X, int Y, int Radius);
+extern void f_platform_api_sdl__drawCircleFilled(int X, int Y, int Radius);
+
 #endif // F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H

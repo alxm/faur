@@ -20,4 +20,15 @@
 
 #include "f_sdl_blit.p.h"
 
+#include "../f_platform.v.h"
+
+extern FPlatformTextureScreen* f_platform_api_sdl__textureSpriteToScreen(FPlatformTexture* SpriteTexture);
+
+extern FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels);
+extern FPlatformTexture* f_platform_api_sdl__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels);
+extern void f_platform_api_sdl__textureFree(FPlatformTexture* Texture);
+
+extern void f_platform_api_sdl__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
+extern void f_platform_api_sdl__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
+
 #endif // F_INC_PLATFORM_GRAPHICS_SDL_BLIT_V_H

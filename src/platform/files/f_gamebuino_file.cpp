@@ -29,7 +29,7 @@ typedef struct {
     File file;
 } FGamebuinoFile;
 
-bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
+bool f_platform_api_gamebuino__fileStat(const char* Path, FPathInfo* Info)
 {
     File f = SD.open(Path, O_RDONLY);
 
@@ -55,7 +55,7 @@ bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
     return false;
 }
 
-bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
+bool f_platform_api_gamebuino__fileBufferRead(const char* Path, void* Buffer, size_t Size)
 {
     File f = SD.open(Path, O_RDONLY);
 
@@ -70,7 +70,7 @@ bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
     return ret;
 }
 
-bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
+bool f_platform_api_gamebuino__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
 {
     File f = SD.open(Path, O_RDWR | O_CREAT);
 
@@ -85,7 +85,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(const FPath* Path, unsigned Mode)
+FPlatformFile* f_platform_api_gamebuino__fileNew(const FPath* Path, unsigned Mode)
 {
     oflag_t flags = 0;
 
@@ -108,7 +108,7 @@ FPlatformFile* f_platform_api__fileNew(const FPath* Path, unsigned Mode)
     return f;
 }
 
-void f_platform_api__fileFree(FPlatformFile* File)
+void f_platform_api_gamebuino__fileFree(FPlatformFile* File)
 {
     if(File == NULL) {
         return;
@@ -121,21 +121,21 @@ void f_platform_api__fileFree(FPlatformFile* File)
     f_mem_free(File);
 }
 
-bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size)
+bool f_platform_api_gamebuino__fileRead(FPlatformFile* File, void* Buffer, size_t Size)
 {
     FGamebuinoFile* f = (FGamebuinoFile*)File;
 
     return f->file.read(Buffer, Size) == (int)Size;
 }
 
-bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size)
+bool f_platform_api_gamebuino__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size)
 {
     FGamebuinoFile* f = (FGamebuinoFile*)File;
 
     return f->file.write(Buffer, Size) == (int)Size;
 }
 
-void f_platform_api__filePrint(FPlatformFile* File, const char* String)
+void f_platform_api_gamebuino__filePrint(FPlatformFile* File, const char* String)
 {
     F_UNUSED(File);
 

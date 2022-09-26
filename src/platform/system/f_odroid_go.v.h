@@ -22,4 +22,7 @@
 
 extern void f_platform_odroid_go__init(void);
 
+extern uint32_t f_platform_api_odroidgo__timeMsGet(void);
+extern void f_platform_api_odroidgo__timeMsWait(uint32_t Ms);
+
 #endif // F_INC_PLATFORM_SYSTEM_ODROID_GO_V_H

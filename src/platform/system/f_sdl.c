@@ -73,12 +73,12 @@ void f_platform_sdl__uninit(void)
 }
 
 #if F_CONFIG_LIB_SDL_TIME
-uint32_t f_platform_api__timeMsGet(void)
+uint32_t f_platform_api_sdl__timeMsGet(void)
 {
     return SDL_GetTicks();
 }
 
-void f_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api_sdl__timeMsWait(uint32_t Ms)
 {
     #if F_CONFIG_TRAIT_NO_SLEEP
         F_UNUSED(Ms);

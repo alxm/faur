@@ -23,4 +23,7 @@
 extern void f_platform_sdl__init(void);
 extern void f_platform_sdl__uninit(void);
 
+extern uint32_t f_platform_api_sdl__timeMsGet(void);
+extern void f_platform_api_sdl__timeMsWait(uint32_t Ms);
+
 #endif // F_INC_PLATFORM_SYSTEM_SDL_V_H

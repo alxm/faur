@@ -20,4 +20,7 @@
 
 #include "f_gamebuino.p.h"
 
+extern uint32_t f_platform_api_gamebuino__timeMsGet(void);
+extern void f_platform_api_gamebuino__timeMsWait(uint32_t Ms);
+
 #endif // F_INC_PLATFORM_VIDEO_GAMEBUINO_V_H

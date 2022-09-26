@@ -64,12 +64,12 @@ void loop(void)
     #endif
 }
 
-uint32_t f_platform_api__timeMsGet(void)
+uint32_t f_platform_api_gamebuino__timeMsGet(void)
 {
     return millis();
 }
 
-void f_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api_gamebuino__timeMsWait(uint32_t Ms)
 {
     f_time_msSpin(Ms);
 }

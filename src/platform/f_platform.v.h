@@ -41,7 +41,6 @@ typedef void FPlatformFile;
 #include "../math/f_fix.v.h"
 #include "../sound/f_sample.v.h"
 
-////////////////////////////////////////////////////////////////////////////////
 typedef void FCallApi_CustomExit(int Status);
 
 typedef uint32_t FCallApi_TimeMsGet(void);
@@ -135,7 +134,7 @@ typedef void FCallApi_FileSync(void);
 
 typedef void* FCallApi_Malloc(size_t Size);
 typedef void* FCallApi_Mallocz(size_t Size);
-////////////////////////////////////////////////////////////////////////////////
+
 typedef struct FPlatformApi {
     FCallApi_CustomExit* customExit;
 
@@ -165,8 +164,8 @@ typedef struct FPlatformApi {
     FCallApi_DrawLine* drawLine;
     FCallApi_DrawLineH* drawLineH;
     FCallApi_DrawLineV* drawLineV;
-    FCallApi_DrawRectangleFilled* drawRectangleFilled;
     FCallApi_DrawRectangleOutline* drawRectangleOutline;
+    FCallApi_DrawRectangleFilled* drawRectangleFilled;
     FCallApi_DrawCircleOutline* drawCircleOutline;
     FCallApi_DrawCircleFilled* drawCircleFilled;
 
@@ -232,9 +231,6 @@ typedef struct FPlatformApi {
     FCallApi_Malloc* malloc;
     FCallApi_Mallocz* mallocz;
 } FPlatformApi;
-
-extern FPlatformApi f__platform_api;
-////////////////////////////////////////////////////////////////////////////////
 
 extern const FPack f_pack__platform;
 
@@ -331,4 +327,5 @@ extern void f_platform_api__fileSync(void);
 
 extern void* f_platform_api__malloc(size_t Size);
 extern void* f_platform_api__mallocz(size_t Size);
+
 #endif // F_INC_PLATFORM_PLATFORM_V_H

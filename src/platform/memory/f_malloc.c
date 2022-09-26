@@ -23,7 +23,7 @@
     extern void *ps_calloc(size_t n, size_t size);
 #endif
 
-void* f_platform_api__malloc(size_t Size)
+void* f_platform_api_common__malloc(size_t Size)
 {
     #if F_CONFIG_SYSTEM_ODROID_GO
         return ps_malloc(Size);
@@ -32,7 +32,7 @@ void* f_platform_api__malloc(size_t Size)
     #endif
 }
 
-void* f_platform_api__mallocz(size_t Size)
+void* f_platform_api_common__mallocz(size_t Size)
 {
     #if F_CONFIG_SYSTEM_ODROID_GO
         return ps_calloc(1, Size);

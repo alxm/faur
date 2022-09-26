@@ -23,6 +23,9 @@
 extern void f_platform_wiz__init(void);
 extern void f_platform_wiz__uninit(void);
 
+extern uint32_t f_platform_api_wiz__timeMsGet(void);
+extern void f_platform_api_wiz___timeMsWait(uint32_t Ms);
+
 extern void f_platform_wiz__portraitModeSet(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_WIZ_V_H

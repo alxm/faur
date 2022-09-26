@@ -20,7 +20,26 @@
 
 #include "f_sdl_input.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_sdl_input__init(void);
 extern void f_platform_sdl_input__uninit(void);
+
+extern void f_platform_api_sdl__inputPoll(void);
+
+extern const FPlatformButton* f_platform_api_sdl__inputKeyGet(FKeyId Id);
+
+extern const FPlatformButton* f_platform_api_sdl__inputButtonGet(const FPlatformController* Controller, FButtonId Id);
+extern bool f_platform_api_sdl__inputButtonPressGet(const FPlatformButton* Button);
+
+extern const FPlatformAnalog* f_platform_api_sdl__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id);
+extern int f_platform_api_sdl__inputAnalogValueGet(const FPlatformAnalog* Analog);
+
+extern FVecInt f_platform_api_sdl__inputTouchCoordsGet(void);
+extern FVecInt f_platform_api_sdl__inputTouchDeltaGet(void);
+extern bool f_platform_api_sdl__inputTouchTapGet(void);
+
+extern FPlatformController* f_platform_api_sdl__inputControllerClaim(FCallControllerBind* Callback);
+extern void f_platform_api_sdl__inputControllerRelease(FPlatformController* Controller);
 
 #endif // F_INC_PLATFORM_INPUT_SDL_INPUT_V_H

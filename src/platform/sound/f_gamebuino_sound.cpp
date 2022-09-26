@@ -25,12 +25,7 @@ extern "C" {
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
-bool f_platform_api__soundMuteGet(void)
-{
-    return false;
-}
-
-void f_platform_api__soundSamplePlay(const FSample* Sample, int Channel, bool Loop)
+void f_platform_api_gamebuino__soundSamplePlay(const FSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
@@ -43,12 +38,12 @@ void f_platform_api__soundSamplePlay(const FSample* Sample, int Channel, bool Lo
     gb.sound.play(Sample->buffer, Sample->size);
 }
 
-void f_platform_api__soundSampleStop(int Channel)
+void f_platform_api_gamebuino__soundSampleStop(int Channel)
 {
     gb.sound.stop((int8_t)Channel);
 }
 
-bool f_platform_api__soundSampleIsPlaying(int Channel)
+bool f_platform_api_gamebuino__soundSampleIsPlaying(int Channel)
 {
     return gb.sound.isPlaying((int8_t)Channel);
 }
