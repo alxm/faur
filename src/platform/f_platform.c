@@ -39,7 +39,8 @@
 #include "input/f_odroid_go_input.v.h"
 #include "input/f_sdl_input.v.h"
 
-#include "memory/f_malloc.v.h"
+#include "memory/f_odroidgo_malloc.v.h"
+#include "memory/f_standard_malloc.v.h"
 
 #include "sound/f_gamebuino_sound.v.h"
 #include "sound/f_sdl_sound.v.h"
@@ -298,8 +299,13 @@ static const FPlatformApi f__platform_api = {
         .filePrint = f_platform_api_odroidgo__filePrint,
     #endif
 
-    .malloc = f_platform_api_common__malloc,
-    .mallocz = f_platform_api_common__mallocz,
+    #if F_CONFIG_SYSTEM_ODROID_GO
+        .malloc = f_platform_api_odroidgo__malloc,
+        .mallocz = f_platform_api_odroidgo__mallocz,
+    #else
+        .malloc = f_platform_api_standard__malloc,
+        .mallocz = f_platform_api_standard__mallocz,
+    #endif
 };
 
 void f_platform_api__customExit(int Status)

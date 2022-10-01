@@ -15,14 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_MEMORY_MALLOC_V_H
-#define F_INC_PLATFORM_MEMORY_MALLOC_V_H
+#ifndef F_INC_PLATFORM_MEMORY_STANDARD_MALLOC_P_H
+#define F_INC_PLATFORM_MEMORY_STANDARD_MALLOC_P_H
 
-#include "f_malloc.p.h"
+#include "../../general/f_system_includes.h"
 
-#include "../f_platform.v.h"
-
-extern FCallApi_Malloc f_platform_api_common__malloc;
-extern FCallApi_Mallocz f_platform_api_common__mallocz;
-
-#endif // F_INC_PLATFORM_MEMORY_MALLOC_V_H
+#endif // F_INC_PLATFORM_MEMORY_STANDARD_MALLOC_P_H
