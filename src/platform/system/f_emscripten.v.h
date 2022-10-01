@@ -20,13 +20,14 @@
 
 #include "f_emscripten.p.h"
 
+#include "../f_platform.v.h"
 #include "../../math/f_vec.v.h"
 
 extern void f_platform_emscripten__init(void);
 
-extern void f_platform_api_emscripten__customExit(int Status);
+extern FCallApi_CustomExit f_platform_api_emscripten__customExit;
 
-extern void f_platform_api_emscripten__fileSync(void);
+extern FCallApi_FileSync f_platform_api_emscripten__fileSync;
 
 extern FVecInt f_platform_emscripten__windowSizeGet(void);
 

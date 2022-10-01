@@ -42,29 +42,29 @@
 extern void f_platform_sdl_video__init(void);
 extern void f_platform_sdl_video__uninit(void);
 
-extern void f_platform_api_sdl___screenInit(void);
-extern void f_platform_api_sdl__screenUninit(void);
+extern FCallApi_ScreenInit f_platform_api_sdl___screenInit;
+extern FCallApi_ScreenUninit f_platform_api_sdl__screenUninit;
 
-extern void f_platform_api_sdl__screenClear(void);
+extern FCallApi_ScreenClear f_platform_api_sdl__screenClear;
 
-extern FPlatformTextureScreen* f_platform_api_sdl__screenTextureGet(void);
-extern void f_platform_api_sdl__screenTextureSet(FPlatformTextureScreen* Texture);
-extern void f_platform_api_sdl__screenTextureSync(void);
-extern void f_platform_api_sdl__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame);
+extern FCallApi_ScreenTextureGet f_platform_api_sdl__screenTextureGet;
+extern FCallApi_ScreenTextureSet f_platform_api_sdl__screenTextureSet;
+extern FCallApi_ScreenTextureSync f_platform_api_sdl__screenTextureSync;
+extern FCallApi_ScreenToTexture f_platform_api_sdl__screenToTexture;
 
-extern void f_platform_api_sdl__screenClipSet(void);
-extern void f_platform_api_sdl__screenShow(void);
+extern FCallApi_ScreenClipSet f_platform_api_sdl__screenClipSet;
+extern FCallApi_ScreenShow f_platform_api_sdl__screenShow;
 
-extern FPixels* f_platform_api_sdl__screenPixelsGet(void);
-extern FVecInt f_platform_api_sdl__screenSizeGet(void);
+extern FCallApi_ScreenPixelsGet f_platform_api_sdl__screenPixelsGet;
+extern FCallApi_ScreenSizeGet f_platform_api_sdl__screenSizeGet;
 
-extern bool f_platform_api_sdl__screenVsyncGet(void);
+extern FCallApi_ScreenVsyncGet f_platform_api_sdl__screenVsyncGet;
 
-extern int f_platform_api_sdl__screenZoomGet(void);
-extern void f_platform_api_sdl__screenZoomSet(int Zoom);
+extern FCallApi_ScreenZoomGet f_platform_api_sdl__screenZoomGet;
+extern FCallApi_ScreenZoomSet f_platform_api_sdl__screenZoomSet;
 
-extern bool f_platform_api_sdl__screenFullscreenGet(void);
-extern void f_platform_api_sdl__screenFullscreenFlip(void);
+extern FCallApi_ScreenFullscreenGet f_platform_api_sdl__screenFullscreenGet;
+extern FCallApi_ScreenFullscreenFlip f_platform_api_sdl__screenFullscreenFlip;
 
 extern int f_platform_sdl_video__pixelBlendToSdlBlend(void);
 extern uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void);

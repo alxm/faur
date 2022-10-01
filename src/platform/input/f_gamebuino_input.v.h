@@ -22,7 +22,7 @@
 
 #include "../f_platform.v.h"
 
-extern const FPlatformButton* f_platform_api_gamebuino__inputButtonGet(const FPlatformController* Controller, FButtonId Id);
-extern bool f_platform_api_gamebuino__inputButtonPressGet(const FPlatformButton* Button);
+extern FCallApi_InputButtonGet f_platform_api_gamebuino__inputButtonGet;
+extern FCallApi_InputButtonPressGet f_platform_api_gamebuino__inputButtonPressGet;
 
 #endif // F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H

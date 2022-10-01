@@ -20,6 +20,7 @@
 
 #include "f_png.p.h"
 
+#include "../f_platform.v.h"
 #include "../../graphics/f_pixels.v.h"
 
 extern FPixels* f_png__read(const char* Path);

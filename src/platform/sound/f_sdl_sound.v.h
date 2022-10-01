@@ -25,23 +25,23 @@
 extern void f_platform_sdl_sound__init(void);
 extern void f_platform_sdl_sound__uninit(void);
 
-extern bool f_platform_api_sdl__soundMuteGet(void);
-extern void f_platform_api_sdl__soundMuteFlip(void);
-extern int f_platform_api_sdl__soundVolumeGetMax(void);
-extern void f_platform_api_sdl__soundVolumeSet(int MusicVolume, int SamplesVolume);
+extern FCallApi_SoundMuteGet f_platform_api_sdl__soundMuteGet;
+extern FCallApi_SoundMuteFlip f_platform_api_sdl__soundMuteFlip;
+extern FCallApi_SoundVolumeGetMax f_platform_api_sdl__soundVolumeGetMax;
+extern FCallApi_SoundVolumeSet f_platform_api_sdl__soundVolumeSet;
 
-extern FPlatformMusic* f_platform_api_sdl__soundMusicNew(const char* Path);
-extern void f_platform_api_sdl__soundMusicFree(FPlatformMusic* Music);
-extern void f_platform_api_sdl__soundMusicPlay(FPlatformMusic* Music);
-extern void f_platform_api_sdl__soundMusicStop(void);
+extern FCallApi_SoundMusicNew f_platform_api_sdl__soundMusicNew;
+extern FCallApi_SoundMusicFree f_platform_api_sdl__soundMusicFree;
+extern FCallApi_SoundMusicPlay f_platform_api_sdl__soundMusicPlay;
+extern FCallApi_SoundMusicStop f_platform_api_sdl__soundMusicStop;
 
-extern FPlatformSample* f_platform_api_sdl__soundSampleNewFromFile(const char* Path);
-extern FPlatformSample* f_platform_api_sdl__soundSampleNewFromData(const uint8_t* Data, size_t Size);
-extern void f_platform_api_sdl__soundSampleFree(FPlatformSample* Sample);
+extern FCallApi_SoundSampleNewFromFile f_platform_api_sdl__soundSampleNewFromFile;
+extern FCallApi_SoundSampleNewFromData f_platform_api_sdl__soundSampleNewFromData;
+extern FCallApi_SoundSampleFree f_platform_api_sdl__soundSampleFree;
 
-extern void f_platform_api_sdl__soundSamplePlay(const FSample* Sample, int Channel, bool Loop);
-extern void f_platform_api_sdl__soundSampleStop(int Channel);
-extern bool f_platform_api_sdl__soundSampleIsPlaying(int Channel);
-extern int f_platform_api_sdl__soundSampleChannelGet(void);
+extern FCallApi_SoundSamplePlay f_platform_api_sdl__soundSamplePlay;
+extern FCallApi_SoundSampleStop f_platform_api_sdl__soundSampleStop;
+extern FCallApi_SoundSampleIsPlaying f_platform_api_sdl__soundSampleIsPlaying;
+extern FCallApi_SoundSampleChannelGet f_platform_api_sdl__soundSampleChannelGet;
 
 #endif // F_INC_PLATFORM_SOUND_SDL_SOUND_V_H

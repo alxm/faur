@@ -20,14 +20,15 @@
 
 #include "f_odroid_go_file.p.h"
 
+#include "../f_platform.v.h"
 #include "../../files/f_file.v.h"
 #include "../../files/f_path.v.h"
 
-extern bool f_platform_api_odroidgo__fileStat(const char* Path, FPathInfo* Info);
+extern FCallApi_FileStat f_platform_api_odroidgo__fileStat;
 
-extern bool f_platform_api_odroidgo__fileBufferRead(const char* Path, void* Buffer, size_t Size);
-extern bool f_platform_api_odroidgo__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
+extern FCallApi_FileBufferRead f_platform_api_odroidgo__fileBufferRead;
+extern FCallApi_FileBufferWrite f_platform_api_odroidgo__fileBufferWrite;
 
-extern void f_platform_api_odroidgo__filePrint(FPlatformFile* File, const char* String);
+extern FCallApi_FilePrint f_platform_api_odroidgo__filePrint;
 
 #endif // F_INC_PLATFORM_FILES_ODROID_GO_FILE_V_H

@@ -20,29 +20,30 @@
 
 #include "f_standard_file.p.h"
 
+#include "../f_platform.v.h"
 #include "../../files/f_file.v.h"
 #include "../../files/f_path.v.h"
 
-extern bool f_platform_api_std__dirCreate(const char* Path);
+extern FCallApi_DirCreate f_platform_api_std__dirCreate;
 
-extern bool f_platform_api_std__fileStat(const char* Path, FPathInfo* Info);
+extern FCallApi_FileStat f_platform_api_std__fileStat;
 
-extern bool f_platform_api_std__fileBufferRead(const char* Path, void* Buffer, size_t Size);
-extern bool f_platform_api_std__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
+extern FCallApi_FileBufferRead f_platform_api_std__fileBufferRead;
+extern FCallApi_FileBufferWrite f_platform_api_std__fileBufferWrite;
 
-extern FPlatformFile* f_platform_api_std__fileNew(const FPath* Path, unsigned Mode);
-extern void f_platform_api_std__fileFree(FPlatformFile* File);
+extern FCallApi_FileNew f_platform_api_std__fileNew;
+extern FCallApi_FileFree f_platform_api_std__fileFree;
 
-extern bool f_platform_api_std__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin);
-extern bool f_platform_api_std__fileRead(FPlatformFile* File, void* Buffer, size_t Size);
-extern bool f_platform_api_std__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size);
-extern bool f_platform_api_std__fileWritef(FPlatformFile* File, const char* Format, va_list Args);
+extern FCallApi_FileSeek f_platform_api_std__fileSeek;
+extern FCallApi_FileRead f_platform_api_std__fileRead;
+extern FCallApi_FileWrite f_platform_api_std__fileWrite;
+extern FCallApi_FileWritef f_platform_api_std__fileWritef;
 
-extern void f_platform_api_std__filePrint(FPlatformFile* File, const char* String);
+extern FCallApi_FilePrint f_platform_api_std__filePrint;
 
-extern bool f_platform_api_std__fileFlush(FPlatformFile* File);
+extern FCallApi_FileFlush f_platform_api_std__fileFlush;
 
-extern int f_platform_api_std__fileReadChar(FPlatformFile* File);
-extern int f_platform_api_std__fileReadCharUndo(FPlatformFile* File, int Char);
+extern FCallApi_FileReadChar f_platform_api_std__fileReadChar;
+extern FCallApi_FileReadCharUndo f_platform_api_std__fileReadCharUndo;
 
 #endif // F_INC_PLATFORM_FILES_STANDARD_FILE_V_H

@@ -25,21 +25,21 @@
 extern void f_platform_sdl_input__init(void);
 extern void f_platform_sdl_input__uninit(void);
 
-extern void f_platform_api_sdl__inputPoll(void);
+extern FCallApi_InputPoll f_platform_api_sdl__inputPoll;
 
-extern const FPlatformButton* f_platform_api_sdl__inputKeyGet(FKeyId Id);
+extern FCallApi_InputKeyGet f_platform_api_sdl__inputKeyGet;
 
-extern const FPlatformButton* f_platform_api_sdl__inputButtonGet(const FPlatformController* Controller, FButtonId Id);
-extern bool f_platform_api_sdl__inputButtonPressGet(const FPlatformButton* Button);
+extern FCallApi_InputButtonGet f_platform_api_sdl__inputButtonGet;
+extern FCallApi_InputButtonPressGet f_platform_api_sdl__inputButtonPressGet;
 
-extern const FPlatformAnalog* f_platform_api_sdl__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id);
-extern int f_platform_api_sdl__inputAnalogValueGet(const FPlatformAnalog* Analog);
+extern FCallApi_InputAnalogGet f_platform_api_sdl__inputAnalogGet;
+extern FCallApi_InputAnalogValueGet f_platform_api_sdl__inputAnalogValueGet;
 
-extern FVecInt f_platform_api_sdl__inputTouchCoordsGet(void);
-extern FVecInt f_platform_api_sdl__inputTouchDeltaGet(void);
-extern bool f_platform_api_sdl__inputTouchTapGet(void);
+extern FCallApi_InputTouchCoordsGet f_platform_api_sdl__inputTouchCoordsGet;
+extern FCallApi_InputTouchDeltaGet f_platform_api_sdl__inputTouchDeltaGet;
+extern FCallApi_InputTouchTapGet f_platform_api_sdl__inputTouchTapGet;
 
-extern FPlatformController* f_platform_api_sdl__inputControllerClaim(FCallControllerBind* Callback);
-extern void f_platform_api_sdl__inputControllerRelease(FPlatformController* Controller);
+extern FCallApi_InputControllerClaim f_platform_api_sdl__inputControllerClaim;
+extern FCallApi_InputControllerRelease f_platform_api_sdl__inputControllerRelease;
 
 #endif // F_INC_PLATFORM_INPUT_SDL_INPUT_V_H

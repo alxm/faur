@@ -24,11 +24,11 @@
 
 extern FPlatformTextureScreen* f_platform_api_sdl__textureSpriteToScreen(FPlatformTexture* SpriteTexture);
 
-extern FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels);
-extern FPlatformTexture* f_platform_api_sdl__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels);
-extern void f_platform_api_sdl__textureFree(FPlatformTexture* Texture);
+extern FCallApi_TextureNew f_platform_api_sdl__textureNew;
+extern FCallApi_TextureDup f_platform_api_sdl__textureDup;
+extern FCallApi_TextureFree f_platform_api_sdl__textureFree;
 
-extern void f_platform_api_sdl__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
-extern void f_platform_api_sdl__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
+extern FCallApi_TextureBlit f_platform_api_sdl__textureBlit;
+extern FCallApi_TextureBlitEx f_platform_api_sdl__textureBlitEx;
 
 #endif // F_INC_PLATFORM_GRAPHICS_SDL_BLIT_V_H

@@ -20,6 +20,8 @@
 
 #include "f_pandora.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_pandora__init(void);
 extern void f_platform_pandora__uninit(void);
 

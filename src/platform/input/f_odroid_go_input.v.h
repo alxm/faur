@@ -24,9 +24,9 @@
 
 extern void f_platform_odroid_go_input__init(void);
 
-extern void f_platform_api_odroidgo__inputPoll(void);
+extern FCallApi_InputPoll f_platform_api_odroidgo__inputPoll;
 
-extern const FPlatformButton* f_platform_api_odroidgo__inputButtonGet(const FPlatformController* Controller, FButtonId Id);
-extern bool f_platform_api_odroidgo__inputButtonPressGet(const FPlatformButton* Button);
+extern FCallApi_InputButtonGet f_platform_api_odroidgo__inputButtonGet;
+extern FCallApi_InputButtonPressGet f_platform_api_odroidgo__inputButtonPressGet;
 
 #endif // F_INC_PLATFORM_INPUT_ODROID_GO_INPUT_V_H

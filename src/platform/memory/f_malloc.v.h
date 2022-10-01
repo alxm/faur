@@ -20,7 +20,9 @@
 
 #include "f_malloc.p.h"
 
-extern void* f_platform_api_common__malloc(size_t Size);
-extern void* f_platform_api_common__mallocz(size_t Size);
+#include "../f_platform.v.h"
+
+extern FCallApi_Malloc f_platform_api_common__malloc;
+extern FCallApi_Mallocz f_platform_api_common__mallocz;
 
 #endif // F_INC_PLATFORM_MEMORY_MALLOC_V_H

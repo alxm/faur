@@ -20,9 +20,11 @@
 
 #include "f_odroid_go.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_odroid_go__init(void);
 
-extern uint32_t f_platform_api_odroidgo__timeMsGet(void);
-extern void f_platform_api_odroidgo__timeMsWait(uint32_t Ms);
+extern FCallApi_TimeMsGet f_platform_api_odroidgo__timeMsGet;
+extern FCallApi_TimeMsWait f_platform_api_odroidgo__timeMsWait;
 
 #endif // F_INC_PLATFORM_SYSTEM_ODROID_GO_V_H

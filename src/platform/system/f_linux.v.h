@@ -20,6 +20,8 @@
 
 #include "f_linux.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_linux__init(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_LINUX_V_H

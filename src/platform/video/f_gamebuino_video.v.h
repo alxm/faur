@@ -20,13 +20,14 @@
 
 #include "f_gamebuino_video.p.h"
 
+#include "../f_platform.v.h"
 #include "../../graphics/f_pixels.v.h"
 
-extern void f_platform_api_gamebuino__screenInit(void);
+extern FCallApi_ScreenInit f_platform_api_gamebuino__screenInit;
 
-extern FPixels* f_platform_api_gamebuino__screenPixelsGet(void);
-extern FVecInt f_platform_api_gamebuino__screenSizeGet(void);
+extern FCallApi_ScreenPixelsGet f_platform_api_gamebuino__screenPixelsGet;
+extern FCallApi_ScreenSizeGet f_platform_api_gamebuino__screenSizeGet;
 
-extern bool f_platform_api_gamebuino__screenVsyncGet(void);
+extern FCallApi_ScreenVsyncGet f_platform_api_gamebuino__screenVsyncGet;
 
 #endif // F_INC_PLATFORM_VIDEO_GAMEBUINO_VIDEO_V_H

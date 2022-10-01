@@ -20,10 +20,11 @@
 
 #include "f_gamebuino_sound.p.h"
 
+#include "../f_platform.v.h"
 #include "../../sound/f_sample.v.h"
 
-extern void f_platform_api_gamebuino__soundSamplePlay(const FSample* Sample, int Channel, bool Loop);
-extern void f_platform_api_gamebuino__soundSampleStop(int Channel);
-extern bool f_platform_api_gamebuino__soundSampleIsPlaying(int Channel);
+extern FCallApi_SoundSamplePlay f_platform_api_gamebuino__soundSamplePlay;
+extern FCallApi_SoundSampleStop f_platform_api_gamebuino__soundSampleStop;
+extern FCallApi_SoundSampleIsPlaying f_platform_api_gamebuino__soundSampleIsPlaying;
 
 #endif // F_INC_PLATFORM_SOUND_GAMEBUINO_SOUND_V_H

@@ -20,13 +20,15 @@
 
 #include "f_software_draw.p.h"
 
-extern void f_platform_api_software__drawPixel(int X, int Y);
-extern void f_platform_api_software__drawLine(int X1, int Y1, int X2, int Y2);
-extern void f_platform_api_software__drawLineH(int X1, int X2, int Y);
-extern void f_platform_api_software__drawLineV(int X, int Y1, int Y2);
-extern void f_platform_api_software__drawRectangleOutline(int X, int Y, int Width, int Height);
-extern void f_platform_api_software__drawRectangleFilled(int X, int Y, int Width, int Height);
-extern void f_platform_api_software__drawCircleOutline(int X, int Y, int Radius);
-extern void f_platform_api_software__drawCircleFilled(int X, int Y, int Radius);
+#include "../f_platform.v.h"
+
+extern FCallApi_DrawPixel f_platform_api_software__drawPixel;
+extern FCallApi_DrawLine f_platform_api_software__drawLine;
+extern FCallApi_DrawLineH f_platform_api_software__drawLineH;
+extern FCallApi_DrawLineV f_platform_api_software__drawLineV;
+extern FCallApi_DrawRectangleOutline f_platform_api_software__drawRectangleOutline;
+extern FCallApi_DrawRectangleFilled f_platform_api_software__drawRectangleFilled;
+extern FCallApi_DrawCircleOutline f_platform_api_software__drawCircleOutline;
+extern FCallApi_DrawCircleFilled f_platform_api_software__drawCircleFilled;
 
 #endif // F_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H
