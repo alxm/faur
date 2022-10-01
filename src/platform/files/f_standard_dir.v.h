@@ -23,5 +23,6 @@
 #include "../f_platform.v.h"
 
 extern FCallApi_DirCreate f_platform_api_standard__dirCreate;
+extern FCallApi_DirOpen f_platform_api_standard__dirOpen;
 
 #endif // F_INC_PLATFORM_FILES_STANDARD_DIR_V_H

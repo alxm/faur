@@ -18,67 +18,6 @@
 #include "f_dir.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_STANDARD
-#include <dirent.h>
-#include <sys/stat.h>
-
-static int dirSort(const FPath* A, const FPath* B)
-{
-    const char* nameA = f_path_getName(A);
-    const char* nameB = f_path_getName(B);
-    int a = *nameA;
-    int b = *nameB;
-    int lowerCaseUpperCaseCmp = 0;
-
-    while(a != '\0' && b != '\0') {
-        if(a != b) {
-            int lowerA = tolower(a);
-            int lowerB = tolower(b);
-
-            if(lowerA == lowerB) {
-                if(lowerCaseUpperCaseCmp == 0) {
-                    lowerCaseUpperCaseCmp = b - a;
-                }
-            } else {
-                return lowerA - lowerB;
-            }
-        }
-
-        a = *++nameA;
-        b = *++nameB;
-    }
-
-    if(a == b) {
-        return lowerCaseUpperCaseCmp;
-    }
-
-    return a - b;
-}
-
-static FList* dirRealOpen(FPath* Path)
-{
-    const char* path = f_path_getFull(Path);
-    DIR* dir = opendir(path);
-
-    if(dir == NULL) {
-        F__FATAL("opendir(%s) failed", path);
-    }
-
-    FList* files = f_list_new();
-
-    for(struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
-        if(ent->d_name[0] != '.') {
-            f_list_addLast(files, f_path_newf("%s/%s", path, ent->d_name));
-        }
-    }
-
-    f_list_sort(files, (FCallListCompare*)dirSort);
-
-    closedir(dir);
-
-    return files;
-}
-
 static FList* dirEmbeddedOpen(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
@@ -96,17 +35,19 @@ static FList* dirEmbeddedOpen(FPath* Path)
 FDir* f_dir_new(const char* Path)
 {
     if(!f_path_exists(Path, F_PATH_DIR) && !f_platform_api__dirCreate(Path)) {
-        F__FATAL("f_dir_new(%s): mkdir failed", Path);
+        F__FATAL("f_dir_new(%s): Cannot create dir", Path);
     }
 
-    FList* files;
+    FList* files = NULL;
     FPath* path = f_path_new(Path);
 
     if(f_path_test(path, F_PATH_DIR | F_PATH_REAL)) {
-        files = dirRealOpen(path);
+        files = f_platform_api__dirOpen(path);
     } else if(f_path_test(path, F_PATH_DIR | F_PATH_EMBEDDED)) {
         files = dirEmbeddedOpen(path);
-    } else {
+    }
+
+    if(files == NULL) {
         F__FATAL("f_dir_new(%s): Cannot open dir", Path);
     }
 
@@ -144,4 +85,3 @@ unsigned f_dir_entriesGetNum(const FDir* Dir)
 {
     return f_list_sizeGet(Dir->files);
 }
-#endif // F_CONFIG_FILES_STANDARD

@@ -117,6 +117,7 @@ typedef FPlatformController* FCallApi_InputControllerClaim(FCallControllerBind* 
 typedef void FCallApi_InputControllerRelease(FPlatformController* Controller);
 
 typedef bool FCallApi_DirCreate(const char* Path);
+typedef FList* FCallApi_DirOpen(FPath* Path);
 typedef bool FCallApi_FileStat(const char* Path, FPathInfo* Info);
 typedef bool FCallApi_FileBufferRead(const char* Path, void* Buffer, size_t Size);
 typedef bool FCallApi_FileBufferWrite(const char* Path, const void* Buffer, size_t Size);
@@ -212,6 +213,7 @@ typedef struct FPlatformApi {
     FCallApi_InputControllerRelease* inputControllerRelease;
 
     FCallApi_DirCreate* dirCreate;
+    FCallApi_DirOpen* dirOpen;
 
     FCallApi_FileStat* fileStat;
     FCallApi_FileBufferRead* fileBufferRead;
@@ -310,6 +312,7 @@ extern FPlatformController* f_platform_api__inputControllerClaim(FCallController
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
 extern bool f_platform_api__dirCreate(const char* Path);
+extern FList* f_platform_api__dirOpen(FPath* Path);
 extern bool f_platform_api__fileStat(const char* Path, FPathInfo* Info);
 extern bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size);
 extern bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);

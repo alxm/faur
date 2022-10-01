@@ -22,6 +22,39 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+static int dirSort(const FPath* A, const FPath* B)
+{
+    const char* nameA = f_path_getName(A);
+    const char* nameB = f_path_getName(B);
+    int a = *nameA;
+    int b = *nameB;
+    int lowerCaseUpperCaseCmp = 0;
+
+    while(a != '\0' && b != '\0') {
+        if(a != b) {
+            int lowerA = tolower(a);
+            int lowerB = tolower(b);
+
+            if(lowerA == lowerB) {
+                if(lowerCaseUpperCaseCmp == 0) {
+                    lowerCaseUpperCaseCmp = b - a;
+                }
+            } else {
+                return lowerA - lowerB;
+            }
+        }
+
+        a = *++nameA;
+        b = *++nameB;
+    }
+
+    if(a == b) {
+        return lowerCaseUpperCaseCmp;
+    }
+
+    return a - b;
+}
+
 bool f_platform_api_standard__dirCreate(const char* Path)
 {
     int ret;
@@ -33,5 +66,29 @@ bool f_platform_api_standard__dirCreate(const char* Path)
     #endif
 
     return ret == 0;
+}
+
+FList* f_platform_api_standard__dirOpen(FPath* Path)
+{
+    const char* path = f_path_getFull(Path);
+    DIR* dir = opendir(path);
+
+    if(dir == NULL) {
+        F__FATAL("opendir(%s) failed", path);
+    }
+
+    FList* files = f_list_new();
+
+    for(struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
+        if(ent->d_name[0] != '.') {
+            f_list_addLast(files, f_path_newf("%s/%s", path, ent->d_name));
+        }
+    }
+
+    f_list_sort(files, (FCallListCompare*)dirSort);
+
+    closedir(dir);
+
+    return files;
 }
 #endif // F_CONFIG_FILES_STANDARD

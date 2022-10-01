@@ -268,6 +268,7 @@ static const FPlatformApi f__platform_api = {
 
     #if F_CONFIG_FILES_STANDARD
         .dirCreate = f_platform_api_standard__dirCreate,
+        .dirOpen = f_platform_api_standard__dirOpen,
         .fileStat = f_platform_api_standard__fileStat,
         .fileBufferRead = f_platform_api_standard__fileBufferRead,
         .fileBufferWrite = f_platform_api_standard__fileBufferWrite,
@@ -874,6 +875,15 @@ bool f_platform_api__dirCreate(const char* Path)
     }
 
     return f__platform_api.dirCreate(Path);
+}
+
+FList* f_platform_api__dirOpen(FPath* Path)
+{
+    if(f__platform_api.dirOpen == NULL) {
+        return NULL;
+    }
+
+    return f__platform_api.dirOpen(Path);
 }
 
 bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
