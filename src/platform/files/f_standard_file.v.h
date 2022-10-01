@@ -24,8 +24,6 @@
 #include "../../files/f_file.v.h"
 #include "../../files/f_path.v.h"
 
-extern FCallApi_DirCreate f_platform_api_standard__dirCreate;
-
 extern FCallApi_FileStat f_platform_api_standard__fileStat;
 
 extern FCallApi_FileBufferRead f_platform_api_standard__fileBufferRead;

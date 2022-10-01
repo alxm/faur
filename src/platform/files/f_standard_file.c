@@ -21,19 +21,6 @@
 #if F_CONFIG_FILES_STANDARD
 #include <sys/stat.h>
 
-bool f_platform_api_standard__dirCreate(const char* Path)
-{
-    int ret;
-
-    #if F_CONFIG_SYSTEM_MINGW
-        ret = mkdir(Path);
-    #else
-        ret = mkdir(Path, S_IRWXU);
-    #endif
-
-    return ret == 0;
-}
-
 bool f_platform_api_standard__fileStat(const char* Path, FPathInfo* Info)
 {
     struct stat info;

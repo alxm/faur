@@ -28,6 +28,7 @@
 
 #include "files/f_gamebuino_file.v.h"
 #include "files/f_odroid_go_file.v.h"
+#include "files/f_standard_dir.v.h"
 #include "files/f_standard_file.v.h"
 
 #include "graphics/f_sdl_blit.v.h"
