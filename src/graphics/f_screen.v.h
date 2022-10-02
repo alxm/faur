@@ -32,10 +32,8 @@ struct FScreen {
     FSprite* sprite;
     unsigned frame;
     FVecInt clipStart, clipEnd, clipSize;
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        int yOffset;
-        FPlatformTextureScreen* texture;
-    #endif
+    int yOffset;
+    FPlatformTextureScreen* texture;
 };
 
 extern const FPack f_pack__screen;

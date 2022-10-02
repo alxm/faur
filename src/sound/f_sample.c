@@ -30,8 +30,6 @@ FSample* f_sample_new(const char* Path)
 
         s->platform =
             f_platform_api__soundSampleNewFromData(e->buffer, e->size);
-    } else {
-        F__FATAL("f_sample_new(%s): File does not exist", Path);
     }
 
     if(s->platform == NULL) {

@@ -396,16 +396,18 @@ void f_platform_api_sdl__screenTextureSet(FPlatformTextureScreen* Texture)
 
 void f_platform_api_sdl__screenTextureSync(void)
 {
-    // Unreliable on texture targets
-    if(SDL_RenderReadPixels(
-        f__sdlRenderer,
-        NULL,
-        F_SDL__PIXEL_FORMAT,
-        f_screen__bufferGetFrom(0, 0),
-        f__screen.pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
+    #if F_CONFIG_SCREEN_RENDER_SDL2
+        // Unreliable on texture targets
+        if(SDL_RenderReadPixels(
+            f__sdlRenderer,
+            NULL,
+            F_SDL__PIXEL_FORMAT,
+            f_screen__bufferGetFrom(0, 0),
+            f__screen.pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
 
-        F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
-    }
+            F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
+        }
+    #endif
 }
 
 #if F_CONFIG_SCREEN_RENDER_SDL2
@@ -702,7 +704,7 @@ void f_platform_api_sdl__screenFullscreenFlip(void)
     mouseCursorSet(!g_fullscreen);
 }
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_LIB_SDL == 2
 int f_platform_sdl_video__pixelBlendToSdlBlend(void)
 {
     switch(f__color.blend) {
@@ -737,5 +739,5 @@ uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
             return SDL_ALPHA_OPAQUE;
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_LIB_SDL == 2
 #endif // F_CONFIG_LIB_SDL

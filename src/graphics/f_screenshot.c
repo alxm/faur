@@ -50,9 +50,7 @@ static void takeScreenshot(void)
 
     f_out__info("Saving screenshot '%s'", path);
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__screenTextureSync();
-    #endif
+    f_platform_api__screenTextureSync();
 
     f_png__write(
         path, f__screen.pixels, f__screen.frame, g_title, g_description);

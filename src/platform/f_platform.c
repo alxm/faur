@@ -98,7 +98,7 @@ static void f_platform__init(void)
     #if F_CONFIG_SCREEN_RENDER_SOFTWARE
         f_out__info("Using S/W graphics");
         f_platform_software_blit__init();
-    #elif F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
+    #elif F_CONFIG_SCREEN_RENDER_SDL2
         f_out__info("Using SDL2 graphics");
     #endif
 }
@@ -183,7 +183,7 @@ static const FPlatformApi f__platform_api = {
         .screenSizeGet = f_platform_api_odroidgo__screenSizeGet,
     #endif
 
-    #if F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
+    #if F_CONFIG_SCREEN_RENDER_SDL2
         .drawSetColor = f_platform_api_sdl__drawSetColor,
         .drawSetBlend = f_platform_api_sdl__drawSetBlend,
         .drawPixel = f_platform_api_sdl__drawPixel,
@@ -205,7 +205,7 @@ static const FPlatformApi f__platform_api = {
         .drawCircleFilled = f_platform_api_software__drawCircleFilled,
     #endif
 
-    #if F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
+    #if F_CONFIG_SCREEN_RENDER_SDL2
         .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
         .textureNew = f_platform_api_sdl__textureNew,
         .textureDup = f_platform_api_sdl__textureDup,

@@ -51,9 +51,7 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
     if(!ret) {
         f_out__error("f_file_bufferWrite(%s, %zu): Failed", Path, Size);
     } else {
-        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-            f_platform_api__fileSync();
-        #endif
+        f_platform_api__fileSync();
     }
 
     return ret;
@@ -80,8 +78,6 @@ FFile* f_file_new(const char* Path, unsigned Mode)
         file = f_platform_api__fileNew(path, Mode);
     } else if(f_path_test(path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         file = f_file_embedded__new(path);
-    } else {
-        f_out__warning("f_file_new(%s): File does not exist", Path);
     }
 
     if(file == NULL) {
@@ -178,9 +174,7 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
                      f_path_getFull(File->path),
                      Size);
     } else {
-        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-            f_platform_api__fileSync();
-        #endif
+        f_platform_api__fileSync();
     }
 
     return ret;
@@ -199,9 +193,7 @@ bool f_file_writef(FFile* File, const char* Format, ...)
         f_out__error(
             "f_file_writef(%s): Could not write", f_path_getFull(File->path));
     } else {
-        #if F_CONFIG_FILES_SYNC_AFTER_WRITE
-            f_platform_api__fileSync();
-        #endif
+        f_platform_api__fileSync();
     }
 
     return ret;
