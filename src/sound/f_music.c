@@ -18,7 +18,7 @@
 #include "f_music.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED && F_CONFIG_SOUND_ENABLED_MUSIC
+#if F_CONFIG_SOUND_ENABLED
 FMusic* f_music_new(const char* Path)
 {
     FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
@@ -50,25 +50,4 @@ void f_music_stop(void)
 {
     f_platform_api__soundMusicStop();
 }
-#else // !(F_CONFIG_SOUND_ENABLED && F_CONFIG_SOUND_ENABLED_MUSIC)
-FMusic* f_music_new(const char* Path)
-{
-    F_UNUSED(Path);
-
-    return NULL;
-}
-
-void f_music_free(FMusic* Music)
-{
-    F_UNUSED(Music);
-}
-
-void f_music_play(FMusic* Music)
-{
-    F_UNUSED(Music);
-}
-
-void f_music_stop(void)
-{
-}
-#endif // !(F_CONFIG_SOUND_ENABLED && F_CONFIG_SOUND_ENABLED_MUSIC)
+#endif // F_CONFIG_SOUND_ENABLED

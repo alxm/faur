@@ -221,26 +221,28 @@ static const FPlatformApi f__platform_api = {
         .textureBlitEx = f_platform_api_software__textureBlitEx,
     #endif
 
-    #if F_CONFIG_SOUND_ENABLED && F_CONFIG_LIB_SDL
-        .soundMuteGet = f_platform_api_sdl__soundMuteGet,
-        .soundMuteFlip = f_platform_api_sdl__soundMuteFlip,
-        .soundVolumeGetMax = f_platform_api_sdl__soundVolumeGetMax,
-        .soundVolumeSet = f_platform_api_sdl__soundVolumeSet,
-        .soundMusicNew = f_platform_api_sdl__soundMusicNew,
-        .soundMusicFree = f_platform_api_sdl__soundMusicFree,
-        .soundMusicPlay = f_platform_api_sdl__soundMusicPlay,
-        .soundMusicStop = f_platform_api_sdl__soundMusicStop,
-        .soundSampleNewFromFile = f_platform_api_sdl__soundSampleNewFromFile,
-        .soundSampleNewFromData = f_platform_api_sdl__soundSampleNewFromData,
-        .soundSampleFree = f_platform_api_sdl__soundSampleFree,
-        .soundSamplePlay = f_platform_api_sdl__soundSamplePlay,
-        .soundSampleStop = f_platform_api_sdl__soundSampleStop,
-        .soundSampleIsPlaying = f_platform_api_sdl__soundSampleIsPlaying,
-        .soundSampleChannelGet = f_platform_api_sdl__soundSampleChannelGet,
-    #elif F_CONFIG_SOUND_ENABLED && F_CONFIG_SYSTEM_GAMEBUINO
-        .soundSamplePlay = f_platform_api_gamebuino__soundSamplePlay,
-        .soundSampleStop = f_platform_api_gamebuino__soundSampleStop,
-        .soundSampleIsPlaying = f_platform_api_gamebuino__soundSampleIsPlaying,
+    #if F_CONFIG_SOUND_ENABLED
+        #if F_CONFIG_LIB_SDL
+            .soundMuteGet = f_platform_api_sdl__soundMuteGet,
+            .soundMuteFlip = f_platform_api_sdl__soundMuteFlip,
+            .soundVolumeGetMax = f_platform_api_sdl__soundVolumeGetMax,
+            .soundVolumeSet = f_platform_api_sdl__soundVolumeSet,
+            .soundMusicNew = f_platform_api_sdl__soundMusicNew,
+            .soundMusicFree = f_platform_api_sdl__soundMusicFree,
+            .soundMusicPlay = f_platform_api_sdl__soundMusicPlay,
+            .soundMusicStop = f_platform_api_sdl__soundMusicStop,
+            .soundSampleNewFromFile = f_platform_api_sdl__soundSampleNewFromFile,
+            .soundSampleNewFromData = f_platform_api_sdl__soundSampleNewFromData,
+            .soundSampleFree = f_platform_api_sdl__soundSampleFree,
+            .soundSamplePlay = f_platform_api_sdl__soundSamplePlay,
+            .soundSampleStop = f_platform_api_sdl__soundSampleStop,
+            .soundSampleIsPlaying = f_platform_api_sdl__soundSampleIsPlaying,
+            .soundSampleChannelGet = f_platform_api_sdl__soundSampleChannelGet,
+        #elif F_CONFIG_SYSTEM_GAMEBUINO
+            .soundSamplePlay = f_platform_api_gamebuino__soundSamplePlay,
+            .soundSampleStop = f_platform_api_gamebuino__soundSampleStop,
+            .soundSampleIsPlaying = f_platform_api_gamebuino__soundSampleIsPlaying,
+        #endif
     #endif
 
     #if F_CONFIG_LIB_SDL
