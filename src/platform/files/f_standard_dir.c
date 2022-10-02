@@ -18,7 +18,7 @@
 #include "f_standard_dir.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_STANDARD
+#if F_CONFIG_LIB_STDLIB_FILES
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -91,4 +91,4 @@ FList* f_platform_api_standard__dirOpen(FPath* Path)
 
     return files;
 }
-#endif // F_CONFIG_FILES_STANDARD
+#endif // F_CONFIG_LIB_STDLIB_FILES

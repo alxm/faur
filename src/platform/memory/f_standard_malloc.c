@@ -18,6 +18,7 @@
 #include "f_standard_malloc.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_LIB_STDLIB_MEMORY
 void* f_platform_api_standard__malloc(size_t Size)
 {
     return malloc(Size);
@@ -27,3 +28,4 @@ void* f_platform_api_standard__mallocz(size_t Size)
 {
     return calloc(1, Size);
 }
+#endif // F_CONFIG_LIB_STDLIB_MEMORY

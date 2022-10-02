@@ -203,7 +203,7 @@ static const FPlatformApi f__platform_api = {
         .drawRectangleFilled = f_platform_api_software__drawRectangleFilled,
         .drawCircleOutline = f_platform_api_software__drawCircleOutline,
         .drawCircleFilled = f_platform_api_software__drawCircleFilled,
-#endif
+    #endif
 
     #if F_CONFIG_LIB_SDL && F_CONFIG_SCREEN_RENDER_SDL2
         .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
@@ -266,7 +266,7 @@ static const FPlatformApi f__platform_api = {
         .inputButtonPressGet = f_platform_api_odroidgo__inputButtonPressGet,
     #endif
 
-    #if F_CONFIG_FILES_STANDARD
+    #if F_CONFIG_LIB_STDLIB_FILES
         .dirCreate = f_platform_api_standard__dirCreate,
         .dirOpen = f_platform_api_standard__dirOpen,
         .fileStat = f_platform_api_standard__fileStat,
@@ -301,12 +301,12 @@ static const FPlatformApi f__platform_api = {
         .filePrint = f_platform_api_odroidgo__filePrint,
     #endif
 
-    #if F_CONFIG_SYSTEM_ODROID_GO
-        .malloc = f_platform_api_odroidgo__malloc,
-        .mallocz = f_platform_api_odroidgo__mallocz,
-    #else
+    #if F_CONFIG_LIB_STDLIB_MEMORY
         .malloc = f_platform_api_standard__malloc,
         .mallocz = f_platform_api_standard__mallocz,
+    #elif F_CONFIG_SYSTEM_ODROID_GO
+        .malloc = f_platform_api_odroidgo__malloc,
+        .mallocz = f_platform_api_odroidgo__mallocz,
     #endif
 };
 

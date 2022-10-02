@@ -18,7 +18,7 @@
 #include "f_standard_file.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_STANDARD
+#if F_CONFIG_LIB_STDLIB_FILES
 #include <sys/stat.h>
 
 bool f_platform_api_standard__fileStat(const char* Path, FPathInfo* Info)
@@ -156,4 +156,4 @@ int f_platform_api_standard__fileReadCharUndo(FPlatformFile* File, int Char)
 {
     return ungetc(Char, File);
 }
-#endif // F_CONFIG_FILES_STANDARD
+#endif // F_CONFIG_LIB_STDLIB_FILES
