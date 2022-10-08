@@ -21,7 +21,7 @@ extern "C" {
 
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED && F_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
@@ -47,4 +47,4 @@ bool f_platform_api_gamebuino__soundSampleIsPlaying(int Channel)
 {
     return gb.sound.isPlaying((int8_t)Channel);
 }
-#endif // F_CONFIG_SOUND_ENABLED && F_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO

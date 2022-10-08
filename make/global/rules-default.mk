@@ -105,12 +105,10 @@ endif
 F_BUILD_LIBS := $(F_CONFIG_BUILD_LIBS)
 
 ifdef F_CONFIG_LIB_SDL_CONFIG
-    ifeq ($(F_CONFIG_SOUND_ENABLED), 1)
-        ifeq ($(F_CONFIG_LIB_SDL), 1)
-            F_BUILD_LIBS += -lSDL_mixer
-        else ifeq ($(F_CONFIG_LIB_SDL), 2)
-            F_BUILD_LIBS += -lSDL2_mixer
-        endif
+    ifeq ($(F_CONFIG_LIB_SDL), 1)
+	F_BUILD_LIBS += -lSDL_mixer
+    else ifeq ($(F_CONFIG_LIB_SDL), 2)
+	F_BUILD_LIBS += -lSDL2_mixer
     endif
 
     F_BUILD_LIBS += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --libs)

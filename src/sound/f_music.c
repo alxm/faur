@@ -18,7 +18,6 @@
 #include "f_music.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED
 FMusic* f_music_new(const char* Path)
 {
     FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
@@ -50,4 +49,3 @@ void f_music_stop(void)
 {
     f_platform_api__soundMusicStop();
 }
-#endif // F_CONFIG_SOUND_ENABLED

@@ -18,7 +18,6 @@
 #include "f_sound.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED
 #if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
     static int g_volume;
     static int g_musicVolume;
@@ -151,4 +150,3 @@ void f_sound__draw(void)
         f_color_pop();
     #endif
 }
-#endif // F_CONFIG_SOUND_ENABLED

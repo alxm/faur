@@ -53,20 +53,14 @@ void f_platform_sdl__init(void)
 
     f_platform_sdl_input__init();
     f_platform_sdl_video__init();
-
-    #if F_CONFIG_SOUND_ENABLED
-        f_platform_sdl_sound__init();
-    #endif
+    f_platform_sdl_sound__init();
 }
 
 void f_platform_sdl__uninit(void)
 {
     f_platform_sdl_input__uninit();
     f_platform_sdl_video__uninit();
-
-    #if F_CONFIG_SOUND_ENABLED
-        f_platform_sdl_sound__uninit();
-    #endif
+    f_platform_sdl_sound__uninit();
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();

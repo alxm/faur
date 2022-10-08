@@ -235,10 +235,8 @@ void f_console__draw(void)
             f_font_print("SDL2 gfx\n");
         #endif
 
-        #if F_CONFIG_SOUND_ENABLED
-            f_font_printf(
-                "Sound %s\n", f_platform_api__soundMuteGet() ? "off" : "on");
-        #endif
+        f_font_printf(
+            "Sound %s\n", f_platform_api__soundMuteGet() ? "off" : "on");
 
         f_color__colorSetInternal(F_COLOR__PAL_BLUE1);
         f_font_printf("PID %d\n", getpid());
