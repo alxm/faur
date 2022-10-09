@@ -58,10 +58,15 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
 
 static FPixels* f_png__readFile(const char* Path)
 {
+    FPixels* volatile pixels = NULL;
+    png_structp png = NULL;
+    png_infop info = NULL;
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
-        F__FATAL("f_png__readFile(%s): Could not open file", Path);
+        f_out__error("f_png__readFile(%s): Could not open file", Path);
+
+        goto cleanUp;
     }
 
     #define PNG_SIG 8
@@ -70,24 +75,36 @@ static FPixels* f_png__readFile(const char* Path)
     f_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        F__FATAL("png_sig_cmp(%s) failed", Path);
+        f_out__error("png_sig_cmp(%s) failed", Path);
+
+        goto cleanUp;
     }
 
-    png_structp png = png_create_read_struct(
-                        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(png == NULL) {
-        F__FATAL("png_create_read_struct(%s) failed", Path);
+        f_out__error("png_create_read_struct(%s) failed", Path);
+
+        goto cleanUp;
     }
 
-    png_infop info = png_create_info_struct(png);
+    info = png_create_info_struct(png);
 
     if(info == NULL) {
-        F__FATAL("png_create_info_struct(%s) failed", Path);
+        f_out__error("png_create_info_struct(%s) failed", Path);
+
+        goto cleanUp;
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        F__FATAL("f_png__readFile(%s) failed", Path);
+        if(pixels != NULL) {
+            f_pixels__free(pixels);
+            pixels = NULL;
+        }
+
+        f_out__error("f_png__readFile(%s) failed", Path);
+
+        goto cleanUp;
     }
 
     png_init_io(png, f_file_handleGet(f));
@@ -97,12 +114,18 @@ static FPixels* f_png__readFile(const char* Path)
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        F__FATAL("png_get_color_type(%s): Not an RGB or RGBA PNG", Path);
+        f_out__error("png_get_color_type(%s): Not an RGB or RGBA PNG", Path);
+
+        goto cleanUp;
     }
 
-    FPixels* pixels = pngToPixels(png, info);
+    pixels = pngToPixels(png, info);
 
-    png_destroy_read_struct(&png, &info, NULL);
+cleanUp:
+    if(png != NULL) {
+        png_destroy_read_struct(&png, &info, NULL);
+    }
+
     f_file_free(f);
 
     return pixels;
@@ -110,10 +133,10 @@ static FPixels* f_png__readFile(const char* Path)
 
 static FPixels* f_png__readMemory(const uint8_t* Data)
 {
-    FByteStream* stream = f_mem_malloc(sizeof(FByteStream));
-
-    stream->data = Data;
-    stream->offset = 0;
+    FPixels* volatile pixels = NULL;
+    png_structp png = NULL;
+    png_infop info = NULL;
+    FByteStream stream = {Data, 0};
 
     #define PNG_SIG 8
     png_byte sig[PNG_SIG];
@@ -121,53 +144,67 @@ static FPixels* f_png__readMemory(const uint8_t* Data)
     memcpy(sig, Data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        F__FATAL("png_sig_cmp failed");
+        f_out__error("png_sig_cmp failed");
+
+        goto cleanUp;
     }
 
-    png_structp png = png_create_read_struct(
-                        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(png == NULL) {
-        F__FATAL("png_create_read_struct failed");
+        f_out__error("png_create_read_struct failed");
+
+        goto cleanUp;
     }
 
-    png_infop info = png_create_info_struct(png);
+    info = png_create_info_struct(png);
 
     if(info == NULL) {
-        F__FATAL("png_create_info_struct failed");
+        f_out__error("png_create_info_struct failed");
+
+        goto cleanUp;
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        F__FATAL("f_png__readMemory failed");
+        if(pixels != NULL) {
+            f_pixels__free(pixels);
+            pixels = NULL;
+        }
+
+        f_out__error("f_png__readMemory failed");
+
+        goto cleanUp;
     }
 
-    png_set_read_fn(png, stream, readFunction);
+    png_set_read_fn(png, &stream, readFunction);
     png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        F__FATAL("png_get_color_type: Not an RGB or RGBA PNG");
+        f_out__error("png_get_color_type: Not an RGB or RGBA PNG");
+
+        goto cleanUp;
     }
 
-    FPixels* pixels = pngToPixels(png, info);
+    pixels = pngToPixels(png, info);
 
-    png_destroy_read_struct(&png, &info, NULL);
-    f_mem_free(stream);
+cleanUp:
+    if (png != NULL) {
+        png_destroy_read_struct(&png, &info, NULL);
+    }
 
     return pixels;
 }
 
 FPixels* f_png__read(const char* Path)
 {
-    FPixels* pixels;
+    FPixels* pixels = NULL;
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         pixels = f_png__readFile(Path);
     } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         pixels = f_png__readMemory(f_embed__fileGet(Path)->buffer);
-    } else {
-        F__FATAL("f_png__read(%s): File does not exist", Path);
     }
 
     return pixels;

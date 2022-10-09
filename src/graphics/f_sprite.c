@@ -85,6 +85,10 @@ FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 {
     FPixels* pixels = f_png__read(Path);
 
+    if(pixels == NULL) {
+        F__FATAL("f_sprite_newFromPng(%s): Cannot open file", Path);
+    }
+
     if(FrameWidth < 1 || FrameHeight < 1) {
         char* suffix = f_str_suffixGetFromLast(Path, '_');
 
