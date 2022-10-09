@@ -157,7 +157,7 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
     }
 
     if(!ret) {
-        f_out__warning("f_file_read(%s): Could not read %zu bytes",
+        f_out__warning("f_file_read(%s): Cannot read %zu bytes",
                        f_path_getFull(File->path),
                        Size);
     }
@@ -170,7 +170,7 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
     bool ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
 
     if(!ret) {
-        f_out__error("f_file_write(%s): Could not write %zu bytes",
+        f_out__error("f_file_write(%s): Cannot write %zu bytes",
                      f_path_getFull(File->path),
                      Size);
     } else {
@@ -191,7 +191,7 @@ bool f_file_writef(FFile* File, const char* Format, ...)
 
     if(!ret) {
         f_out__error(
-            "f_file_writef(%s): Could not write", f_path_getFull(File->path));
+            "f_file_writef(%s): Cannot write", f_path_getFull(File->path));
     } else {
         f_platform_api__fileSync();
     }

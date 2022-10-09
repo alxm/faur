@@ -64,7 +64,7 @@ static FPixels* f_png__readFile(const char* Path)
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
-        f_out__error("f_png__readFile(%s): Could not open file", Path);
+        f_out__error("f_png__readFile(%s): Cannot open file", Path);
 
         goto cleanUp;
     }

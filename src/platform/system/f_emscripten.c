@@ -37,7 +37,7 @@ void f_platform_emscripten__init(void)
                 function(Error)
                 {
                     if(Error) {
-                        Module.printErr("Could not init IDBFS");
+                        Module.printErr("Cannot init IDBFS");
                         Module.faur_fsIsReady = 1;
                     } else {
                         Module.faur_fsIsReady = 2;

@@ -212,7 +212,7 @@ void f_platform_api_sdl___screenInit(void)
         #endif
 
         if(!sdl1ScreenSet(w, h, videoFlags)) {
-            F__FATAL("Could not create SDL screen surface");
+            F__FATAL("Cannot create SDL screen surface");
         }
 
         #if !F__ALLOCATE_LOGICAL_BUFFER
