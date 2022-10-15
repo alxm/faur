@@ -74,7 +74,9 @@ FList* f_platform_api_standard__dirOpen(FPath* Path)
     DIR* dir = opendir(path);
 
     if(dir == NULL) {
-        F__FATAL("opendir(%s) failed", path);
+        f_out__error("opendir(%s) failed", path);
+
+        return NULL;
     }
 
     FList* files = f_list_new();
