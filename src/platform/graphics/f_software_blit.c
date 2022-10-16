@@ -18,7 +18,7 @@
 #include "f_software_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SCREEN_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
 #define F__SCANLINES_MALLOC (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
 
 typedef struct {
@@ -573,4 +573,4 @@ void f_platform_api_software__textureBlitEx(const FPlatformTexture* Texture, con
         [Texture != NULL]
             (Pixels, Frame, yTop, yBottom);
 }
-#endif // F_CONFIG_SCREEN_RENDER_SOFTWARE
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE

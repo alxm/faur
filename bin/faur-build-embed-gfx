@@ -168,7 +168,7 @@ static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 #include <faur.v.h>
 
 #ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         #define F__GEN_GFX_CONST const
     #else
         #define F__GEN_GFX_CONST
@@ -178,7 +178,7 @@ static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffer}}};
 
-#if F_CONFIG_SCREEN_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
 {span_buffers}
 static const struct {{
     FSpriteWord framesNum;
@@ -199,7 +199,7 @@ static F__GEN_GFX_CONST FSprite f__gfx_sprite__{var} = {{
         .flags = F_PIXELS__CONST,
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
-    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         (FPlatformTexture*)&f__gfx_texture__{var},
     #else
         NULL,

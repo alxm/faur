@@ -157,7 +157,7 @@ void f_sprite_free(FSprite* Sprite)
     }
 
     if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-        #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
             f_platform_api__textureFree(Sprite->texture);
             Sprite->texture = NULL; // Sprite may be re-used later
         #endif

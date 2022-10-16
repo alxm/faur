@@ -41,7 +41,8 @@ typedef struct FColorState FColorState;
 #include "../math/f_math.v.h"
 
 #define F__OPTIMIZE_ALPHA \
-    (F_CONFIG_SCREEN_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
+    (F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE \
+        && F_CONFIG_TRAIT_SLOW_MUL)
 
 struct FColorState {
     FListIntrNode listNode;

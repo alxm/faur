@@ -240,7 +240,7 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
                  f__screen.pixels->size.y);
     }
 
-    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         f_pixels__copyFrame(
             &Sprite->pixels, Frame, f__screen.pixels, f__screen.frame);
     #else

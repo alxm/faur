@@ -18,7 +18,7 @@
 #include "f_sdl_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 #include <SDL2/SDL.h>
 
 typedef enum {
@@ -269,4 +269,4 @@ void f_platform_api_sdl__textureBlitEx(const FPlatformTexture* Texture, const FP
         f_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2

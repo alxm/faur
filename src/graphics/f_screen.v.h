@@ -26,6 +26,9 @@ typedef struct FScreen FScreen;
 #include "../graphics/f_sprite.v.h"
 #include "../math/f_fix.v.h"
 
+#define F_SCREEN_RENDER_SOFTWARE 0
+#define F_SCREEN_RENDER_SDL2 1
+
 struct FScreen {
     FListIntrNode listNode;
     FPixels* pixels;

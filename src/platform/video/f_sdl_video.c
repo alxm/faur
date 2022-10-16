@@ -302,7 +302,7 @@ void f_platform_api_sdl___screenInit(void)
             F__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
             int access = SDL_TEXTUREACCESS_STREAMING;
         #else
             int access = SDL_TEXTUREACCESS_TARGET;
@@ -318,7 +318,7 @@ void f_platform_api_sdl___screenInit(void)
             F__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SDL2
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
             if(SDL_SetRenderTarget(f__sdlRenderer, g_sdlTexture) < 0) {
                 F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
             }
@@ -396,7 +396,7 @@ void f_platform_api_sdl__screenTextureSet(FPlatformTextureScreen* Texture)
 
 void f_platform_api_sdl__screenTextureSync(void)
 {
-    #if F_CONFIG_SCREEN_RENDER_SDL2
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
         // Unreliable on texture targets
         if(SDL_RenderReadPixels(
             f__sdlRenderer,
@@ -410,7 +410,7 @@ void f_platform_api_sdl__screenTextureSync(void)
     #endif
 }
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 void f_platform_api_sdl__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
 {
     if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
@@ -450,7 +450,7 @@ void f_platform_api_sdl__screenClipSet(void)
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 #endif // F_CONFIG_LIB_SDL == 2
 
 void f_platform_api_sdl__screenShow(void)
@@ -571,7 +571,7 @@ void f_platform_api_sdl__screenShow(void)
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
-        #if F_CONFIG_SCREEN_RENDER_SDL2
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
             if(SDL_SetRenderTarget(f__sdlRenderer, NULL) < 0) {
                 F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
             }
@@ -594,7 +594,7 @@ void f_platform_api_sdl__screenShow(void)
             f_out__error("SDL_RenderClear: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
             if(SDL_UpdateTexture(
                 g_sdlTexture,
                 NULL,
