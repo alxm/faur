@@ -89,21 +89,10 @@ void f_main(void)
 
     F_STATE_TICK
     {{
-        if(f_button_pressGet(context.up)) {{
-            context.y--;
-        }}
-
-        if(f_button_pressGet(context.down)) {{
-            context.y++;
-        }}
-
-        if(f_button_pressGet(context.left)) {{
-            context.x--;
-        }}
-
-        if(f_button_pressGet(context.right)) {{
-            context.x++;
-        }}
+        if(f_button_pressGet(context.up)) context.y--;
+        if(f_button_pressGet(context.down)) context.y++;
+        if(f_button_pressGet(context.left)) context.x--;
+        if(f_button_pressGet(context.right)) context.x++;
     }}
 
     F_STATE_DRAW
