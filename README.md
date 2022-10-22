@@ -115,21 +115,20 @@ include $(FAUR_PATH)/make/default.mk
 
 I started Faur by collecting my [GP2X games'](https://www.alxm.org/games/gamepark.html) shared code into a library. Over time I added support for more platforms:
 
-Platform | Toolchain | Dependencies | More Info
---- | --- | --- | ---
+Target | Host | Toolchain | Dependencies | More Info
+--- | --- | --- | --- | ---
 ***Desktop***
-Linux | OS build tools | `libsdl2-dev` `libsdl2-mixer-dev` `libpng-dev`
-Linux (older) | OS build tools | `libsdl1.2-dev` `libsdl-mixer1.2-dev` `libpng-dev`
-FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on FreeBSD](https://www.alxm.org/notes/a2x-freebsd.html)
-Windows | MinGW-w64 | `mingw-w64` `libz-mingw-w64-dev` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
-Web (Wasm) | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
+Linux | Linux | OS build tools | Debian: `libsdl2-dev` `libsdl2-mixer-dev` `libpng-dev`<br><br>Fedora: `SDL2-devel` `SDL2_mixer-devel` `libpng-devel` `libubsan`
+FreeBSD | FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on FreeBSD](https://www.alxm.org/notes/a2x-freebsd.html)
+Windows | Linux | MinGW-w64 | Debian: `mingw-w64` `libz-mingw-w64-dev` and local builds of `SDL2` `SDL2_mixer` `libpng`<br><br>Fedora: `mingw64-gcc` `mingw64-gcc-c++` `mingw64-SDL2` `mingw64-SDL2_mixer` `mingw64-libpng` `mingw64-zlib` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
+Web (Wasm) | Linux | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
 ***Embedded Linux***
-GP2X, GP2X Wiz | Open2x SDK | `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
-Caanoo | GPH SDK | `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)
-Open Pandora | Pandora SDK | `ia32-libs` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
+GP2X, GP2X Wiz | Linux | Open2x SDK | Debian: `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
+Caanoo | Linux | GPH SDK | Debian: `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)
+Open Pandora | Linux | Pandora SDK | Debian: `ia32-libs` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
 ***Arduino***
-Gamebuino META | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | `Gamebuino META 1.3` `ffmpeg` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
-ODROID-GO | Arduino 1.8.13, Arduino ESP32 1.0.6 | `ODROID-GO 1.0.0` `python3-serial` `python-is-python3` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
+Gamebuino META | Linux | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | Arduino: `Gamebuino META 1.3`<br><br>Debian: `ffmpeg`<br><br>Fedora: `ffmpeg-free` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
+ODROID-GO | Linux | Arduino 1.8.13, Arduino-ESP32 1.0.6 | Arduino: `ODROID-GO 1.0.0`<br><br>Debian: `python3-serial` `python-is-python3`<br><br>Fedora: `python3-pyserial` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
 
 The default toolchain paths are in `make/global/sdk.mk`, and they can be overridden in a project Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to use other files from `$(FAUR_PATH)/make`.
 
