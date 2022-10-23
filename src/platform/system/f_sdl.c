@@ -74,7 +74,7 @@ uint32_t f_platform_api_sdl__timeMsGet(void)
 
 void f_platform_api_sdl__timeMsWait(uint32_t Ms)
 {
-    #if F_CONFIG_TRAIT_NO_SLEEP
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
         F_UNUSED(Ms);
 
         return;
