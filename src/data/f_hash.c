@@ -322,17 +322,27 @@ void f__hash_printStats(const FHash* Hash, const char* Message)
         return;
     }
 
-    printf("%d/%d (%d%%) slots used, %d/%d (%d%%) entries collide, "
-           "chain min=%d avg=%.2f max=%d\n",
-           occupiedSlots,
-           Hash->numSlots,
-           100 * occupiedSlots / Hash->numSlots,
-           collisions,
-           Hash->numEntries,
-           100 * collisions / Hash->numEntries,
-           minLength,
-           (float)lengthSum / (float)occupiedSlots,
-           maxLength);
+    printf(
+        "%d/%d (%d%%) slots used, "
+        "%d/%d (%d%%) slots have collisions, "
+        "%d/%d (%d%%) entries collide, "
+        "chain min=%d avg=%.2f max=%d\n",
+
+        occupiedSlots,
+        Hash->numSlots,
+        100 * occupiedSlots / Hash->numSlots,
+
+        slotsWithCollisions,
+        Hash->numSlots,
+        100 * slotsWithCollisions / Hash->numSlots,
+
+        collisions,
+        Hash->numEntries,
+        100 * collisions / Hash->numEntries,
+
+        minLength,
+        (float)lengthSum / (float)occupiedSlots,
+        maxLength);
 }
 
 uint8_t f_hash_crc8(const void* Buffer, size_t Size)
