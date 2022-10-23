@@ -98,6 +98,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND solid
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , *src
 #include "f_software_blit.inc.c"
@@ -116,6 +117,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     if(alpha == 0) { \
         return; \
     }
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_blit.inc.c"
@@ -136,6 +138,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha25
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -150,6 +153,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha50
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -164,6 +168,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha75
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -181,6 +186,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha;
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
 #include "f_software_blit.inc.c"
@@ -190,6 +196,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha;
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
 #include "f_software_blit.inc.c"
@@ -211,6 +218,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND mod
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
@@ -225,6 +233,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND add
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
