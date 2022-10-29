@@ -140,7 +140,7 @@ endif
 #
 $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O)
 	@ mkdir -p $(@D)
-	$(CC) -o $@ $^ $(F_BUILD_LIBS)
+	$(CXX) -v -o $@ $^ $(F_BUILD_LIBS)
 
 $(F_BUILD_LINK_BIN_MEDIA) :
 	@ mkdir -p $(@D)
