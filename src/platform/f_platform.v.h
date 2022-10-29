@@ -145,11 +145,6 @@ typedef struct FPlatformApi {
     FCallApi_ScreenInit* screenInit;
     FCallApi_ScreenUninit* screenUninit;
     FCallApi_ScreenClear* screenClear;
-    FCallApi_ScreenTextureGet* screenTextureGet;
-    FCallApi_ScreenTextureSet* screenTextureSet;
-    FCallApi_ScreenTextureSync* screenTextureSync;
-    FCallApi_ScreenToTexture* screenToTexture;
-    FCallApi_ScreenClipSet* screenClipSet;
     FCallApi_ScreenShow* screenShow;
     FCallApi_ScreenPixelsGet* screenPixelsGet;
     FCallApi_ScreenSizeGet* screenSizeGet;
@@ -158,6 +153,11 @@ typedef struct FPlatformApi {
     FCallApi_ScreenZoomSet* screenZoomSet;
     FCallApi_ScreenFullscreenGet* screenFullscreenGet;
     FCallApi_ScreenFullscreenFlip* screenFullscreenFlip;
+    FCallApi_ScreenTextureGet* screenTextureGet;
+    FCallApi_ScreenTextureSet* screenTextureSet;
+    FCallApi_ScreenTextureSync* screenTextureSync;
+    FCallApi_ScreenToTexture* screenToTexture;
+    FCallApi_ScreenClipSet* screenClipSet;
 
     FCallApi_DrawSetColor* drawSetColor;
     FCallApi_DrawSetBlend* drawSetBlend;

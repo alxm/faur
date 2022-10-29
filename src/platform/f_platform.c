@@ -153,13 +153,6 @@ static const FPlatformApi f__platform_api = {
         .screenInit = f_platform_api_sdl___screenInit,
         .screenUninit = f_platform_api_sdl__screenUninit,
         .screenClear = f_platform_api_sdl__screenClear,
-        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-            .screenTextureGet = f_platform_api_sdl__screenTextureGet,
-            .screenTextureSet = f_platform_api_sdl__screenTextureSet,
-            .screenTextureSync = f_platform_api_sdl__screenTextureSync,
-            .screenToTexture = f_platform_api_sdl__screenToTexture,
-            .screenClipSet = f_platform_api_sdl__screenClipSet,
-        #endif
         .screenShow = f_platform_api_sdl__screenShow,
         .screenPixelsGet = f_platform_api_sdl__screenPixelsGet,
         .screenSizeGet = f_platform_api_sdl__screenSizeGet,
@@ -168,6 +161,13 @@ static const FPlatformApi f__platform_api = {
         .screenZoomSet = f_platform_api_sdl__screenZoomSet,
         .screenFullscreenGet = f_platform_api_sdl__screenFullscreenGet,
         .screenFullscreenFlip = f_platform_api_sdl__screenFullscreenFlip,
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
+            .screenTextureGet = f_platform_api_sdl__screenTextureGet,
+            .screenTextureSet = f_platform_api_sdl__screenTextureSet,
+            .screenTextureSync = f_platform_api_sdl__screenTextureSync,
+            .screenToTexture = f_platform_api_sdl__screenToTexture,
+            .screenClipSet = f_platform_api_sdl__screenClipSet,
+        #endif
     #elif F_CONFIG_SYSTEM_GAMEBUINO
         .screenInit = f_platform_api_gamebuino__screenInit,
         .screenPixelsGet = f_platform_api_gamebuino__screenPixelsGet,
@@ -362,51 +362,6 @@ void f_platform_api__screenClear(void)
     f__platform_api.screenClear();
 }
 
-FPlatformTextureScreen* f_platform_api__screenTextureGet(void)
-{
-    if(f__platform_api.screenTextureGet == NULL) {
-        return NULL;
-    }
-
-    return f__platform_api.screenTextureGet();
-}
-
-void f_platform_api__screenTextureSet(FPlatformTextureScreen* Texture)
-{
-    if(f__platform_api.screenTextureSet == NULL) {
-        return;
-    }
-
-    f__platform_api.screenTextureSet(Texture);
-}
-
-void f_platform_api__screenTextureSync(void)
-{
-    if(f__platform_api.screenTextureSync == NULL) {
-        return;
-    }
-
-    f__platform_api.screenTextureSync();
-}
-
-void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
-{
-    if(f__platform_api.screenToTexture == NULL) {
-        return;
-    }
-
-    f__platform_api.screenToTexture(Texture, Frame);
-}
-
-void f_platform_api__screenClipSet(void)
-{
-    if(f__platform_api.screenClipSet == NULL) {
-        return;
-    }
-
-    f__platform_api.screenClipSet();
-}
-
 void f_platform_api__screenShow(void)
 {
     if(f__platform_api.screenShow == NULL) {
@@ -477,6 +432,51 @@ void f_platform_api__screenFullscreenFlip(void)
     }
 
     f__platform_api.screenFullscreenFlip();
+}
+
+FPlatformTextureScreen* f_platform_api__screenTextureGet(void)
+{
+    if(f__platform_api.screenTextureGet == NULL) {
+        return NULL;
+    }
+
+    return f__platform_api.screenTextureGet();
+}
+
+void f_platform_api__screenTextureSet(FPlatformTextureScreen* Texture)
+{
+    if(f__platform_api.screenTextureSet == NULL) {
+        return;
+    }
+
+    f__platform_api.screenTextureSet(Texture);
+}
+
+void f_platform_api__screenTextureSync(void)
+{
+    if(f__platform_api.screenTextureSync == NULL) {
+        return;
+    }
+
+    f__platform_api.screenTextureSync();
+}
+
+void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
+{
+    if(f__platform_api.screenToTexture == NULL) {
+        return;
+    }
+
+    f__platform_api.screenToTexture(Texture, Frame);
+}
+
+void f_platform_api__screenClipSet(void)
+{
+    if(f__platform_api.screenClipSet == NULL) {
+        return;
+    }
+
+    f__platform_api.screenClipSet();
 }
 
 void f_platform_api__drawSetColor(void)
