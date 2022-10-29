@@ -153,14 +153,12 @@ static const FPlatformApi f__platform_api = {
         .screenInit = f_platform_api_sdl___screenInit,
         .screenUninit = f_platform_api_sdl__screenUninit,
         .screenClear = f_platform_api_sdl__screenClear,
-        #if F_CONFIG_LIB_SDL == 2
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
             .screenTextureGet = f_platform_api_sdl__screenTextureGet,
             .screenTextureSet = f_platform_api_sdl__screenTextureSet,
             .screenTextureSync = f_platform_api_sdl__screenTextureSync,
-            #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-                .screenToTexture = f_platform_api_sdl__screenToTexture,
-                .screenClipSet = f_platform_api_sdl__screenClipSet,
-            #endif
+            .screenToTexture = f_platform_api_sdl__screenToTexture,
+            .screenClipSet = f_platform_api_sdl__screenClipSet,
         #endif
         .screenShow = f_platform_api_sdl__screenShow,
         .screenPixelsGet = f_platform_api_sdl__screenPixelsGet,
