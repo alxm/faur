@@ -331,6 +331,12 @@ void f_platform_api_sdl___screenInit(void)
                         f_color_pixelFromHex(F_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
+    #if F_CONFIG_SCREEN_VSYNC
+        if(!g_vsync) {
+            f_out__warning("Cannot use V-sync");
+        }
+    #endif
+
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if F_CONFIG_TRAIT_DESKTOP || F_CONFIG_SYSTEM_EMSCRIPTEN
