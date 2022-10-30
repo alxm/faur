@@ -71,6 +71,7 @@ struct FColorRgb {
 };
 
 #include "../graphics/f_palette.p.h"
+#include "../graphics/f_screen.p.h"
 
 #if F_CONFIG_SCREEN_FORMAT & F__C_565
     #define F__PX_BITS_R 5

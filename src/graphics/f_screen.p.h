@@ -20,7 +20,11 @@
 
 #include "../general/f_system_includes.h"
 
+#define F_SCREEN_RENDER_SOFTWARE 0
+#define F_SCREEN_RENDER_SDL2 1
+
 #include "../graphics/f_sprite.p.h"
+#include "../math/f_vec.p.h"
 
 extern FColorPixel* f_screen_pixelsGetBuffer(void);
 
