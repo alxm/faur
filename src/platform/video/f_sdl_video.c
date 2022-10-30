@@ -388,6 +388,7 @@ void f_platform_api_sdl__screenClear(void)
     }
 }
 
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 FPlatformTextureScreen* f_platform_api_sdl__screenTextureGet(void)
 {
     return g_sdlTexture;
@@ -402,21 +403,18 @@ void f_platform_api_sdl__screenTextureSet(FPlatformTextureScreen* Texture)
 
 void f_platform_api_sdl__screenTextureSync(void)
 {
-    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-        // Unreliable on texture targets
-        if(SDL_RenderReadPixels(
-            f__sdlRenderer,
-            NULL,
-            F_SDL__PIXEL_FORMAT,
-            f_screen__bufferGetFrom(0, 0),
-            f__screen.pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
+    // Unreliable on texture targets
+    if(SDL_RenderReadPixels(
+        f__sdlRenderer,
+        NULL,
+        F_SDL__PIXEL_FORMAT,
+        f_screen__bufferGetFrom(0, 0),
+        f__screen.pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
 
-            F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
-        }
-    #endif
+        F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
+    }
 }
 
-#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 void f_platform_api_sdl__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
 {
     if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {

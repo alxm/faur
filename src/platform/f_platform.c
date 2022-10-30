@@ -181,7 +181,16 @@ static const FPlatformApi f__platform_api = {
         .screenSizeGet = f_platform_api_odroidgo__screenSizeGet,
     #endif
 
-    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
+        .drawPixel = f_platform_api_software__drawPixel,
+        .drawLine = f_platform_api_software__drawLine,
+        .drawLineH = f_platform_api_software__drawLineH,
+        .drawLineV = f_platform_api_software__drawLineV,
+        .drawRectangleOutline = f_platform_api_software__drawRectangleOutline,
+        .drawRectangleFilled = f_platform_api_software__drawRectangleFilled,
+        .drawCircleOutline = f_platform_api_software__drawCircleOutline,
+        .drawCircleFilled = f_platform_api_software__drawCircleFilled,
+    #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
         .drawSetColor = f_platform_api_sdl__drawSetColor,
         .drawSetBlend = f_platform_api_sdl__drawSetBlend,
         .drawPixel = f_platform_api_sdl__drawPixel,
@@ -192,31 +201,22 @@ static const FPlatformApi f__platform_api = {
         .drawRectangleFilled = f_platform_api_sdl__drawRectangleFilled,
         .drawCircleOutline = f_platform_api_sdl__drawCircleOutline,
         .drawCircleFilled = f_platform_api_sdl__drawCircleFilled,
-    #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
-        .drawPixel = f_platform_api_software__drawPixel,
-        .drawLine = f_platform_api_software__drawLine,
-        .drawLineH = f_platform_api_software__drawLineH,
-        .drawLineV = f_platform_api_software__drawLineV,
-        .drawRectangleOutline = f_platform_api_software__drawRectangleOutline,
-        .drawRectangleFilled = f_platform_api_software__drawRectangleFilled,
-        .drawCircleOutline = f_platform_api_software__drawCircleOutline,
-        .drawCircleFilled = f_platform_api_software__drawCircleFilled,
     #endif
 
-    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-        .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
-        .textureNew = f_platform_api_sdl__textureNew,
-        .textureDup = f_platform_api_sdl__textureDup,
-        .textureFree = f_platform_api_sdl__textureFree,
-        .textureBlit = f_platform_api_sdl__textureBlit,
-        .textureBlitEx = f_platform_api_sdl__textureBlitEx,
-    #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         .textureNew = f_platform_api_software__textureNew,
         .textureDup = f_platform_api_software__textureDup,
         .textureFree = f_platform_api_software__textureFree,
         .textureUpdate = f_platform_api_software__textureUpdate,
         .textureBlit = f_platform_api_software__textureBlit,
         .textureBlitEx = f_platform_api_software__textureBlitEx,
+    #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
+        .textureNew = f_platform_api_sdl__textureNew,
+        .textureDup = f_platform_api_sdl__textureDup,
+        .textureFree = f_platform_api_sdl__textureFree,
+        .textureBlit = f_platform_api_sdl__textureBlit,
+        .textureBlitEx = f_platform_api_sdl__textureBlitEx,
+        .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
     #endif
 
     #if F_CONFIG_LIB_SDL

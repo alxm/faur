@@ -243,8 +243,8 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
     #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         f_pixels__copyFrame(
             &Sprite->pixels, Frame, f__screen.pixels, f__screen.frame);
-    #else
-        f_platform_api__screenToTexture(
-            f_platform_api__textureSpriteToScreen(Sprite->texture), Frame);
     #endif
+
+    f_platform_api__screenToTexture(
+        f_platform_api__textureSpriteToScreen(Sprite->texture), Frame);
 }

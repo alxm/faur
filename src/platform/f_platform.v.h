@@ -170,13 +170,13 @@ typedef struct FPlatformApi {
     FCallApi_DrawCircleOutline* drawCircleOutline;
     FCallApi_DrawCircleFilled* drawCircleFilled;
 
-    FCallApi_TextureSpriteToScreen* textureSpriteToScreen;
     FCallApi_TextureNew* textureNew;
     FCallApi_TextureDup* textureDup;
     FCallApi_TextureFree* textureFree;
     FCallApi_TextureUpdate* textureUpdate;
     FCallApi_TextureBlit* textureBlit;
     FCallApi_TextureBlitEx* textureBlitEx;
+    FCallApi_TextureSpriteToScreen* textureSpriteToScreen;
 
     FCallApi_SoundMuteGet* soundMuteGet;
     FCallApi_SoundMuteFlip* soundMuteFlip;
