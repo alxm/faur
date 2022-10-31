@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_MEMORY_MALLOC_P_H
-#define F_INC_PLATFORM_MEMORY_MALLOC_P_H
+#ifndef F_INC_PLATFORM_MEMORY_ODROIDGO_MALLOC_P_H
+#define F_INC_PLATFORM_MEMORY_ODROIDGO_MALLOC_P_H
 
 #include "../../general/f_system_includes.h"
 
-#endif // F_INC_PLATFORM_MEMORY_MALLOC_P_H
+#endif // F_INC_PLATFORM_MEMORY_ODROIDGO_MALLOC_P_H

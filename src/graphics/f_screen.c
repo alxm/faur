@@ -33,11 +33,7 @@ static void f_screen__init(void)
     FVecInt size = f_platform_api__screenSizeGet();
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
-
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f__screen.texture = f_platform_api__screenTextureGet();
-    #endif
-
+    f__screen.texture = f_platform_api__screenTextureGet();
     f__screen.clipStart = (FVecInt){0, 0};
     f__screen.clipEnd = size;
     f__screen.clipSize = size;
@@ -111,9 +107,7 @@ void f_screen__draw(void)
 
 FColorPixel* f_screen_pixelsGetBuffer(void)
 {
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__screenTextureSync();
-    #endif
+    f_platform_api__screenTextureSync();
 
     return f_screen__bufferGetFrom(0, 0);
 }
@@ -152,12 +146,10 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
     f__screen.sprite = Sprite;
     f__screen.frame = Frame;
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f__screen.yOffset = (int)f__screen.frame * f__screen.pixels->size.y;
-        f__screen.texture = f_sprite__textureGet(Sprite);
+    f__screen.yOffset = (int)f__screen.frame * f__screen.pixels->size.y;
+    f__screen.texture = f_platform_api__textureSpriteToScreen(Sprite->texture);
 
-        f_platform_api__screenTextureSet(f__screen.texture);
-    #endif
+    f_platform_api__screenTextureSet(f__screen.texture);
 
     f_screen_clipReset();
 }
@@ -170,17 +162,14 @@ void f_screen_pop(void)
         F__FATAL("f_screen_pop: Stack is empty");
     }
 
-    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_sprite__textureUpdate(f__screen.sprite, f__screen.frame);
-    #endif
+    f_platform_api__textureUpdate(
+        f__screen.sprite->texture, &f__screen.sprite->pixels, f__screen.frame);
 
     f__screen = *screen;
     f_pool_release(screen);
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__screenTextureSet(f__screen.texture);
-        f_platform_api__screenClipSet();
-    #endif
+    f_platform_api__screenTextureSet(f__screen.texture);
+    f_platform_api__screenClipSet();
 }
 
 void f_screen_clipSet(int X, int Y, int Width, int Height)
@@ -202,9 +191,7 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
     f__screen.clipEnd = (FVecInt){X + Width, Y + Height};
     f__screen.clipSize = (FVecInt){Width, Height};
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__screenClipSet();
-    #endif
+    f_platform_api__screenClipSet();
 }
 
 void f_screen_clipReset(void)
@@ -253,10 +240,11 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
                  f__screen.pixels->size.y);
     }
 
-    #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         f_pixels__copyFrame(
             &Sprite->pixels, Frame, f__screen.pixels, f__screen.frame);
-    #else
-        f_platform_api__screenToTexture(f_sprite__textureGet(Sprite), Frame);
     #endif
+
+    f_platform_api__screenToTexture(
+        f_platform_api__textureSpriteToScreen(Sprite->texture), Frame);
 }

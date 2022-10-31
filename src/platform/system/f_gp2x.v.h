@@ -20,6 +20,8 @@
 
 #include "f_gp2x.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_gp2x__init(void);
 extern void f_platform_gp2x__uninit(void);
 

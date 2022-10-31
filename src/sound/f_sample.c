@@ -18,7 +18,7 @@
 #include "f_sample.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED && !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
 FSample* f_sample_new(const char* Path)
 {
     FSample* s = f_pool__alloc(F_POOL__SAMPLE);
@@ -30,8 +30,6 @@ FSample* f_sample_new(const char* Path)
 
         s->platform =
             f_platform_api__soundSampleNewFromData(e->buffer, e->size);
-    } else {
-        F__FATAL("f_sample_new(%s): File does not exist", Path);
     }
 
     if(s->platform == NULL) {
@@ -55,4 +53,4 @@ void f_sample_free(FSample* Sample)
         Sample->platform = NULL;
     }
 }
-#endif // F_CONFIG_SOUND_ENABLED && !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#endif // !F_CONFIG_SOUND_SAMPLE_PRE_INIT

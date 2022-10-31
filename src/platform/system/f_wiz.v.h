@@ -20,8 +20,13 @@
 
 #include "f_wiz.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_wiz__init(void);
 extern void f_platform_wiz__uninit(void);
+
+extern FCallApi_TimeMsGet f_platform_api_wiz__timeMsGet;
+extern FCallApi_TimeMsWait f_platform_api_wiz___timeMsWait;
 
 extern void f_platform_wiz__portraitModeSet(void);
 

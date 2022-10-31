@@ -37,7 +37,7 @@ void f_platform_emscripten__init(void)
                 function(Error)
                 {
                     if(Error) {
-                        Module.printErr("Could not init IDBFS");
+                        Module.printErr("Cannot init IDBFS");
                         Module.faur_fsIsReady = 1;
                     } else {
                         Module.faur_fsIsReady = 2;
@@ -49,7 +49,7 @@ void f_platform_emscripten__init(void)
     );
 }
 
-void f_platform_api__customExit(int Status)
+void f_platform_api_emscripten__customExit(int Status)
 {
     emscripten_force_exit(Status);
 }
@@ -92,7 +92,7 @@ FVecInt f_platform_emscripten__windowSizeGet(void)
     };
 }
 
-void f_platform_api__fileSync(void)
+void f_platform_api_emscripten__fileSync(void)
 {
     EM_ASM({
         if(Module.faur_fsIsReady === 2) {

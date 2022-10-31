@@ -15,9 +15,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_MEMORY_MALLOC_V_H
-#define F_INC_PLATFORM_MEMORY_MALLOC_V_H
+#include "f_odroidgo_malloc.v.h"
+#include <faur.v.h>
 
-#include "f_malloc.p.h"
+#if F_CONFIG_SYSTEM_ODROID_GO
+extern void *ps_malloc(size_t size);
+extern void *ps_calloc(size_t n, size_t size);
 
-#endif // F_INC_PLATFORM_MEMORY_MALLOC_V_H
+void* f_platform_api_odroidgo__malloc(size_t Size)
+{
+    return ps_malloc(Size);
+}
+
+void* f_platform_api_odroidgo__mallocz(size_t Size)
+{
+    return ps_calloc(1, Size);
+}
+#endif // F_CONFIG_SYSTEM_ODROID_GO

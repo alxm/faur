@@ -100,10 +100,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
             #endif
         #endif
 
-        #if F_CONFIG_TRAIT_CUSTOM_EXIT
-            f_platform_api__customExit(EXIT_FAILURE);
-        #endif
-
+        f_platform_api__customExit(EXIT_FAILURE);
         exit(EXIT_FAILURE);
     #endif
 }

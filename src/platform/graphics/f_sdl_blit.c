@@ -18,7 +18,7 @@
 #include "f_sdl_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 #include <SDL2/SDL.h>
 
 typedef enum {
@@ -36,12 +36,12 @@ typedef struct {
 
 extern SDL_Renderer* f__sdlRenderer;
 
-FPlatformTextureScreen* f_platform_api__textureSpriteToScreen(FPlatformTexture* SpriteTexture)
+FPlatformTextureScreen* f_platform_api_sdl__textureSpriteToScreen(FPlatformTexture* SpriteTexture)
 {
     return ((FTexture*)SpriteTexture)->sides[F_SIDE__NORMAL];
 }
 
-FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
+FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels)
 {
     FTexture* texture = f_mem_mallocz(sizeof(FTexture));
 
@@ -118,7 +118,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
     return texture;
 }
 
-FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
+FPlatformTexture* f_platform_api_sdl__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
     const FTexture* texSrc = Texture;
     FTexture* texDst = f_mem_mallocz(sizeof(FTexture));
@@ -165,7 +165,7 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
     return texDst;
 }
 
-void f_platform_api__textureFree(FPlatformTexture* Texture)
+void f_platform_api_sdl__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -182,7 +182,7 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
     f_mem_free(texture);
 }
 
-void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+void f_platform_api_sdl__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     f_platform_api__textureBlitEx(Texture,
                                   Pixels,
@@ -195,7 +195,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
                                   0);
 }
 
-void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
+void f_platform_api_sdl__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     SDL_Texture* tex;
     SDL_BlendMode blend =
@@ -269,4 +269,4 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         f_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2

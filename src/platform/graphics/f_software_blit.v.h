@@ -26,7 +26,17 @@
     typedef unsigned FSpriteWord;
 #endif
 
+#include "../f_platform.v.h"
+
 extern void f_platform_software_blit__init(void);
 extern void f_platform_software_blit__uninit(void);
+
+extern FCallApi_TextureNew f_platform_api_software__textureNew;
+extern FCallApi_TextureDup f_platform_api_software__textureDup;
+extern FCallApi_TextureFree f_platform_api_software__textureFree;
+
+extern FCallApi_TextureUpdate f_platform_api_software__textureUpdate;
+extern FCallApi_TextureBlit f_platform_api_software__textureBlit;
+extern FCallApi_TextureBlitEx f_platform_api_software__textureBlitEx;
 
 #endif // F_INC_PLATFORM_GRAPHICS_SOFTWARE_BLIT_V_H

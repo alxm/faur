@@ -53,34 +53,28 @@ void f_platform_sdl__init(void)
 
     f_platform_sdl_input__init();
     f_platform_sdl_video__init();
-
-    #if F_CONFIG_SOUND_ENABLED
-        f_platform_sdl_sound__init();
-    #endif
+    f_platform_sdl_sound__init();
 }
 
 void f_platform_sdl__uninit(void)
 {
     f_platform_sdl_input__uninit();
     f_platform_sdl_video__uninit();
-
-    #if F_CONFIG_SOUND_ENABLED
-        f_platform_sdl_sound__uninit();
-    #endif
+    f_platform_sdl_sound__uninit();
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
 }
 
 #if F_CONFIG_LIB_SDL_TIME
-uint32_t f_platform_api__timeMsGet(void)
+uint32_t f_platform_api_sdl__timeMsGet(void)
 {
     return SDL_GetTicks();
 }
 
-void f_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api_sdl__timeMsWait(uint32_t Ms)
 {
-    #if F_CONFIG_TRAIT_NO_SLEEP
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
         F_UNUSED(Ms);
 
         return;

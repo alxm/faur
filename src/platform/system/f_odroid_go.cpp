@@ -52,12 +52,12 @@ void f_platform_odroid_go__init(void)
     f_platform_odroid_go_input__init();
 }
 
-uint32_t f_platform_api__timeMsGet(void)
+uint32_t f_platform_api_odroidgo__timeMsGet(void)
 {
     return millis();
 }
 
-void f_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api_odroidgo__timeMsWait(uint32_t Ms)
 {
     f_time_msSpin(Ms);
 }

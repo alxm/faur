@@ -26,7 +26,9 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* 
 
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
+#ifdef F__PIXEL_USE_SRC
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+#endif
     const FSpriteWord* spans = Texture->spans[Frame];
 
     for(int i = Pixels->size.y; i--; startDst += screenW) {
@@ -42,11 +44,15 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* 
                     F__PIXEL_SETUP;
                     F__PIXEL_DRAW(dst);
                     dst++;
+#ifdef F__PIXEL_USE_SRC
                     src++;
+#endif
                 }
             } else {
                 dst += len;
+#ifdef F__PIXEL_USE_SRC
                 src += len;
+#endif
             }
 
             draw = !draw;
@@ -71,8 +77,10 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
     const int columns = spriteW - xClipLeft - xClipRight;
 
     FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+#ifdef F__PIXEL_USE_SRC
     const FColorPixel* startSrc = f_pixels__bufferGetFrom(
                                     Pixels, Frame, xClipLeft, yClipUp);
+#endif
 
     const FSpriteWord* spans = Texture->spans[Frame];
 
@@ -82,11 +90,13 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
     }
 
     // draw visible rows
-    for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
+    for(int i = rows; i--; ) {
         bool draw = *spans & 1;
         const FSpriteWord* nextLine = spans + 1 + (*spans >> 1);
         FColorPixel* dst = startDst;
+#ifdef F__PIXEL_USE_SRC
         const FColorPixel* src = startSrc;
+#endif
         int clippedLen = 0;
         int drawColumns = columns;
 
@@ -103,14 +113,18 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
             // Inverse logic because we're drawing from the previous span
             if(draw) {
                 dst += len;
+#ifdef F__PIXEL_USE_SRC
                 src += len;
+#endif
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
                     F__PIXEL_SETUP;
                     F__PIXEL_DRAW(dst);
                     dst++;
+#ifdef F__PIXEL_USE_SRC
                     src++;
+#endif
                 }
             }
         }
@@ -124,11 +138,15 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
                     F__PIXEL_SETUP;
                     F__PIXEL_DRAW(dst);
                     dst++;
+#ifdef F__PIXEL_USE_SRC
                     src++;
+#endif
                 }
             } else {
                 dst += len;
+#ifdef F__PIXEL_USE_SRC
                 src += len;
+#endif
                 drawColumns -= len;
             }
 
@@ -137,6 +155,11 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
 
         // skip clipped right columns
         spans = nextLine;
+
+        startDst += screenW;
+#ifdef F__PIXEL_USE_SRC
+        startSrc += spriteW;
+#endif
     }
 }
 
@@ -148,7 +171,11 @@ static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* 
 
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
+#ifdef F__PIXEL_USE_SRC
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+#else
+    F_UNUSED(Frame);
+#endif
 
     for(int i = Pixels->size.y; i--; startDst += screenW) {
         FColorPixel* dst = startDst;
@@ -157,7 +184,9 @@ static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* 
             F__PIXEL_SETUP;
             F__PIXEL_DRAW(dst);
             dst++;
+#ifdef F__PIXEL_USE_SRC
             src++;
+#endif
         }
     }
 }
@@ -181,19 +210,32 @@ static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* 
     const int columns = spriteW - xClipLeft - xClipRight;
 
     FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+#ifdef F__PIXEL_USE_SRC
     const FColorPixel* startSrc = f_pixels__bufferGetFrom(
                                     Pixels, Frame, xClipLeft, yClipUp);
+#else
+    F_UNUSED(Frame);
+#endif
 
-    for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
+    for(int i = rows; i--; ) {
         FColorPixel* dst = startDst;
+#ifdef F__PIXEL_USE_SRC
         const FColorPixel* src = startSrc;
+#endif
 
         for(int j = columns; j--; ) {
             F__PIXEL_SETUP;
             F__PIXEL_DRAW(dst);
             dst++;
+#ifdef F__PIXEL_USE_SRC
             src++;
+#endif
         }
+
+        startDst += screenW;
+#ifdef F__PIXEL_USE_SRC
+        startSrc += spriteW;
+#endif
     }
 }
 
@@ -206,6 +248,7 @@ static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* 
 #undef F__BLEND
 #undef F__FILL
 #undef F__BLEND_SETUP
+#undef F__PIXEL_USE_SRC
 #undef F__PIXEL_SETUP
 #undef F__PIXEL_PARAMS
 #endif // F__BLEND

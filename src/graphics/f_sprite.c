@@ -18,14 +18,13 @@
 #include "f_sprite.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-static inline void lazyInitTextures(FSprite* Sprite)
+static inline void lazyInitTextures(const FSprite* Sprite)
 {
     if(Sprite->texture == NULL) {
-        Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
+        ((FSprite*)Sprite)->texture =
+            f_platform_api__textureNew(&Sprite->pixels);
     }
 }
-#endif
 
 static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
@@ -86,6 +85,10 @@ FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 {
     FPixels* pixels = f_png__read(Path);
 
+    if(pixels == NULL) {
+        F__FATAL("f_sprite_newFromPng(%s): Cannot open file", Path);
+    }
+
     if(FrameWidth < 1 || FrameHeight < 1) {
         char* suffix = f_str_suffixGetFromLast(Path, '_');
 
@@ -137,14 +140,11 @@ FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
 
 FSprite* f_sprite_dup(const FSprite* Sprite)
 {
+    lazyInitTextures(Sprite);
+
     FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        lazyInitTextures((FSprite*)Sprite);
-    #endif
-
     f_pixels__copy(&s->pixels, &Sprite->pixels);
-
     s->texture = f_platform_api__textureDup(Sprite->texture, &Sprite->pixels);
 
     return s;
@@ -157,11 +157,9 @@ void f_sprite_free(FSprite* Sprite)
     }
 
     if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-        #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
             f_platform_api__textureFree(Sprite->texture);
-
-            // Sprite may be re-used later
-            Sprite->texture = NULL;
+            Sprite->texture = NULL; // Sprite may be re-used later
         #endif
 
         return;
@@ -175,9 +173,7 @@ void f_sprite_free(FSprite* Sprite)
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        lazyInitTextures((FSprite*)Sprite);
-    #endif
+    lazyInitTextures(Sprite);
 
     Frame %= Sprite->pixels.framesNum;
 
@@ -200,9 +196,7 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        lazyInitTextures((FSprite*)Sprite);
-    #endif
+    lazyInitTextures(Sprite);
 
     Frame %= Sprite->pixels.framesNum;
 
@@ -236,11 +230,8 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
         }
     }
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__textureFree(Sprite->texture);
-
-        Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
-    #endif
+    f_platform_api__textureFree(Sprite->texture);
+    Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
 }
 
 void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
@@ -264,11 +255,8 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
         }
     }
 
-    #if !F_CONFIG_SCREEN_RENDER_SOFTWARE
-        f_platform_api__textureFree(Sprite->texture);
-
-        Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
-    #endif
+    f_platform_api__textureFree(Sprite->texture);
+    Sprite->texture = f_platform_api__textureNew(&Sprite->pixels);
 }
 
 FVecInt f_sprite_sizeGet(const FSprite* Sprite)
@@ -300,15 +288,3 @@ FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X
 {
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }
-
-#if F_CONFIG_SCREEN_RENDER_SOFTWARE
-void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame)
-{
-    f_platform_api__textureUpdate(Sprite->texture, &Sprite->pixels, Frame);
-}
-#else
-FPlatformTextureScreen* f_sprite__textureGet(const FSprite* Sprite)
-{
-    return f_platform_api__textureSpriteToScreen(Sprite->texture);
-}
-#endif

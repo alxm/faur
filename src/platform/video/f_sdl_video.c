@@ -164,7 +164,7 @@ static void mouseCursorSet(bool Show)
     }
 }
 
-void f_platform_api__screenInit(void)
+void f_platform_api_sdl___screenInit(void)
 {
     #if F__SIZE_DYNAMIC
         FVecInt res = sdlScreenSizeGetNative();
@@ -212,7 +212,7 @@ void f_platform_api__screenInit(void)
         #endif
 
         if(!sdl1ScreenSet(w, h, videoFlags)) {
-            F__FATAL("Could not create SDL screen surface");
+            F__FATAL("Cannot create SDL screen surface");
         }
 
         #if !F__ALLOCATE_LOGICAL_BUFFER
@@ -302,7 +302,7 @@ void f_platform_api__screenInit(void)
             F__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
             int access = SDL_TEXTUREACCESS_STREAMING;
         #else
             int access = SDL_TEXTUREACCESS_TARGET;
@@ -318,7 +318,7 @@ void f_platform_api__screenInit(void)
             F__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SDL2
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
             if(SDL_SetRenderTarget(f__sdlRenderer, g_sdlTexture) < 0) {
                 F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
             }
@@ -329,6 +329,12 @@ void f_platform_api__screenInit(void)
 
         g_clearRgb = f_color_pixelToRgb(
                         f_color_pixelFromHex(F_CONFIG_COLOR_SCREEN_BORDER));
+    #endif
+
+    #if F_CONFIG_SCREEN_VSYNC
+        if(!g_vsync) {
+            f_out__warning("Cannot use V-sync");
+        }
     #endif
 
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
@@ -358,13 +364,13 @@ void f_platform_api__screenInit(void)
     #endif
 }
 
-void f_platform_api__screenUninit(void)
+void f_platform_api_sdl__screenUninit(void)
 {
     f_pixels__free(&g_pixels);
 }
 
 #if F_CONFIG_LIB_SDL == 1
-void f_platform_api__screenClear(void)
+void f_platform_api_sdl__screenClear(void)
 {
     FColorPixel* pixels = g_sdlScreen->pixels;
 
@@ -375,26 +381,27 @@ void f_platform_api__screenClear(void)
     }
 }
 #elif F_CONFIG_LIB_SDL == 2
-void f_platform_api__screenClear(void)
+void f_platform_api_sdl__screenClear(void)
 {
     if(SDL_RenderClear(f__sdlRenderer) < 0) {
         f_out__error("SDL_RenderClear: %s", SDL_GetError());
     }
 }
 
-FPlatformTextureScreen* f_platform_api__screenTextureGet(void)
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
+FPlatformTextureScreen* f_platform_api_sdl__screenTextureGet(void)
 {
     return g_sdlTexture;
 }
 
-void f_platform_api__screenTextureSet(FPlatformTextureScreen* Texture)
+void f_platform_api_sdl__screenTextureSet(FPlatformTextureScreen* Texture)
 {
     if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 }
 
-void f_platform_api__screenTextureSync(void)
+void f_platform_api_sdl__screenTextureSync(void)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(
@@ -408,8 +415,7 @@ void f_platform_api__screenTextureSync(void)
     }
 }
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
-void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
+void f_platform_api_sdl__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
 {
     if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
@@ -435,7 +441,7 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned F
     f_platform_api__screenClipSet();
 }
 
-void f_platform_api__screenClipSet(void)
+void f_platform_api_sdl__screenClipSet(void)
 {
     SDL_Rect area = {
         f__screen.clipStart.x,
@@ -448,10 +454,10 @@ void f_platform_api__screenClipSet(void)
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 #endif // F_CONFIG_LIB_SDL == 2
 
-void f_platform_api__screenShow(void)
+void f_platform_api_sdl__screenShow(void)
 {
     #if F_CONFIG_LIB_SDL == 1
         #if F_CONFIG_SYSTEM_WIZ && F_CONFIG_SYSTEM_WIZ_SCREEN_FIX
@@ -569,7 +575,7 @@ void f_platform_api__screenShow(void)
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
-        #if F_CONFIG_SCREEN_RENDER_SDL2
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
             if(SDL_SetRenderTarget(f__sdlRenderer, NULL) < 0) {
                 F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
             }
@@ -592,7 +598,7 @@ void f_platform_api__screenShow(void)
             f_out__error("SDL_RenderClear: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_SCREEN_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
             if(SDL_UpdateTexture(
                 g_sdlTexture,
                 NULL,
@@ -623,27 +629,27 @@ void f_platform_api__screenShow(void)
     #endif
 }
 
-FPixels* f_platform_api__screenPixelsGet(void)
+FPixels* f_platform_api_sdl__screenPixelsGet(void)
 {
     return &g_pixels;
 }
 
-FVecInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api_sdl__screenSizeGet(void)
 {
     return g_size;
 }
 
-bool f_platform_api__screenVsyncGet(void)
+bool f_platform_api_sdl__screenVsyncGet(void)
 {
     return g_vsync;
 }
 
-int f_platform_api__screenZoomGet(void)
+int f_platform_api_sdl__screenZoomGet(void)
 {
     return g_zoom;
 }
 
-void f_platform_api__screenZoomSet(int Zoom)
+void f_platform_api_sdl__screenZoomSet(int Zoom)
 {
     #if F_CONFIG_LIB_SDL == 1
         int w = g_size.x * Zoom;
@@ -659,12 +665,12 @@ void f_platform_api__screenZoomSet(int Zoom)
     #endif
 }
 
-bool f_platform_api__screenFullscreenGet(void)
+bool f_platform_api_sdl__screenFullscreenGet(void)
 {
     return g_fullscreen;
 }
 
-void f_platform_api__screenFullscreenFlip(void)
+void f_platform_api_sdl__screenFullscreenFlip(void)
 {
     g_fullscreen = !g_fullscreen;
 
@@ -702,7 +708,7 @@ void f_platform_api__screenFullscreenFlip(void)
     mouseCursorSet(!g_fullscreen);
 }
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_LIB_SDL == 2
 int f_platform_sdl_video__pixelBlendToSdlBlend(void)
 {
     switch(f__color.blend) {
@@ -737,5 +743,5 @@ uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
             return SDL_ALPHA_OPAQUE;
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_LIB_SDL == 2
 #endif // F_CONFIG_LIB_SDL

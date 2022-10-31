@@ -32,9 +32,7 @@ static const FPack* g_packs[] = {
 #if F_CONFIG_LIB_PNG
     &f_pack__screenshot,
 #endif
-#if F_CONFIG_SOUND_ENABLED
     &f_pack__sound,
-#endif
     &f_pack__random,
 #if F_CONFIG_BUILD_GEN_LUTS
     &f_pack__fix,

@@ -20,4 +20,9 @@
 
 #include "f_gamebuino.p.h"
 
+#include "../f_platform.v.h"
+
+extern FCallApi_TimeMsGet f_platform_api_gamebuino__timeMsGet;
+extern FCallApi_TimeMsWait f_platform_api_gamebuino__timeMsWait;
+
 #endif // F_INC_PLATFORM_VIDEO_GAMEBUINO_V_H

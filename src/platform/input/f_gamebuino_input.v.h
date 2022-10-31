@@ -20,4 +20,9 @@
 
 #include "f_gamebuino_input.p.h"
 
+#include "../f_platform.v.h"
+
+extern FCallApi_InputButtonGet f_platform_api_gamebuino__inputButtonGet;
+extern FCallApi_InputButtonPressGet f_platform_api_gamebuino__inputButtonPressGet;
+
 #endif // F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H

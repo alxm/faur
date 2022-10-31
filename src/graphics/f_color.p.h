@@ -71,6 +71,7 @@ struct FColorRgb {
 };
 
 #include "../graphics/f_palette.p.h"
+#include "../graphics/f_screen.p.h"
 
 #if F_CONFIG_SCREEN_FORMAT & F__C_565
     #define F__PX_BITS_R 5
@@ -114,7 +115,7 @@ struct FColorRgb {
 #define F__PX_PACK_G (8 - F__PX_BITS_G)
 #define F__PX_PACK_B (8 - F__PX_BITS_B)
 
-#if F_CONFIG_SCREEN_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
     #define F_COLOR_ALPHA_MAX 256
 #else
     #define F_COLOR_ALPHA_MAX 255

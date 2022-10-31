@@ -20,4 +20,15 @@
 
 #include "f_odroid_go_video.p.h"
 
+#include "../f_platform.v.h"
+#include "../../graphics/f_pixels.v.h"
+
+extern FCallApi_ScreenInit f_platform_api_odroidgo__screenInit;
+
+extern FCallApi_ScreenClear f_platform_api_odroidgo__screenClear;
+extern FCallApi_ScreenShow f_platform_api_odroidgo__screenShow;
+
+extern FCallApi_ScreenPixelsGet f_platform_api_odroidgo__screenPixelsGet;
+extern FCallApi_ScreenSizeGet f_platform_api_odroidgo__screenSizeGet;
+
 #endif // F_INC_PLATFORM_VIDEO_ODROID_GO_VIDEO_V_H

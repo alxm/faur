@@ -18,12 +18,12 @@
 #include "f_sdl_draw.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SCREEN_RENDER_SDL2
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer* f__sdlRenderer;
 
-void f_platform_api__drawSetColor(void)
+void f_platform_api_sdl__drawSetColor(void)
 {
     if(SDL_SetRenderDrawColor(
         f__sdlRenderer,
@@ -36,7 +36,7 @@ void f_platform_api__drawSetColor(void)
     }
 }
 
-void f_platform_api__drawSetBlend(void)
+void f_platform_api_sdl__drawSetBlend(void)
 {
     SDL_BlendMode blend =
         (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
@@ -46,7 +46,7 @@ void f_platform_api__drawSetBlend(void)
     }
 }
 
-void f_platform_api__drawPixel(int X, int Y)
+void f_platform_api_sdl__drawPixel(int X, int Y)
 {
     Y += f__screen.yOffset;
 
@@ -55,7 +55,7 @@ void f_platform_api__drawPixel(int X, int Y)
     }
 }
 
-void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
+void f_platform_api_sdl__drawLine(int X1, int Y1, int X2, int Y2)
 {
     Y1 += f__screen.yOffset;
     Y2 += f__screen.yOffset;
@@ -65,14 +65,14 @@ void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void f_platform_api__drawLineH(int X1, int X2, int Y)
+void f_platform_api_sdl__drawLineH(int X1, int X2, int Y)
 {
     Y += f__screen.yOffset;
 
     f_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
 }
 
-void f_platform_api__drawLineV(int X, int Y1, int Y2)
+void f_platform_api_sdl__drawLineV(int X, int Y1, int Y2)
 {
     Y1 += f__screen.yOffset;
     Y2 += f__screen.yOffset;
@@ -80,18 +80,7 @@ void f_platform_api__drawLineV(int X, int Y1, int Y2)
     f_platform_api__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
 }
 
-void f_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
-{
-    Y += f__screen.yOffset;
-
-    SDL_Rect area = {X, Y, Width, Height};
-
-    if(SDL_RenderFillRect(f__sdlRenderer, &area) < 0) {
-        f_out__error("SDL_RenderFillRect: %s", SDL_GetError());
-    }
-}
-
-void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
+void f_platform_api_sdl__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
     f_platform_api__drawRectangleFilled(X, Y, Width, 1);
 
@@ -109,7 +98,18 @@ void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
     f_platform_api__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
 }
 
-void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
+void f_platform_api_sdl__drawRectangleFilled(int X, int Y, int Width, int Height)
+{
+    Y += f__screen.yOffset;
+
+    SDL_Rect area = {X, Y, Width, Height};
+
+    if(SDL_RenderFillRect(f__sdlRenderer, &area) < 0) {
+        f_out__error("SDL_RenderFillRect: %s", SDL_GetError());
+    }
+}
+
+void f_platform_api_sdl__drawCircleOutline(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius < 0) {
@@ -226,7 +226,7 @@ void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
     }
 }
 
-void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
+void f_platform_api_sdl__drawCircleFilled(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius < 0) {
@@ -305,4 +305,4 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
         f_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_SCREEN_RENDER_SDL2
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2

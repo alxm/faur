@@ -33,7 +33,7 @@ static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
 static FColorPixel* g_scaledBuffer;
 #endif
 
-void f_platform_api__screenInit(void)
+void f_platform_api_odroidgo__screenInit(void)
 {
     g_screenBuffer =
         (FColorPixel*)f_mem_malloc(
@@ -53,16 +53,12 @@ void f_platform_api__screenInit(void)
         &g_pixels, g_screenBuffer, g_screenSize.x, g_screenSize.y);
 }
 
-void f_platform_api__screenUninit(void)
-{
-}
-
-void f_platform_api__screenClear(void)
+void f_platform_api_odroidgo__screenClear(void)
 {
     GO.lcd.fillScreen(f__color_flipEndianness(f__color.pixel));
 }
 
-void f_platform_api__screenShow(void)
+void f_platform_api_odroidgo__screenShow(void)
 {
     #if F_CONFIG_SCREEN_SIZE_ZOOM > 1
         FColorPixel* dst = g_scaledBuffer;
@@ -106,28 +102,13 @@ void f_platform_api__screenShow(void)
     #endif
 }
 
-bool f_platform_api__screenVsyncGet(void)
-{
-    return false;
-}
-
-FVecInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api_odroidgo__screenSizeGet(void)
 {
     return g_screenSize;
 }
 
-FPixels* f_platform_api__screenPixelsGet(void)
+FPixels* f_platform_api_odroidgo__screenPixelsGet(void)
 {
     return &g_pixels;
-}
-
-int f_platform_api__screenZoomGet(void)
-{
-    return F_CONFIG_SCREEN_SIZE_ZOOM;
-}
-
-bool f_platform_api__screenFullscreenGet(void)
-{
-    return F_CONFIG_SCREEN_FULLSCREEN;
 }
 #endif // F_CONFIG_SYSTEM_ODROID_GO

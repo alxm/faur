@@ -20,4 +20,15 @@
 
 #include "f_software_draw.p.h"
 
+#include "../f_platform.v.h"
+
+extern FCallApi_DrawPixel f_platform_api_software__drawPixel;
+extern FCallApi_DrawLine f_platform_api_software__drawLine;
+extern FCallApi_DrawLineH f_platform_api_software__drawLineH;
+extern FCallApi_DrawLineV f_platform_api_software__drawLineV;
+extern FCallApi_DrawRectangleOutline f_platform_api_software__drawRectangleOutline;
+extern FCallApi_DrawRectangleFilled f_platform_api_software__drawRectangleFilled;
+extern FCallApi_DrawCircleOutline f_platform_api_software__drawCircleOutline;
+extern FCallApi_DrawCircleFilled f_platform_api_software__drawCircleFilled;
+
 #endif // F_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H

@@ -20,4 +20,15 @@
 
 #include "f_sdl_blit.p.h"
 
+#include "../f_platform.v.h"
+
+extern FPlatformTextureScreen* f_platform_api_sdl__textureSpriteToScreen(FPlatformTexture* SpriteTexture);
+
+extern FCallApi_TextureNew f_platform_api_sdl__textureNew;
+extern FCallApi_TextureDup f_platform_api_sdl__textureDup;
+extern FCallApi_TextureFree f_platform_api_sdl__textureFree;
+
+extern FCallApi_TextureBlit f_platform_api_sdl__textureBlit;
+extern FCallApi_TextureBlitEx f_platform_api_sdl__textureBlitEx;
+
 #endif // F_INC_PLATFORM_GRAPHICS_SDL_BLIT_V_H

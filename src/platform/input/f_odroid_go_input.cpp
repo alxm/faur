@@ -55,7 +55,7 @@ void f_platform_odroid_go_input__init(void)
     g_buttons[F_BUTTON_VOLDOWN].odroidButton = &GO.BtnVolume;
 }
 
-void f_platform_api__inputPoll(void)
+void f_platform_api_odroidgo__inputPoll(void)
 {
     for(int b = F_BUTTON_NUM; b--; ) {
         Button* button = g_buttons[b].odroidButton;
@@ -69,14 +69,14 @@ void f_platform_api__inputPoll(void)
     }
 }
 
-const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
+const FPlatformButton* f_platform_api_odroidgo__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     F_UNUSED(Controller);
 
     return g_buttons[Id].odroidButton == NULL ? NULL : &g_buttons[Id];
 }
 
-bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)
+bool f_platform_api_odroidgo__inputButtonPressGet(const FPlatformButton* Button)
 {
     return Button->pressed;
 }

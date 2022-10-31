@@ -817,7 +817,7 @@ void f_platform_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void f_platform_api__inputPoll(void)
+void f_platform_api_sdl__inputPoll(void)
 {
     g_mouse.tap = false;
     g_mouse.delta = (FVecInt){0, 0};
@@ -1121,13 +1121,13 @@ void f_platform_api__inputPoll(void)
 }
 
 #if F_CONFIG_TRAIT_KEYBOARD
-const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
+const FPlatformButton* f_platform_api_sdl__inputKeyGet(FKeyId Id)
 {
     return Id != F_KEY_INVALID ? g_keys[Id] : NULL;
 }
 #endif
 
-const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
+const FPlatformButton* f_platform_api_sdl__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1140,12 +1140,12 @@ const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController*
     return NULL;
 }
 
-bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)
+bool f_platform_api_sdl__inputButtonPressGet(const FPlatformButton* Button)
 {
     return Button->pressed;
 }
 
-const FPlatformAnalog* f_platform_api__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id)
+const FPlatformAnalog* f_platform_api_sdl__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1166,27 +1166,27 @@ const FPlatformAnalog* f_platform_api__inputAnalogGet(const FPlatformController*
     return NULL;
 }
 
-int f_platform_api__inputAnalogValueGet(const FPlatformAnalog* Analog)
+int f_platform_api_sdl__inputAnalogValueGet(const FPlatformAnalog* Analog)
 {
     return Analog->value;
 }
 
-FVecInt f_platform_api__inputTouchCoordsGet(void)
+FVecInt f_platform_api_sdl__inputTouchCoordsGet(void)
 {
     return g_mouse.coords;
 }
 
-FVecInt f_platform_api__inputTouchDeltaGet(void)
+FVecInt f_platform_api_sdl__inputTouchDeltaGet(void)
 {
     return g_mouse.delta;
 }
 
-bool f_platform_api__inputTouchTapGet(void)
+bool f_platform_api_sdl__inputTouchTapGet(void)
 {
     return g_mouse.tap;
 }
 
-FPlatformController* f_platform_api__inputControllerClaim(FCallControllerBind* Callback)
+FPlatformController* f_platform_api_sdl__inputControllerClaim(FCallControllerBind* Callback)
 {
     FPlatformController* controller = NULL;
 
@@ -1227,7 +1227,7 @@ FPlatformController* f_platform_api__inputControllerClaim(FCallControllerBind* C
     return controller;
 }
 
-void f_platform_api__inputControllerRelease(FPlatformController* Controller)
+void f_platform_api_sdl__inputControllerRelease(FPlatformController* Controller)
 {
     if(Controller == NULL) {
         return;

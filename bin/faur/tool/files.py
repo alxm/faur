@@ -63,11 +63,11 @@ class Files:
             return f.read()
 
     def read_text(self, Name):
-        with open(Name, 'rU') as f:
+        with open(Name, 'r') as f:
             return f.read()
 
     def read_text_lines(self, Name):
-        with open(Name, 'rU') as f:
+        with open(Name, 'r') as f:
             return f.readlines()
 
     def write_bytes(self, Name, Contents):

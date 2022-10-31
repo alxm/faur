@@ -44,18 +44,14 @@ static const Button* const g_buttons[F_BUTTON_NUM] = {
     [F_BUTTON_SELECT] = &BUTTON_MENU,
 };
 
-void f_platform_api__inputPoll(void)
-{
-}
-
-const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
+const FPlatformButton* f_platform_api_gamebuino__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     F_UNUSED(Controller);
 
     return (FPlatformButton*)g_buttons[Id];
 }
 
-bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)
+bool f_platform_api_gamebuino__inputButtonPressGet(const FPlatformButton* Button)
 {
     return gb.buttons.repeat(Button->code, 0);
 }

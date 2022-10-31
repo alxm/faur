@@ -18,7 +18,7 @@
 #include "f_software_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SCREEN_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
 #define F__SCANLINES_MALLOC (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
 
 typedef struct {
@@ -98,6 +98,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND solid
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , *src
 #include "f_software_blit.inc.c"
@@ -116,6 +117,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     if(alpha == 0) { \
         return; \
     }
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_blit.inc.c"
@@ -136,6 +138,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha25
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -150,6 +153,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha50
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -164,6 +168,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
     #define F__BLEND alpha75
     #define F__FILL Data
     #define F__BLEND_SETUP
+    #define F__PIXEL_USE_SRC
     #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
     #define F__PIXEL_PARAMS , &rgb
     #include "f_software_blit.inc.c"
@@ -181,6 +186,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha;
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
 #include "f_software_blit.inc.c"
@@ -190,6 +196,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha;
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
 #include "f_software_blit.inc.c"
@@ -211,6 +218,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND mod
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
@@ -225,6 +233,7 @@ static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix
 #define F__BLEND add
 #define F__FILL Data
 #define F__BLEND_SETUP
+#define F__PIXEL_USE_SRC
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
@@ -380,7 +389,7 @@ static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
     return spansStart;
 }
 
-FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
+FPlatformTexture* f_platform_api_software__textureNew(const FPixels* Pixels)
 {
     FTexture* t = f_mem_malloc(
                     sizeof(FTexture)
@@ -395,7 +404,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
     return t;
 }
 
-FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
+FPlatformTexture* f_platform_api_software__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
     F_UNUSED(Pixels);
 
@@ -418,7 +427,7 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
     return texDst;
 }
 
-void f_platform_api__textureFree(FPlatformTexture* Texture)
+void f_platform_api_software__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -433,7 +442,7 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
     f_mem_free(texture);
 }
 
-void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
+void f_platform_api_software__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
 {
     FTexture* texture = Texture;
 
@@ -442,7 +451,7 @@ void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pix
     texture->spans[Frame] = spansNew(Pixels, Frame);
 }
 
-void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+void f_platform_api_software__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     if(!f_screen_boxOnClip(X, Y, Pixels->size.x, Pixels->size.y)) {
         return;
@@ -456,7 +465,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
             (Texture, Pixels, Frame, X, Y);
 }
 
-void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
+void f_platform_api_software__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     const FVecInt size = Pixels->size;
     const FVecFix sizeScaled = {size.x * Scale, size.y * Scale};
@@ -573,4 +582,4 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         [Texture != NULL]
             (Pixels, Frame, yTop, yBottom);
 }
-#endif // F_CONFIG_SCREEN_RENDER_SOFTWARE
+#endif // F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE

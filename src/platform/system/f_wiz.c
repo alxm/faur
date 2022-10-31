@@ -78,7 +78,7 @@ static void timer_init(void)
     }
 
     if(div < 1 || div > 256 || div2 >= 4) {
-        F__FATAL("Could not set up Pollux timer");
+        F__FATAL("Cannot set up Pollux timer");
     }
 
     if(TIMER_REG(0x08) & 8) { // Timer in use
@@ -131,7 +131,7 @@ void f_platform_wiz__uninit(void)
     #endif
 }
 
-uint32_t f_platform_api__timeMsGet(void)
+uint32_t f_platform_api_wiz__timeMsGet(void)
 {
     unsigned div = TIMER_REG(0x08) & 3;
     TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value
@@ -139,7 +139,7 @@ uint32_t f_platform_api__timeMsGet(void)
     return TIMER_REG(0) / 1000;
 }
 
-void f_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api_wiz___timeMsWait(uint32_t Ms)
 {
     f_time_msSpin(Ms);
 }

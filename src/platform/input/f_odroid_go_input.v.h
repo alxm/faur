@@ -20,6 +20,13 @@
 
 #include "f_odroid_go_input.p.h"
 
+#include "../f_platform.v.h"
+
 extern void f_platform_odroid_go_input__init(void);
+
+extern FCallApi_InputPoll f_platform_api_odroidgo__inputPoll;
+
+extern FCallApi_InputButtonGet f_platform_api_odroidgo__inputButtonGet;
+extern FCallApi_InputButtonPressGet f_platform_api_odroidgo__inputButtonPressGet;
 
 #endif // F_INC_PLATFORM_INPUT_ODROID_GO_INPUT_V_H

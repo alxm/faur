@@ -20,4 +20,28 @@
 
 #include "f_standard_file.p.h"
 
+#include "../f_platform.v.h"
+#include "../../files/f_file.v.h"
+#include "../../files/f_path.v.h"
+
+extern FCallApi_FileStat f_platform_api_standard__fileStat;
+
+extern FCallApi_FileBufferRead f_platform_api_standard__fileBufferRead;
+extern FCallApi_FileBufferWrite f_platform_api_standard__fileBufferWrite;
+
+extern FCallApi_FileNew f_platform_api_standard__fileNew;
+extern FCallApi_FileFree f_platform_api_standard__fileFree;
+
+extern FCallApi_FileSeek f_platform_api_standard__fileSeek;
+extern FCallApi_FileRead f_platform_api_standard__fileRead;
+extern FCallApi_FileWrite f_platform_api_standard__fileWrite;
+extern FCallApi_FileWritef f_platform_api_standard__fileWritef;
+
+extern FCallApi_FilePrint f_platform_api_standard__filePrint;
+
+extern FCallApi_FileFlush f_platform_api_standard__fileFlush;
+
+extern FCallApi_FileReadChar f_platform_api_standard__fileReadChar;
+extern FCallApi_FileReadCharUndo f_platform_api_standard__fileReadCharUndo;
+
 #endif // F_INC_PLATFORM_FILES_STANDARD_FILE_V_H

@@ -24,7 +24,7 @@ extern "C" {
 #if F_CONFIG_SYSTEM_ODROID_GO
 #include <SD.h>
 
-bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
+bool f_platform_api_odroidgo__fileStat(const char* Path, FPathInfo* Info)
 {
     File f = SD.open(Path, FILE_READ);
 
@@ -48,7 +48,7 @@ bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
     return false;
 }
 
-bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
+bool f_platform_api_odroidgo__fileBufferRead(const char* Path, void* Buffer, size_t Size)
 {
     File f = SD.open(Path, FILE_READ);
 
@@ -56,7 +56,7 @@ bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
     return f && f.read((uint8_t*)Buffer, Size) == Size;
 }
 
-bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
+bool f_platform_api_odroidgo__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
 {
     File f = SD.open(Path, FILE_WRITE);
 
@@ -64,7 +64,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return f && f.write((const uint8_t*)Buffer, Size) == Size;
 }
 
-void f_platform_api__filePrint(FPlatformFile* File, const char* String)
+void f_platform_api_odroidgo__filePrint(FPlatformFile* File, const char* String)
 {
     F_UNUSED(File);
 
