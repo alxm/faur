@@ -191,8 +191,6 @@ static const FPlatformApi f__platform_api = {
         .drawCircleOutline = f_platform_api_software__drawCircleOutline,
         .drawCircleFilled = f_platform_api_software__drawCircleFilled,
     #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-        .drawSetColor = f_platform_api_sdl__drawSetColor,
-        .drawSetBlend = f_platform_api_sdl__drawSetBlend,
         .drawPixel = f_platform_api_sdl__drawPixel,
         .drawLine = f_platform_api_sdl__drawLine,
         .drawLineH = f_platform_api_sdl__drawLineH,
@@ -201,6 +199,8 @@ static const FPlatformApi f__platform_api = {
         .drawRectangleFilled = f_platform_api_sdl__drawRectangleFilled,
         .drawCircleOutline = f_platform_api_sdl__drawCircleOutline,
         .drawCircleFilled = f_platform_api_sdl__drawCircleFilled,
+        .drawSetColor = f_platform_api_sdl__drawSetColor,
+        .drawSetBlend = f_platform_api_sdl__drawSetBlend,
     #endif
 
     #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE

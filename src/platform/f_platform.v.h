@@ -49,11 +49,6 @@ typedef void FCallApi_TimeMsWait(uint32_t Ms);
 typedef void FCallApi_ScreenInit(void);
 typedef void FCallApi_ScreenUninit(void);
 typedef void FCallApi_ScreenClear(void);
-typedef FPlatformTextureScreen* FCallApi_ScreenTextureGet(void);
-typedef void FCallApi_ScreenTextureSet(FPlatformTextureScreen* Texture);
-typedef void FCallApi_ScreenTextureSync(void);
-typedef void FCallApi_ScreenToTexture(FPlatformTextureScreen* Texture, unsigned Frame);
-typedef void FCallApi_ScreenClipSet(void);
 typedef void FCallApi_ScreenShow(void);
 typedef FPixels* FCallApi_ScreenPixelsGet(void);
 typedef FVecInt FCallApi_ScreenSizeGet(void);
@@ -62,9 +57,12 @@ typedef int FCallApi_ScreenZoomGet(void);
 typedef void FCallApi_ScreenZoomSet(int Zoom);
 typedef bool FCallApi_ScreenFullscreenGet(void);
 typedef void FCallApi_ScreenFullscreenFlip(void);
+typedef FPlatformTextureScreen* FCallApi_ScreenTextureGet(void);
+typedef void FCallApi_ScreenTextureSet(FPlatformTextureScreen* Texture);
+typedef void FCallApi_ScreenTextureSync(void);
+typedef void FCallApi_ScreenToTexture(FPlatformTextureScreen* Texture, unsigned Frame);
+typedef void FCallApi_ScreenClipSet(void);
 
-typedef void FCallApi_DrawSetColor(void);
-typedef void FCallApi_DrawSetBlend(void);
 typedef void FCallApi_DrawPixel(int X, int Y);
 typedef void FCallApi_DrawLine(int X1, int Y1, int X2, int Y2);
 typedef void FCallApi_DrawLineH(int X1, int X2, int Y);
@@ -73,25 +71,25 @@ typedef void FCallApi_DrawRectangleFilled(int X, int Y, int Width, int Height);
 typedef void FCallApi_DrawRectangleOutline(int X, int Y, int Width, int Height);
 typedef void FCallApi_DrawCircleOutline(int X, int Y, int Radius);
 typedef void FCallApi_DrawCircleFilled(int X, int Y, int Radius);
+typedef void FCallApi_DrawSetColor(void);
+typedef void FCallApi_DrawSetBlend(void);
 
-typedef FPlatformTextureScreen* FCallApi_TextureSpriteToScreen(FPlatformTexture* SpriteTexture);
 typedef FPlatformTexture* FCallApi_TextureNew(const FPixels* Pixels);
 typedef FPlatformTexture* FCallApi_TextureDup(const FPlatformTexture* Texture, const FPixels* Pixels);
 typedef void FCallApi_TextureFree(FPlatformTexture* Texture);
 typedef void FCallApi_TextureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame);
 typedef void FCallApi_TextureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
 typedef void FCallApi_TextureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
+typedef FPlatformTextureScreen* FCallApi_TextureSpriteToScreen(FPlatformTexture* SpriteTexture);
 
 typedef bool FCallApi_SoundMuteGet(void);
 typedef void FCallApi_SoundMuteFlip(void);
 typedef int FCallApi_SoundVolumeGetMax(void);
 typedef void FCallApi_SoundVolumeSet(int MusicVolume, int SamplesVolume);
-
 typedef FPlatformMusic* FCallApi_SoundMusicNew(const char* Path);
 typedef void FCallApi_SoundMusicFree(FPlatformMusic* Music);
 typedef void FCallApi_SoundMusicPlay(FPlatformMusic* Music);
 typedef void FCallApi_SoundMusicStop(void);
-
 typedef FPlatformSample* FCallApi_SoundSampleNewFromFile(const char* Path);
 typedef FPlatformSample* FCallApi_SoundSampleNewFromData(const uint8_t* Data, size_t Size);
 typedef void FCallApi_SoundSampleFree(FPlatformSample* Sample);
@@ -101,18 +99,14 @@ typedef bool FCallApi_SoundSampleIsPlaying(int Channel);
 typedef int FCallApi_SoundSampleChannelGet(void);
 
 typedef void FCallApi_InputPoll(void);
-
 typedef const FPlatformButton* FCallApi_InputKeyGet(FKeyId Id);
 typedef const FPlatformButton* FCallApi_InputButtonGet(const FPlatformController* Controller, FButtonId Id);
 typedef bool FCallApi_InputButtonPressGet(const FPlatformButton* Button);
-
 typedef const FPlatformAnalog* FCallApi_InputAnalogGet(const FPlatformController* Controller, FAnalogId Id);
 typedef int FCallApi_InputAnalogValueGet(const FPlatformAnalog* Analog);
-
 typedef FVecInt FCallApi_InputTouchCoordsGet(void);
 typedef FVecInt FCallApi_InputTouchDeltaGet(void);
 typedef bool FCallApi_InputTouchTapGet(void);
-
 typedef FPlatformController* FCallApi_InputControllerClaim(FCallControllerBind* Callback);
 typedef void FCallApi_InputControllerRelease(FPlatformController* Controller);
 
@@ -159,8 +153,6 @@ typedef struct FPlatformApi {
     FCallApi_ScreenToTexture* screenToTexture;
     FCallApi_ScreenClipSet* screenClipSet;
 
-    FCallApi_DrawSetColor* drawSetColor;
-    FCallApi_DrawSetBlend* drawSetBlend;
     FCallApi_DrawPixel* drawPixel;
     FCallApi_DrawLine* drawLine;
     FCallApi_DrawLineH* drawLineH;
@@ -169,6 +161,8 @@ typedef struct FPlatformApi {
     FCallApi_DrawRectangleFilled* drawRectangleFilled;
     FCallApi_DrawCircleOutline* drawCircleOutline;
     FCallApi_DrawCircleFilled* drawCircleFilled;
+    FCallApi_DrawSetColor* drawSetColor;
+    FCallApi_DrawSetBlend* drawSetBlend;
 
     FCallApi_TextureNew* textureNew;
     FCallApi_TextureDup* textureDup;
