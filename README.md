@@ -13,7 +13,6 @@ Faur builds native on Linux and cross-compiles for Web, Windows, and some embedd
 ```sh
 $ sudo apt install build-essential git python3 python3-pil
 $ sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
-
 $ git clone https://github.com/alxm/faur.git
 ```
 
@@ -21,18 +20,6 @@ $ git clone https://github.com/alxm/faur.git
 
 ```sh
 $ faur/bin/faur-new hello
-
-$ ls
-faur hello
-
-$ tree hello
-hello
-├── build
-│   └── make
-│       └── Makefile
-└── src
-    └── main.c
-
 $ cd hello/build/make
 $ make run FAUR_PATH=../../../faur
 ```
