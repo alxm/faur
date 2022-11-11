@@ -6,9 +6,7 @@ Features include software or accelerated 2D graphics, abstractions for inputs an
 
 Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices I like, including the GP2X handheld and a few Arduino compatibles. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
-## Install & Create New Project
-
-### Install on Debian-based Linux & Clone Repo
+## Install on Debian-based Linux
 
 ```sh
 $ sudo apt install build-essential git python3 python3-pil
@@ -16,7 +14,7 @@ $ sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
 $ git clone https://github.com/alxm/faur.git
 ```
 
-### Create New Project
+## Create New Project
 
 ```sh
 $ faur/bin/faur-new hello
