@@ -103,7 +103,8 @@ I started Faur by collecting my [GP2X games'](https://www.alxm.org/games/gamepar
 Target | Host | Toolchain | Dependencies | More Info
 --- | --- | --- | --- | ---
 ***Desktop***
-Linux | Linux | OS build tools | Debian: `libsdl2-dev` `libsdl2-mixer-dev` `libpng-dev`<br><br>Fedora: `SDL2-devel` `SDL2_mixer-devel` `libpng-devel` `libubsan`
+Linux (SDL 2) | Linux | OS build tools | Debian: `libsdl2-dev` `libsdl2-mixer-dev` `libpng-dev`<br><br>Fedora: `SDL2-devel` `SDL2_mixer-devel` `libpng-devel` `libubsan`
+Linux (SDL 1.2) | Linux | OS build tools | Debian: `libsdl1.2-dev` `libsdl-mixer1.2-dev` `libpng-dev`<br><br>Fedora: `sdl12-compat-devel` `SDL_mixer-devel` `libpng-devel` `libubsan`
 FreeBSD | FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on FreeBSD](https://www.alxm.org/notes/a2x-freebsd.html)
 Windows | Linux | MinGW-w64 | Debian: `mingw-w64` `libz-mingw-w64-dev` and local builds of `SDL2` `SDL2_mixer` `libpng`<br><br>Fedora: `mingw64-gcc` `mingw64-gcc-c++` `mingw64-SDL2` `mingw64-SDL2_mixer` `mingw64-libpng` `mingw64-zlib` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
 Web (Wasm) | Linux | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
