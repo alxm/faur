@@ -18,7 +18,7 @@
 #include "f_sample.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
 FSample* f_sample_new(const char* Path)
 {
     FSample* s = f_pool__alloc(F_POOL__SAMPLE);
@@ -48,4 +48,4 @@ void f_sample_free(FSample* Sample)
     f_platform_api__soundSampleFree(Sample->u.platform);
     f_pool_release(Sample);
 }
-#endif // !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#endif // F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT

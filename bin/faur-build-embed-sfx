@@ -87,14 +87,14 @@ def process_c(VarName, WavFile, SoundFormat):
 
 static const uint8_t f__sfx_buffer__{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {{F__GEN_BUFFER_DATA__{VarName}}};
 
-#if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
     static FPlatformSample* f__sfx_platform__{VarName};
 #endif
 
 static const FSample f__sfx_sample__{VarName} = {{
     .size = F__GEN_BUFFER_SIZE__{VarName},
     .buffer = f__sfx_buffer__{VarName},
-    #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+    #if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
         .u.platformIndirect = &f__sfx_platform__{VarName}
     #endif
 }};
