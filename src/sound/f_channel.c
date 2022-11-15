@@ -38,8 +38,8 @@ void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
     }
 
     #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
-        if(Sample->platform == NULL) {
-            ((FSample*)Sample)->platform =
+        if(Sample->size != 0 && *(Sample->u.platformIndirect) == NULL) {
+            *(Sample->u.platformIndirect) =
                 f_platform_api__soundSampleNewFromData(
                     Sample->buffer, Sample->size);
         }

@@ -26,7 +26,10 @@ struct FSample {
     unsigned size;
     const uint8_t* buffer;
     #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
-        FPlatformSample* platform;
+        union {
+            FPlatformSample* platform;
+            FPlatformSample** platformIndirect;
+        } u;
     #endif
 };
 
