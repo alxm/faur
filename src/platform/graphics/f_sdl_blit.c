@@ -32,18 +32,18 @@ typedef enum {
 
 typedef struct {
     SDL_Texture* sides[F_SIDE__NUM];
-} FTexture;
+} FTextureSDL;
 
 extern SDL_Renderer* f__sdlRenderer;
 
 FPlatformTextureScreen* f_platform_api_sdl__textureSpriteToScreen(FPlatformTexture* SpriteTexture)
 {
-    return ((FTexture*)SpriteTexture)->sides[F_SIDE__NORMAL];
+    return ((FTextureSDL*)SpriteTexture)->sides[F_SIDE__NORMAL];
 }
 
 FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels)
 {
-    FTexture* texture = f_mem_mallocz(sizeof(FTexture));
+    FTextureSDL* texture = f_mem_mallocz(sizeof(FTextureSDL));
 
     unsigned totalBufferLen = Pixels->bufferLen * Pixels->framesNum;
     unsigned totalBufferSize = Pixels->bufferSize * Pixels->framesNum;
@@ -120,8 +120,8 @@ FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels)
 
 FPlatformTexture* f_platform_api_sdl__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
-    const FTexture* texSrc = Texture;
-    FTexture* texDst = f_mem_mallocz(sizeof(FTexture));
+    const FTextureSDL* texSrc = Texture;
+    FTextureSDL* texDst = f_mem_mallocz(sizeof(FTextureSDL));
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, NULL) < 0) {
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
@@ -171,7 +171,7 @@ void f_platform_api_sdl__textureFree(FPlatformTexture* Texture)
         return;
     }
 
-    FTexture* texture = Texture;
+    FTextureSDL* texture = Texture;
 
     for(int s = F_SIDE__NUM; s--; ) {
         if(texture->sides[s]) {
@@ -201,7 +201,7 @@ void f_platform_api_sdl__textureBlitEx(const FPlatformTexture* Texture, const FP
     SDL_BlendMode blend =
         (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
 
-    const FTexture* texture = Texture;
+    const FTextureSDL* texture = Texture;
 
     if(f__color.fillBlit) {
         tex = texture->sides[F_SIDE__COLORMOD_FLAT];

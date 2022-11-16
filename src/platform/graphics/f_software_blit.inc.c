@@ -20,7 +20,7 @@
 #ifdef F__BLEND
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, NoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F__BLEND_SETUP;
 
@@ -60,7 +60,7 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, DoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F__BLEND_SETUP;
 
@@ -163,7 +163,7 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, NoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F_UNUSED(Texture);
 
@@ -191,7 +191,7 @@ static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, DoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F_UNUSED(Texture);
 
