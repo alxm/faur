@@ -406,12 +406,10 @@ FPlatformTexture* f_platform_api_software__textureNew(const FPixels* Pixels)
 
 FPlatformTexture* f_platform_api_software__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
-    F_UNUSED(Pixels);
-
     const FTextureSoft* texSrc = Texture;
-    FTextureSoft* texDst = f_mem_mallocz(
-                            sizeof(FTextureSoft)
-                                + Pixels->framesNum * sizeof(FSpriteWord*));
+    FTextureSoft* texDst =
+        f_mem_mallocz(sizeof(FTextureSoft)
+                        + (Pixels->framesNum - 1) * sizeof(FSpriteWord*));
 
     texDst->framesNum = texSrc->framesNum;
 
