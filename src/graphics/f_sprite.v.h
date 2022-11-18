@@ -24,7 +24,11 @@
 
 struct FSprite {
     FPixels pixels;
-    FPlatformTexture* texture;
+    union {
+        FPlatformTexture* texture; // dynamic sprites
+        const FPlatformTexture* textureConst; // const software sprites
+        FPlatformTexture** textureIndirect; // const accelerated sprites
+    } u;
 };
 
 #endif // F_INC_GRAPHICS_SPRITE_V_H

@@ -25,17 +25,17 @@
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
 #define F__LINE_SPACING 1
 
-static FFont* g_defaultFonts[F_FONT__ID_NUM];
+static const FFont* g_defaultFonts[F_FONT__ID_NUM];
 static FFontState g_state;
 static F_LISTINTR(g_stack, FFontState, listNode);
 static char g_buffer[512];
 
 static void f_font__init(void)
 {
-    g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__g_font_6x8;
+    g_defaultFonts[F_FONT__ID_BLOCK] = f_gfx__g_font_6x8;
 
     #if !F_CONFIG_TRAIT_LOW_MEM
-        g_defaultFonts[F_FONT__ID_KEYED] = (FFont*)f_gfx__g_font_keyed_6x8;
+        g_defaultFonts[F_FONT__ID_KEYED] = f_gfx__g_font_keyed_6x8;
     #endif
 
     f_font_reset();
@@ -43,10 +43,6 @@ static void f_font__init(void)
 
 static void f_font__uninit(void)
 {
-    for(int f = 0; f < F_FONT__ID_NUM; f++) {
-        f_font_free(g_defaultFonts[f]);
-    }
-
     f_listintr_apply(&g_stack, f_pool_release);
 }
 
