@@ -191,7 +191,7 @@ static const FSprite f__gfx_sprite__{var} = {{
         .bufferLen = {width} * {height},
         .bufferSize = {width} * {height} * sizeof(FColorPixel),
         .flags = F_PIXELS__CONST,
-        .buffer = (FColorPixel*)f__gfx_buffer__{var},
+        .u.bufferConst = f__gfx_buffer__{var},
     }},
     #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
         .u.textureConst = (const FPlatformTexture*)&f__gfx_texture__{var},

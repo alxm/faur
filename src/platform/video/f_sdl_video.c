@@ -476,7 +476,7 @@ void f_platform_api_sdl__screenShow(void)
                 (FColorPixel*)g_sdlScreen->pixels
                     + F_CONFIG_SCREEN_SIZE_WIDTH_HW
                         * F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
-            const FColorPixel* src = g_pixels.buffer;
+            const FColorPixel* src = g_pixels.u.buffer;
 
             for(int i = F_CONFIG_SCREEN_SIZE_HEIGHT_HW;
                 i--;
@@ -507,11 +507,11 @@ void f_platform_api_sdl__screenShow(void)
                     == g_sdlScreen->pitch) {
 
                     memcpy(g_sdlScreen->pixels,
-                           g_pixels.buffer,
+                           g_pixels.u.buffer,
                            g_pixels.bufferSize);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;
-                    const FColorPixel* src = g_pixels.buffer;
+                    const FColorPixel* src = g_pixels.u.buffer;
                     size_t rowSize =
                         (size_t)g_sdlScreen->w * sizeof(FColorPixel);
 
@@ -524,7 +524,7 @@ void f_platform_api_sdl__screenShow(void)
                 }
             } else {
                 FColorPixel* dst = g_sdlScreen->pixels;
-                const FColorPixel* src = g_pixels.buffer;
+                const FColorPixel* src = g_pixels.u.buffer;
                 int dstRowLen = g_sdlScreen->pitch / (int)sizeof(FColorPixel);
 
                 dst += (g_sdlScreen->h - (g_zoom * g_size.y))
@@ -602,7 +602,7 @@ void f_platform_api_sdl__screenShow(void)
             if(SDL_UpdateTexture(
                 g_sdlTexture,
                 NULL,
-                g_pixels.buffer,
+                g_pixels.u.buffer,
                 g_pixels.size.x * (int)sizeof(FColorPixel)) < 0) {
 
                 F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());

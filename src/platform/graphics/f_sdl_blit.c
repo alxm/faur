@@ -48,7 +48,7 @@ FPlatformTexture* f_platform_api_sdl__textureNew(const FPixels* Pixels)
     unsigned totalBufferLen = Pixels->bufferLen * Pixels->framesNum;
     unsigned totalBufferSize = Pixels->bufferSize * Pixels->framesNum;
 
-    const FColorPixel* original = f_pixels__bufferGetStart(Pixels, 0);
+    const FColorPixel* original = f_pixels__bufferGetStartConst(Pixels, 0);
     FColorPixel* buffer = f_mem_dup(original, totalBufferSize);
 
     for(int s = 0; s < F_SIDE__NUM; s++) {

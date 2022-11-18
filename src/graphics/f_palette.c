@@ -26,7 +26,8 @@ static FPalette* newPalette(const FPixels* Pixels)
 
     // First pixel sets the non-palette color to ignore; row 0 is reserved
     FColorPixel ignore = f_pixels__bufferGetValue(Pixels, 0, 0, 0);
-    const FColorPixel* palPixels = f_pixels__bufferGetFrom(Pixels, 0, 0, 1);
+    const FColorPixel* palPixels =
+        f_pixels__bufferGetFromConst(Pixels, 0, 0, 1);
 
     unsigned num = 0;
     int bufferLen = Pixels->size.x * (Pixels->size.y - 1);
@@ -46,7 +47,7 @@ static FPalette* newPalette(const FPixels* Pixels)
 
     p->size = num;
 
-    palPixels = f_pixels__bufferGetFrom(Pixels, 0, 0, 1);
+    palPixels = f_pixels__bufferGetFromConst(Pixels, 0, 0, 1);
 
     for(int i = bufferLen, color = 0; i--; ) {
         FColorPixel pixel = *palPixels++;

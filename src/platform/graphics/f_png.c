@@ -43,7 +43,7 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
     png_bytepp rows = png_get_rows(Png, Info);
 
     FPixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
-    FColorPixel* buffer = pixels->buffer;
+    FColorPixel* buffer = pixels->u.buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
@@ -266,7 +266,7 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStartConst(Pixels, Frame);
 
     for(unsigned y = 0; y < height; y++) {
         rows[y] = rowsData + y * width * COLOR_CHANNELS;

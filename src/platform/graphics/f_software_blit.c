@@ -326,7 +326,8 @@ void f_platform_software_blit__uninit(void)
 
 static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
 {
-    const FColorPixel* bufferStart = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* bufferStart =
+        f_pixels__bufferGetStartConst(Pixels, Frame);
     const FColorPixel* buffer = bufferStart;
     bool transparent = false;
 

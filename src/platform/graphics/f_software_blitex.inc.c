@@ -30,8 +30,8 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
 
     const FVecInt screenSize = f_screen_sizeGet();
     FColorPixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
-    const FColorPixel* const pixels = f_pixels__bufferGetFrom(
-                                        Pixels, Frame, 0, 0);
+    const FColorPixel* const pixels =
+        f_pixels__bufferGetFromConst(Pixels, Frame, 0, 0);
     const FVecInt size = Pixels->size;
 
     for(int scrY = TopY; scrY <= BottomY; scrY++) {

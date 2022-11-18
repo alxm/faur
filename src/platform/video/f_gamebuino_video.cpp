@@ -68,7 +68,7 @@ static FPixels g_lights = {
     F__NEOPIXELS_W * F__NEOPIXELS_H,
     F__NEOPIXELS_W * F__NEOPIXELS_H * sizeof(FColorPixel),
     0,
-    g_buffer,
+    {g_buffer},
 };
 #endif // !F_CONFIG_SYSTEM_GAMEBUINO
 

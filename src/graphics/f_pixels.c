@@ -45,11 +45,11 @@ void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, unsigned Fla
     if(F_FLAGS_TEST_ANY(Flags, F_PIXELS__ALLOC)) {
         Pixels->bufferLen = (unsigned)(W * H);
         Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(FColorPixel);
-        Pixels->buffer = f_mem_mallocz(Pixels->bufferSize * Frames);
+        Pixels->u.buffer = f_mem_mallocz(Pixels->bufferSize * Frames);
     } else {
         Pixels->bufferLen = 0;
         Pixels->bufferSize = 0;
-        Pixels->buffer = NULL;
+        Pixels->u.buffer = NULL;
     }
 }
 
@@ -60,7 +60,7 @@ void f_pixels__free(FPixels* Pixels)
     }
 
     if(F_FLAGS_TEST_ANY(Pixels->flags, F_PIXELS__ALLOC)) {
-        f_mem_free(Pixels->buffer);
+        f_mem_free(Pixels->u.buffer);
     }
 
     if(F_FLAGS_TEST_ANY(Pixels->flags, F_PIXELS__DYNAMIC)) {
@@ -78,21 +78,23 @@ void f_pixels__copy(FPixels* Dst, const FPixels* Src)
     }
 
     if(F_FLAGS_TEST_ANY(Dst->flags, F_PIXELS__ALLOC)) {
-        Dst->buffer = f_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
+        Dst->u.buffer =
+            f_mem_dup(Dst->u.buffer, Dst->bufferSize * Dst->framesNum);
     }
 }
 
 void f_pixels__copyFrame(const FPixels* Dst, unsigned DstFrame, const FPixels* Src, unsigned SrcFrame)
 {
     memcpy(f_pixels__bufferGetFrom(Dst, DstFrame, 0, 0),
-           f_pixels__bufferGetFrom(Src, SrcFrame, 0, 0),
+           f_pixels__bufferGetFromConst(Src, SrcFrame, 0, 0),
            Src->bufferSize);
 }
 
 void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, int SrcX, int SrcY)
 {
     FColorPixel* dst = f_pixels__bufferGetStart(Dst, DstFrame);
-    const FColorPixel* src = f_pixels__bufferGetFrom(SrcPixels, 0, SrcX, SrcY);
+    const FColorPixel* src =
+        f_pixels__bufferGetFromConst(SrcPixels, 0, SrcX, SrcY);
 
     for(int i = Dst->size.y; i--; ) {
         memcpy(dst, src, (unsigned)Dst->size.x * sizeof(FColorPixel));
@@ -106,7 +108,7 @@ void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H)
 {
     Pixels->size.x = W;
     Pixels->size.y = H;
-    Pixels->buffer = Buffer;
+    Pixels->u.buffer = Buffer;
     Pixels->bufferLen = (unsigned)(W * H);
     Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(FColorPixel);
     Pixels->framesNum = 1;
@@ -130,8 +132,8 @@ static int findNextVerticalEdge(const FPixels* Pixels, int StartX, int StartY, i
             *EdgeX = x - StartX;
 
             int len = 1;
-            FColorPixel* buffer = f_pixels__bufferGetFrom(
-                                    Pixels, 0, x, StartY + 1);
+            const FColorPixel* buffer =
+                f_pixels__bufferGetFromConst(Pixels, 0, x, StartY + 1);
 
             for(int y = Pixels->size.y - (StartY + 1); y--; ) {
                 if(*buffer != f_color__limit) {
@@ -158,8 +160,8 @@ static int findNextHorizontalEdge(const FPixels* Pixels, int StartX, int StartY,
             *EdgeY = y - StartY;
 
             int len = 1;
-            FColorPixel* buffer = f_pixels__bufferGetFrom(
-                                    Pixels, 0, StartX + 1, y);
+            const FColorPixel* buffer =
+                f_pixels__bufferGetFromConst(Pixels, 0, StartX + 1, y);
 
             for(int x = Pixels->size.x - (StartX + 1); x--; ) {
                 if(*buffer != f_color__limit) {

@@ -289,7 +289,7 @@ unsigned f_sprite_framesNumGet(const FSprite* Sprite)
 
 const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
 {
-    return f_pixels__bufferGetStart(&Sprite->pixels, Frame);
+    return f_pixels__bufferGetStartConst(&Sprite->pixels, Frame);
 }
 
 FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
