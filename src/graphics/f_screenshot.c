@@ -18,7 +18,7 @@
 #include "f_screenshot.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_PNG
+#if !F_CONFIG_TRAIT_LOW_MEM
 #define F__SCREENSHOTS_LIMIT 99999
 
 static bool g_isInit;
@@ -159,4 +159,4 @@ void f_screenshot_take(void)
 {
     takeScreenshot();
 }
-#endif // F_CONFIG_LIB_PNG
+#endif // !F_CONFIG_TRAIT_LOW_MEM

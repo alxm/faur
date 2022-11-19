@@ -65,13 +65,12 @@ static FPalette* newPalette(const FPixels* Pixels)
     return p;
 }
 
-#if F_CONFIG_LIB_PNG
-FPalette* f_palette_newFromPng(const char* Path)
+FPalette* f_palette_newFromImage(const char* Path)
 {
     FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
-        F__FATAL("f_color_paletteFromPng(%s): Cannot open file", Path);
+        F__FATAL("f_palette_newFromImage(%s): Cannot open file", Path);
     }
 
     FPalette* palette = newPalette(pixels);
@@ -80,7 +79,6 @@ FPalette* f_palette_newFromPng(const char* Path)
 
     return palette;
 }
-#endif
 
 FPalette* f_palette_newFromSprite(const FSprite* Sprite)
 {

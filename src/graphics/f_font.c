@@ -52,12 +52,10 @@ const FPack f_pack__font = {
     f_font__uninit,
 };
 
-#if F_CONFIG_LIB_PNG
-FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
+FFont* f_font_newFromImage(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
-    return f_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
+    return f_sprite_newFromImage(Path, X, Y, CharWidth, CharHeight);
 }
-#endif
 
 FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight)
 {
