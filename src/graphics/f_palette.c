@@ -65,12 +65,12 @@ static FPalette* newPalette(const FPixels* Pixels)
     return p;
 }
 
-FPalette* f_palette_newFromImage(const char* Path)
+FPalette* f_palette_newFromFile(const char* Path)
 {
     FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
-        F__FATAL("f_palette_newFromImage(%s): Cannot open file", Path);
+        F__FATAL("f_palette_newFromFile(%s): Cannot open file", Path);
     }
 
     FPalette* palette = newPalette(pixels);

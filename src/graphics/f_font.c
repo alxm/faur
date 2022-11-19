@@ -52,9 +52,9 @@ const FPack f_pack__font = {
     f_font__uninit,
 };
 
-FFont* f_font_newFromImage(const char* Path, int X, int Y, int CharWidth, int CharHeight)
+FFont* f_font_newFromFile(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
-    return f_sprite_newFromImage(Path, X, Y, CharWidth, CharHeight);
+    return f_sprite_newFromFile(Path, X, Y, CharWidth, CharHeight);
 }
 
 FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight)

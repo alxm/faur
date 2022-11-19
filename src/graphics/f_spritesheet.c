@@ -40,7 +40,7 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
             F__FATAL("f_spritesheet_new(%s): f_str_fmt failed", Path);
         }
 
-        FSprite* sheet = f_sprite_newFromImage(path, 0, 0, -1, -1);
+        FSprite* sheet = f_sprite_newFromFile(path, 0, 0, -1, -1);
         FVecInt fixedDim = {0, 0};
 
         F_LIST_ITERATE(f_block_blocksGet(b), const FBlock*, b) {

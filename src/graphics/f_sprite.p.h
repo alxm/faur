@@ -25,7 +25,7 @@ typedef struct FSprite FSprite;
 #include "../graphics/f_color.p.h"
 #include "../math/f_vec.p.h"
 
-extern FSprite* f_sprite_newFromImage(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
+extern FSprite* f_sprite_newFromFile(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed);
 extern FSprite* f_sprite_dup(const FSprite* Sprite);

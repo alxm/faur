@@ -97,12 +97,12 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
     return s;
 }
 
-FSprite* f_sprite_newFromImage(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
+FSprite* f_sprite_newFromFile(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
     FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
-        F__FATAL("f_sprite_newFromImage(%s): Cannot open file", Path);
+        F__FATAL("f_sprite_newFromFile(%s): Cannot open file", Path);
     }
 
     if(FrameWidth < 1 || FrameHeight < 1) {
