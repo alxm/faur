@@ -314,7 +314,7 @@ bool f_state__runStep(void)
             f_screen__tick();
             f_sound__tick();
 
-            #if !F_CONFIG_TRAIT_LOW_MEM
+            #if F_CONFIG_SCREEN_SCREENSHOTS_ENABLED
                 f_screenshot__tick();
             #endif
 
