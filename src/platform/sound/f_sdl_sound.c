@@ -224,7 +224,10 @@ void f_platform_api_sdl__soundSamplePlay(const FSample* Sample, int Channel, boo
         return;
     }
 
-    Mix_Chunk* chunk = (Mix_Chunk*)Sample->platform;
+    Mix_Chunk* chunk = Sample->size == 0
+                        ? (Mix_Chunk*)Sample->u.platform
+                        : *(Mix_Chunk**)Sample->u.platformIndirect;
+
     int loop = Loop ? -1 : 0;
 
     if(Mix_PlayChannel(Channel, chunk, loop) == -1) {

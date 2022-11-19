@@ -82,28 +82,24 @@ def process_c(VarName, WavFile, SoundFormat):
 //
 #include <faur.v.h>
 
-#ifndef F__GEN_SFX_CONST
-    #if F_CONFIG_SOUND_SAMPLE_PRE_INIT
-        #define F__GEN_SFX_CONST const
-    #else
-        #define F__GEN_SFX_CONST
-    #endif
-#endif
-
 #define F__GEN_BUFFER_SIZE__{VarName} {len(sfx_bytes)}
 #define F__GEN_BUFFER_DATA__{VarName} {format_bytes(sfx_bytes)}
 
 static const uint8_t f__sfx_buffer__{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {{F__GEN_BUFFER_DATA__{VarName}}};
 
-static F__GEN_SFX_CONST FSample f__sfx_sample__{VarName} = {{
-    F__GEN_BUFFER_SIZE__{VarName},
-    f__sfx_buffer__{VarName},
-    #if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
-        NULL,
+#if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
+    static FPlatformSample* f__sfx_platform__{VarName};
+#endif
+
+static const FSample f__sfx_sample__{VarName} = {{
+    .size = F__GEN_BUFFER_SIZE__{VarName},
+    .buffer = f__sfx_buffer__{VarName},
+    #if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
+        .u.platformIndirect = &f__sfx_platform__{VarName}
     #endif
 }};
 
-const FSample* const f_sfx_{VarName} = (const FSample*)&f__sfx_sample__{VarName};
+const FSample* const f_sfx_{VarName} = &f__sfx_sample__{VarName};
 """
 
     return content

@@ -152,13 +152,13 @@ def process_c(VarName, ImageFile, ColorKey, ScreenFormat):
         spans = spans_make(frame_pixels, frame_width, frame_height, ColorKey)
 
         span_buffers += """\
-static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
+    static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 """.format(var = VarName,
            num = frame_index,
            spans_data = ','.join([str(s) for s in spans]))
 
         span_vars += """
-        (FSpriteWord*)f__gfx_spans__{var}__{num},\
+            (FSpriteWord*)f__gfx_spans__{var}__{num},\
 """.format(var = VarName, num = frame_index)
 
     content = """\
@@ -167,46 +167,40 @@ static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 //
 #include <faur.v.h>
 
-#ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
-        #define F__GEN_GFX_CONST const
-    #else
-        #define F__GEN_GFX_CONST
-    #endif
-#endif
-
 static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffer}}};
 
 #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
 {span_buffers}
-static const struct {{
-    FSpriteWord framesNum;
-    FSpriteWord* spans[{frames_num}];
-}} f__gfx_texture__{var} = {{
-    {frames_num},
-    {{{span_vars}
-    }},
-}};
+    static const struct {{
+        FSpriteWord framesNum;
+        FSpriteWord* spans[{frames_num}];
+    }} f__gfx_texture__{var} = {{
+        {frames_num},
+        {{{span_vars}
+        }},
+    }};
+#else
+    static FPlatformTexture* f__gfx_texture__{var};
 #endif
 
-static F__GEN_GFX_CONST FSprite f__gfx_sprite__{var} = {{
-    {{
+static const FSprite f__gfx_sprite__{var} = {{
+    .pixels = {{
         .size = {{{width}, {height}}},
         .framesNum = {frames_num},
         .bufferLen = {width} * {height},
         .bufferSize = {width} * {height} * sizeof(FColorPixel),
         .flags = F_PIXELS__CONST,
-        .buffer = (FColorPixel*)f__gfx_buffer__{var},
+        .u.bufferConst = f__gfx_buffer__{var},
     }},
     #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
-        (FPlatformTexture*)&f__gfx_texture__{var},
+        .u.textureConst = (const FPlatformTexture*)&f__gfx_texture__{var},
     #else
-        NULL,
+        .u.textureIndirect = &f__gfx_texture__{var},
     #endif
 }};
 
-const FSprite* const f_gfx_{var} = (const FSprite*)&f__gfx_sprite__{var};
+const FSprite* const f_gfx_{var} = &f__gfx_sprite__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = VarName,
            width = frame_width,

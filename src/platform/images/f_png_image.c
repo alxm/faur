@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "f_png.v.h"
+#include "f_png_image.v.h"
 #include <faur.v.h>
 
 #if F_CONFIG_LIB_PNG
@@ -43,7 +43,7 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
     png_bytepp rows = png_get_rows(Png, Info);
 
     FPixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
-    FColorPixel* buffer = pixels->buffer;
+    FColorPixel* buffer = pixels->u.buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
@@ -197,7 +197,7 @@ cleanUp:
     return pixels;
 }
 
-FPixels* f_png__read(const char* Path)
+FPixels* f_platform_api_png__imageRead(const char* Path)
 {
     FPixels* pixels = NULL;
 
@@ -210,7 +210,7 @@ FPixels* f_png__read(const char* Path)
     return pixels;
 }
 
-void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
+void f_platform_api_png__imageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
     png_structp png = NULL;
     png_infop info = NULL;
@@ -249,7 +249,7 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        f_out__error("f_png__write(%s) failed", Path);
+        f_out__error("f_platform_api_png__imageWrite(%s) failed", Path);
 
         goto cleanUp;
     }
@@ -266,7 +266,7 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStartConst(Pixels, Frame);
 
     for(unsigned y = 0; y < height; y++) {
         rows[y] = rowsData + y * width * COLOR_CHANNELS;

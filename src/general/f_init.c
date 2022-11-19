@@ -29,7 +29,7 @@ static const FPack* g_packs[] = {
     &f_pack__align,
     &f_pack__color,
     &f_pack__fps,
-#if F_CONFIG_LIB_PNG
+#if F_CONFIG_SCREEN_SCREENSHOTS_ENABLED
     &f_pack__screenshot,
 #endif
     &f_pack__sound,

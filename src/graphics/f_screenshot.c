@@ -18,7 +18,7 @@
 #include "f_screenshot.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_PNG
+#if F_CONFIG_SCREEN_SCREENSHOTS_ENABLED
 #define F__SCREENSHOTS_LIMIT 99999
 
 static bool g_isInit;
@@ -52,7 +52,7 @@ static void takeScreenshot(void)
 
     f_platform_api__screenTextureSync();
 
-    f_png__write(
+    f_platform_api__imageWrite(
         path, f__screen.pixels, f__screen.frame, g_title, g_description);
 }
 
@@ -159,4 +159,4 @@ void f_screenshot_take(void)
 {
     takeScreenshot();
 }
-#endif // F_CONFIG_LIB_PNG
+#endif // F_CONFIG_SCREEN_SCREENSHOTS_ENABLED

@@ -191,8 +191,6 @@ static const FPlatformApi f__platform_api = {
         .drawCircleOutline = f_platform_api_software__drawCircleOutline,
         .drawCircleFilled = f_platform_api_software__drawCircleFilled,
     #elif F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SDL2
-        .drawSetColor = f_platform_api_sdl__drawSetColor,
-        .drawSetBlend = f_platform_api_sdl__drawSetBlend,
         .drawPixel = f_platform_api_sdl__drawPixel,
         .drawLine = f_platform_api_sdl__drawLine,
         .drawLineH = f_platform_api_sdl__drawLineH,
@@ -201,6 +199,8 @@ static const FPlatformApi f__platform_api = {
         .drawRectangleFilled = f_platform_api_sdl__drawRectangleFilled,
         .drawCircleOutline = f_platform_api_sdl__drawCircleOutline,
         .drawCircleFilled = f_platform_api_sdl__drawCircleFilled,
+        .drawSetColor = f_platform_api_sdl__drawSetColor,
+        .drawSetBlend = f_platform_api_sdl__drawSetBlend,
     #endif
 
     #if F_CONFIG_SCREEN_RENDER == F_SCREEN_RENDER_SOFTWARE
@@ -217,6 +217,11 @@ static const FPlatformApi f__platform_api = {
         .textureBlit = f_platform_api_sdl__textureBlit,
         .textureBlitEx = f_platform_api_sdl__textureBlitEx,
         .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
+    #endif
+
+    #if F_CONFIG_LIB_PNG
+        .imageRead = f_platform_api_png__imageRead,
+        .imageWrite = f_platform_api_png__imageWrite,
     #endif
 
     #if F_CONFIG_LIB_SDL
@@ -630,6 +635,24 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     }
 
     f__platform_api.textureBlitEx(Texture, Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
+}
+
+FPixels* f_platform_api__imageRead(const char* Path)
+{
+    if(f__platform_api.imageRead == NULL) {
+        return NULL;
+    }
+
+    return f__platform_api.imageRead(Path);
+}
+
+void f_platform_api__imageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
+{
+    if(f__platform_api.imageWrite == NULL) {
+        return;
+    }
+
+    f__platform_api.imageWrite(Path, Pixels, Frame, Title, Description);
 }
 
 bool f_platform_api__soundMuteGet(void)

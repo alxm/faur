@@ -24,7 +24,7 @@ typedef struct FSprite FFont;
 
 #include "../graphics/f_sprite.p.h"
 
-extern FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
+extern FFont* f_font_newFromFile(const char* Path, int X, int Y, int CharWidth, int CharHeight);
 extern FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight);
 extern void f_font_free(FFont* Font);
 

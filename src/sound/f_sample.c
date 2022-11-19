@@ -18,21 +18,21 @@
 #include "f_sample.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
 FSample* f_sample_new(const char* Path)
 {
     FSample* s = f_pool__alloc(F_POOL__SAMPLE);
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
-        s->platform = f_platform_api__soundSampleNewFromFile(Path);
+        s->u.platform = f_platform_api__soundSampleNewFromFile(Path);
     } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         const FEmbeddedFile* e = f_embed__fileGet(Path);
 
-        s->platform =
+        s->u.platform =
             f_platform_api__soundSampleNewFromData(e->buffer, e->size);
     }
 
-    if(s->platform == NULL) {
+    if(s->u.platform == NULL) {
         F__FATAL("f_sample_new(%s): Cannot open file", Path);
     }
 
@@ -45,12 +45,7 @@ void f_sample_free(FSample* Sample)
         return;
     }
 
-    f_platform_api__soundSampleFree(Sample->platform);
-
-    if(Sample->size == 0) {
-        f_pool_release(Sample);
-    } else {
-        Sample->platform = NULL;
-    }
+    f_platform_api__soundSampleFree(Sample->u.platform);
+    f_pool_release(Sample);
 }
-#endif // !F_CONFIG_SOUND_SAMPLE_PRE_INIT
+#endif // F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT

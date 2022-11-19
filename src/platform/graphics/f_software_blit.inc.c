@@ -20,14 +20,14 @@
 #ifdef F__BLEND
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, NoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F__BLEND_SETUP;
 
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
 #ifdef F__PIXEL_USE_SRC
-    const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* src = f_pixels__bufferGetStartConst(Pixels, Frame);
 #endif
     const FSpriteWord* spans = Texture->spans[Frame];
 
@@ -60,7 +60,7 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, DoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F__BLEND_SETUP;
 
@@ -78,8 +78,8 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
 
     FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
 #ifdef F__PIXEL_USE_SRC
-    const FColorPixel* startSrc = f_pixels__bufferGetFrom(
-                                    Pixels, Frame, xClipLeft, yClipUp);
+    const FColorPixel* startSrc =
+        f_pixels__bufferGetFromConst(Pixels, Frame, xClipLeft, yClipUp);
 #endif
 
     const FSpriteWord* spans = Texture->spans[Frame];
@@ -163,7 +163,7 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, NoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F_UNUSED(Texture);
 
@@ -172,7 +172,7 @@ static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* 
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
 #ifdef F__PIXEL_USE_SRC
-    const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* src = f_pixels__bufferGetStartConst(Pixels, Frame);
 #else
     F_UNUSED(Frame);
 #endif
@@ -191,7 +191,7 @@ static void F__FUNC_NAME(Block, NoClip)(const FTexture* Texture, const FPixels* 
     }
 }
 
-static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, DoClip)(const FTextureSoft* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     F_UNUSED(Texture);
 
@@ -211,8 +211,8 @@ static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* 
 
     FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
 #ifdef F__PIXEL_USE_SRC
-    const FColorPixel* startSrc = f_pixels__bufferGetFrom(
-                                    Pixels, Frame, xClipLeft, yClipUp);
+    const FColorPixel* startSrc =
+        f_pixels__bufferGetFromConst(Pixels, Frame, xClipLeft, yClipUp);
 #else
     F_UNUSED(Frame);
 #endif

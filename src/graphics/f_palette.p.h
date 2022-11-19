@@ -24,7 +24,7 @@ typedef struct FPalette FPalette;
 
 #include "../graphics/f_sprite.p.h"
 
-extern FPalette* f_palette_newFromPng(const char* Path);
+extern FPalette* f_palette_newFromFile(const char* Path);
 extern FPalette* f_palette_newFromSprite(const FSprite* Sprite);
 extern void f_palette_free(FPalette* Palette);
 

@@ -136,10 +136,6 @@ void f_screen_clear(void)
 
 void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
-    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-        F__FATAL("f_screen_push: Const sprite");
-    }
-
     f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
 
     f__screen.pixels = &Sprite->pixels;
@@ -147,7 +143,8 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
     f__screen.frame = Frame;
 
     f__screen.yOffset = (int)f__screen.frame * f__screen.pixels->size.y;
-    f__screen.texture = f_platform_api__textureSpriteToScreen(Sprite->texture);
+    f__screen.texture =
+        f_platform_api__textureSpriteToScreen(Sprite->u.texture);
 
     f_platform_api__screenTextureSet(f__screen.texture);
 
@@ -162,8 +159,9 @@ void f_screen_pop(void)
         F__FATAL("f_screen_pop: Stack is empty");
     }
 
-    f_platform_api__textureUpdate(
-        f__screen.sprite->texture, &f__screen.sprite->pixels, f__screen.frame);
+    f_platform_api__textureUpdate(f__screen.sprite->u.texture,
+                                  &f__screen.sprite->pixels,
+                                  f__screen.frame);
 
     f__screen = *screen;
     f_pool_release(screen);
@@ -246,5 +244,5 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
     #endif
 
     f_platform_api__screenToTexture(
-        f_platform_api__textureSpriteToScreen(Sprite->texture), Frame);
+        f_platform_api__textureSpriteToScreen(Sprite->u.texture), Frame);
 }
