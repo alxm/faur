@@ -18,10 +18,20 @@
 #include "f_sprite.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
 static inline bool isConstSprite(const FSprite* Sprite)
 {
     return F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST);
 }
+
+static inline void lazyInitTextures(const FSprite* Sprite)
+{
+    if(isConstSprite(Sprite) && *(Sprite->u.textureIndirect) == NULL) {
+        *(Sprite->u.textureIndirect) =
+            f_platform_api__textureNew(&Sprite->pixels);
+    }
+}
+#endif
 
 const FPlatformTexture* getSpriteTexture(const FSprite* Sprite)
 {
@@ -32,16 +42,6 @@ const FPlatformTexture* getSpriteTexture(const FSprite* Sprite)
                 ? *(Sprite->u.textureIndirect) : Sprite->u.textureConst;
     #endif
 }
-
-#if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
-static inline void lazyInitTextures(const FSprite* Sprite)
-{
-    if(isConstSprite(Sprite) && *(Sprite->u.textureIndirect) == NULL) {
-        *(Sprite->u.textureIndirect) =
-            f_platform_api__textureNew(&Sprite->pixels);
-    }
-}
-#endif
 
 static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
