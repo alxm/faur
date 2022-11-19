@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "f_png.v.h"
+#include "f_png_image.v.h"
 #include <faur.v.h>
 
 #if F_CONFIG_LIB_PNG
