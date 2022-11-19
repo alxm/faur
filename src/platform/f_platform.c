@@ -219,6 +219,11 @@ static const FPlatformApi f__platform_api = {
         .textureSpriteToScreen = f_platform_api_sdl__textureSpriteToScreen,
     #endif
 
+    #if F_CONFIG_LIB_PNG
+        .imageRead = f_platform_api_png__imageRead,
+        .imageWrite = f_platform_api_png__imageWrite,
+    #endif
+
     #if F_CONFIG_LIB_SDL
         .soundMuteGet = f_platform_api_sdl__soundMuteGet,
         .soundMuteFlip = f_platform_api_sdl__soundMuteFlip,
@@ -630,6 +635,24 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     }
 
     f__platform_api.textureBlitEx(Texture, Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
+}
+
+FPixels* f_platform_api__imageRead(const char* Path)
+{
+    if(f__platform_api.imageRead == NULL) {
+        return NULL;
+    }
+
+    return f__platform_api.imageRead(Path);
+}
+
+void f_platform_api__imageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
+{
+    if(f__platform_api.imageWrite == NULL) {
+        return;
+    }
+
+    f__platform_api.imageWrite(Path, Pixels, Frame, Title, Description);
 }
 
 bool f_platform_api__soundMuteGet(void)

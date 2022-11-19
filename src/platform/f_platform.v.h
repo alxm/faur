@@ -82,6 +82,9 @@ typedef void FCallApi_TextureBlit(const FPlatformTexture* Texture, const FPixels
 typedef void FCallApi_TextureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
 typedef FPlatformTextureScreen* FCallApi_TextureSpriteToScreen(FPlatformTexture* SpriteTexture);
 
+typedef FPixels* FCallApi_ImageRead(const char* Path);
+typedef void FCallApi_ImageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
+
 typedef bool FCallApi_SoundMuteGet(void);
 typedef void FCallApi_SoundMuteFlip(void);
 typedef int FCallApi_SoundVolumeGetMax(void);
@@ -171,6 +174,9 @@ typedef struct FPlatformApi {
     FCallApi_TextureBlit* textureBlit;
     FCallApi_TextureBlitEx* textureBlitEx;
     FCallApi_TextureSpriteToScreen* textureSpriteToScreen;
+
+    FCallApi_ImageRead* imageRead;
+    FCallApi_ImageWrite* imageWrite;
 
     FCallApi_SoundMuteGet* soundMuteGet;
     FCallApi_SoundMuteFlip* soundMuteFlip;
@@ -270,6 +276,9 @@ extern void f_platform_api__textureFree(FPlatformTexture* Texture);
 extern void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame);
 extern void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
 extern void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
+
+extern FPixels* f_platform_api__imageRead(const char* Path);
+extern void f_platform_api__imageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
 
 extern bool f_platform_api__soundMuteGet(void);
 extern void f_platform_api__soundMuteFlip(void);

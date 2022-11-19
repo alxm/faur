@@ -52,7 +52,7 @@ static void takeScreenshot(void)
 
     f_platform_api__screenTextureSync();
 
-    f_png__write(
+    f_platform_api__imageWrite(
         path, f__screen.pixels, f__screen.frame, g_title, g_description);
 }
 

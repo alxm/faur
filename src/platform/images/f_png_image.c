@@ -197,7 +197,7 @@ cleanUp:
     return pixels;
 }
 
-FPixels* f_png__read(const char* Path)
+FPixels* f_platform_api_png__imageRead(const char* Path)
 {
     FPixels* pixels = NULL;
 
@@ -210,7 +210,7 @@ FPixels* f_png__read(const char* Path)
     return pixels;
 }
 
-void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
+void f_platform_api_png__imageWrite(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
     png_structp png = NULL;
     png_infop info = NULL;
@@ -249,7 +249,7 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        f_out__error("f_png__write(%s) failed", Path);
+        f_out__error("f_platform_api_png__imageWrite(%s) failed", Path);
 
         goto cleanUp;
     }

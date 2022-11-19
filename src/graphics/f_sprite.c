@@ -100,7 +100,7 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
 #if F_CONFIG_LIB_PNG
 FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    FPixels* pixels = f_png__read(Path);
+    FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
         F__FATAL("f_sprite_newFromPng(%s): Cannot open file", Path);

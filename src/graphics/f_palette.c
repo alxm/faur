@@ -68,7 +68,7 @@ static FPalette* newPalette(const FPixels* Pixels)
 #if F_CONFIG_LIB_PNG
 FPalette* f_palette_newFromPng(const char* Path)
 {
-    FPixels* pixels = f_png__read(Path);
+    FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
         F__FATAL("f_color_paletteFromPng(%s): Cannot open file", Path);

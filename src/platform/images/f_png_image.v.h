@@ -21,9 +21,8 @@
 #include "f_png_image.p.h"
 
 #include "../f_platform.v.h"
-#include "../../graphics/f_pixels.v.h"
 
-extern FPixels* f_png__read(const char* Path);
-extern void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
+extern FCallApi_ImageRead f_platform_api_png__imageRead;
+extern FCallApi_ImageWrite f_platform_api_png__imageWrite;
 
 #endif // F_INC_PLATFORM_IMAGES_PNG_IMAGE_V_H
