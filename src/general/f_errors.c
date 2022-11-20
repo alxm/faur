@@ -71,7 +71,7 @@ void F_FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    f_out__errorv(Format, args);
+    f_out_errorv(Format, args);
 
     va_end(args);
 

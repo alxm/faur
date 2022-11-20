@@ -206,6 +206,19 @@ void f_out_error(const char* Format, ...)
     #endif
 }
 
+void f_out_errorv(const char* Format, va_list Args)
+{
+    outWorker(F_OUT__SOURCE_APP,
+              F_OUT__TYPE_ERROR,
+              F_CONFIG_OUT_STDERR,
+              Format,
+              Args);
+
+    #if F_CONFIG_DEBUG
+        f_out__backtrace(F_OUT__SOURCE_APP);
+    #endif
+}
+
 void f_out__backtrace(FOutSource Source)
 {
     #ifdef __GLIBC__
