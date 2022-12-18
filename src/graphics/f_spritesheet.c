@@ -20,6 +20,8 @@
 
 FSpriteSheet* f_spritesheet_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FBlock* root = f_block_new(Path);
     FPath* rootPath = f_path_new(Path);
     const char* rootDirs = f_path_getDirs(rootPath);
@@ -78,5 +80,8 @@ void f_spritesheet_free(FSpriteSheet* Sheet)
 
 const FSprite* f_spritesheet_get(const FSpriteSheet* Sheet, const char* Id)
 {
+    F__CHECK(Sheet != NULL);
+    F__CHECK(Id != NULL);
+
     return f_hash_get(Sheet, Id);
 }

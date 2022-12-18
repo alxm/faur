@@ -47,12 +47,8 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
 {
     FVecInt gridDim;
 
-    if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
-        F__FATAL("FrameWidth = %d, FrameHeight = %d", FrameWidth, FrameHeight);
-    }
-
-    // If start is at origin and frame size is negative, use entire image
-    if(X == 0 && Y == 0 && FrameWidth < 0) {
+    // If frame size is negative, use entire image
+    if(FrameWidth < 0) {
         gridDim = Pixels->size;
     } else {
         gridDim = f_pixels__boundsFind(Pixels, X, Y);
@@ -99,6 +95,8 @@ static FSprite* spriteNew(const FPixels* Pixels, int X, int Y, int FrameWidth, i
 
 FSprite* f_sprite_newFromFile(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
+    F__CHECK(Path != NULL);
+
     FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
@@ -120,6 +118,11 @@ FSprite* f_sprite_newFromFile(const char* Path, int X, int Y, int FrameWidth, in
         }
     }
 
+    F__CHECK(FrameWidth >= -1);
+    F__CHECK(FrameHeight >= -1);
+    F__CHECK(((FrameWidth < 0) ^ (FrameHeight < 0)) == 0);
+    F__CHECK(((FrameWidth < 0) && (X == 0 && Y == 0)) || (FrameWidth >= 0));
+
     FSprite* s = spriteNew(pixels, X, Y, FrameWidth, FrameHeight);
 
     f_pixels__free(pixels);
@@ -129,14 +132,18 @@ FSprite* f_sprite_newFromFile(const char* Path, int X, int Y, int FrameWidth, in
 
 FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
 {
+    F__CHECK(Sheet != NULL);
+    F__CHECK(FrameWidth >= 0);
+    F__CHECK(FrameHeight >= 0);
+
     return spriteNew(&Sheet->pixels, X, Y, FrameWidth, FrameHeight);
 }
 
 FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
 {
-    if(Frames == 0) {
-        F__FATAL("f_sprite_newBlank: 0 frames");
-    }
+    F__CHECK(Width > 0);
+    F__CHECK(Height > 0);
+    F__CHECK(Frames > 0);
 
     FSprite* s = f_pool__alloc(F_POOL__SPRITE);
 
@@ -155,6 +162,8 @@ FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
 
 FSprite* f_sprite_dup(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     #if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
         lazyInitTextures(Sprite);
     #endif
@@ -182,6 +191,9 @@ void f_sprite_free(FSprite* Sprite)
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Frame < Sprite->pixels.framesNum);
+
     #if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
         lazyInitTextures(Sprite);
     #endif
@@ -208,6 +220,10 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Frame < Sprite->pixels.framesNum);
+    F__CHECK(Scale > 0);
+
     #if F_CONFIG_SCREEN_RENDER != F_SCREEN_RENDER_SOFTWARE
         lazyInitTextures(Sprite);
     #endif
@@ -230,6 +246,8 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
 
 void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
+    F__CHECK(Sprite != NULL);
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
@@ -246,6 +264,11 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
 
 void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(OldColors != NULL);
+    F__CHECK(NewColors != NULL);
+    F__CHECK(NumColors > 0);
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
@@ -267,30 +290,44 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
 
 FVecInt f_sprite_sizeGet(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     return Sprite->pixels.size;
 }
 
 int f_sprite_sizeGetWidth(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     return Sprite->pixels.size.x;
 }
 
 int f_sprite_sizeGetHeight(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     return Sprite->pixels.size.y;
 }
 
 unsigned f_sprite_framesNumGet(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     return Sprite->pixels.framesNum;
 }
 
 const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Frame < Sprite->pixels.framesNum);
+
     return f_pixels__bufferGetStartConst(&Sprite->pixels, Frame);
 }
 
 FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Frame < Sprite->pixels.framesNum);
+
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }

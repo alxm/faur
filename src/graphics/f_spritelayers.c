@@ -70,6 +70,8 @@ void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites)
 
 void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites)
 {
+    F__CHECK(Layers != NULL);
+
     f_listintr_clearEx(Layers,
                        FreeSprites
                         ? (FCallFree*)layer_freeEx : (FCallFree*)layer_free);
@@ -77,12 +79,22 @@ void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites)
 
 void f_spritelayers_add(FSpriteLayers* Layers, FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
+    F__CHECK(Layers != NULL);
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Blend > F_COLOR_BLEND_INVALID && Blend < F_COLOR_BLEND_NUM);
+    F__CHECK(Red >= 0 && Red <= 255);
+    F__CHECK(Green >= 0 && Green <= 255);
+    F__CHECK(Blue >= 0 && Blue <= 255);
+    F__CHECK(Alpha >= 0 && Alpha <= F_COLOR_ALPHA_MAX);
+
     f_listintr_addLast(
         Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
 void f_spritelayers_blit(const FSpriteLayers* Layers, unsigned Frame, int X, int Y)
 {
+    F__CHECK(Layers != NULL);
+
     f_color_push();
 
     F_LISTINTR_ITERATE(Layers, const FSpriteLayersLayer*, l) {

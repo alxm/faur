@@ -62,9 +62,7 @@ int f_main_argsNumGet(void)
 
 const char* f_main_argsGet(int ArgNum)
 {
-    if(ArgNum >= g_argsNum) {
-        F__FATAL("f_main_argsGet(%d): Only %d args total", ArgNum, g_argsNum);
-    }
+    F__CHECK(ArgNum < g_argsNum);
 
     return g_args[ArgNum];
 }

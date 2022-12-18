@@ -20,6 +20,8 @@
 
 FMusic* f_music_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
@@ -31,18 +33,16 @@ FMusic* f_music_new(const char* Path)
 
 void f_music_free(FMusic* Music)
 {
-    if(Music) {
-        f_platform_api__soundMusicFree(Music);
-    }
+    f_platform_api__soundMusicFree(Music);
 }
 
 void f_music_play(FMusic* Music)
 {
-    if(f_platform_api__soundMuteGet()) {
-        return;
-    }
+    F__CHECK(Music != NULL);
 
-    f_platform_api__soundMusicPlay(Music);
+    if(!f_platform_api__soundMuteGet()) {
+        f_platform_api__soundMusicPlay(Music);
+    }
 }
 
 void f_music_stop(void)

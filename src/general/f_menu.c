@@ -20,6 +20,11 @@
 
 FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel)
 {
+    F__CHECK(Next != NULL);
+    F__CHECK(Back != NULL);
+    F__CHECK(Select != NULL);
+    F__CHECK(Cancel != NULL);
+
     FMenu* m = f_mem_malloc(sizeof(FMenu));
 
     m->state = F_MENU_STATE_RUNNING;
@@ -60,6 +65,8 @@ void f_menu_freeEx(FMenu* Menu, FCallFree* ItemFree)
 
 void f_menu_soundSet(FMenu* Menu, FSample* Accept, FSample* Cancel, FSample* Browse)
 {
+    F__CHECK(Menu != NULL);
+
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
     Menu->soundBrowse = Browse;
@@ -67,6 +74,9 @@ void f_menu_soundSet(FMenu* Menu, FSample* Accept, FSample* Cancel, FSample* Bro
 
 void f_menu_itemAdd(FMenu* Menu, void* Item)
 {
+    F__CHECK(Menu != NULL);
+    F__CHECK(Item != NULL);
+
     f_list_addLast(Menu->items, Item);
 
     if(Menu->selectedItem == NULL) {
@@ -76,6 +86,8 @@ void f_menu_itemAdd(FMenu* Menu, void* Item)
 
 void f_menu_tick(FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     if(f_list_sizeIsEmpty(Menu->items) || Menu->state != F_MENU_STATE_RUNNING) {
         return;
     }
@@ -135,36 +147,51 @@ void f_menu_tick(FMenu* Menu)
 
 FMenuState f_menu_stateGet(const FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     return Menu->state;
 }
 
 const FList* f_menu_itemsGet(const FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     return Menu->items;
 }
 
 bool f_menu_itemIsSelected(const FMenu* Menu, const void* Item)
 {
+    F__CHECK(Menu != NULL);
+    F__CHECK(Item != NULL);
+
     return Item == Menu->selectedItem;
 }
 
 unsigned f_menu_selectedIndexGet(const FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     return Menu->selectedIndex;
 }
 
 void* f_menu_itemGetSelected(const FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     return Menu->selectedItem;
 }
 
 void f_menu_keepRunning(FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     Menu->state = F_MENU_STATE_RUNNING;
 }
 
 void f_menu_reset(FMenu* Menu)
 {
+    F__CHECK(Menu != NULL);
+
     Menu->state = F_MENU_STATE_RUNNING;
     Menu->selectedItem = f_list_getFirst(Menu->items);
     Menu->selectedIndex = 0;

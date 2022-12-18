@@ -103,6 +103,8 @@ void f_fade_startScreens(unsigned DurationMs)
 
 void f_fade_startCustom(FCallFade* Callback, unsigned DurationMs)
 {
+    F__CHECK(Callback != NULL);
+
     newFade(F__FADE_CUSTOM, DurationMs);
 
     g_fade.u.callback = Callback;

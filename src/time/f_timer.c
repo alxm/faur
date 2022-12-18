@@ -83,6 +83,8 @@ FTimer* f_timer_new(unsigned PeriodMs, bool Repeat)
 
 FTimer* f_timer_dup(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     FTimer* t = f_pool__dup(F_POOL__TIMER, Timer);
 
     f_listintr_nodeInit(&t->listNode);
@@ -108,21 +110,29 @@ void f_timer_free(FTimer* Timer)
 
 unsigned f_timer_elapsedGet(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return Timer->diff;
 }
 
 FFixu f_timer_elapsedGetFraction(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return Timer->period > 0 ? f_fixu_div(Timer->diff, Timer->period) : 0;
 }
 
 unsigned f_timer_periodGet(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return Timer->periodMs;
 }
 
 void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs)
 {
+    F__CHECK(Timer != NULL);
+
     Timer->periodMs = PeriodMs;
     Timer->period = f_time_msToTicks(PeriodMs);
     Timer->diff = 0;
@@ -136,6 +146,8 @@ void f_timer_periodSet(FTimer* Timer, unsigned PeriodMs)
 
 void f_timer_runStart(FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     Timer->start = f_fixu_fromInt(f_fps_ticksGet());
     Timer->diff = 0;
     Timer->expiredCount = 0;
@@ -156,6 +168,8 @@ void f_timer_runStart(FTimer* Timer)
 
 void f_timer_runStop(FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     Timer->diff = 0;
 
     F_FLAGS_CLEAR(Timer->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
@@ -165,21 +179,29 @@ void f_timer_runStop(FTimer* Timer)
 
 bool f_timer_runGet(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING);
 }
 
 bool f_timer_expiredGet(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__EXPIRED);
 }
 
 unsigned f_timer_expiredGetCount(const FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     return Timer->expiredCount;
 }
 
 void f_timer_expiredClear(FTimer* Timer)
 {
+    F__CHECK(Timer != NULL);
+
     if(Timer->period > 0) {
         F_FLAGS_CLEAR(Timer->flags, F_TIMER__EXPIRED);
     }

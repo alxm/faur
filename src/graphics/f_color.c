@@ -83,6 +83,8 @@ void f_color_reset(void)
 
 void f_color_paletteSet(const FPalette* Palette)
 {
+    F__CHECK(Palette != NULL);
+
     f__color.palette = Palette;
 }
 
@@ -119,6 +121,8 @@ static void optimizeAlphaBlending(void)
 
 void f_color_blendSet(FColorBlend Blend)
 {
+    F__CHECK(Blend > F_COLOR_BLEND_INVALID && Blend < F_COLOR_BLEND_NUM);
+
     f__color.blend = Blend;
 
     #if F__OPTIMIZE_ALPHA
@@ -139,7 +143,9 @@ void f_color_blendSet(FColorBlend Blend)
 
 void f_color_alphaSet(int Alpha)
 {
-    f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
+    F__CHECK(Alpha >= 0 && Alpha <= F_COLOR_ALPHA_MAX);
+
+    f__color.alpha = Alpha;
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
@@ -148,17 +154,20 @@ void f_color_alphaSet(int Alpha)
     f_platform_api__drawSetColor();
 }
 
-static void setRgb(int Red, int Green, int Blue)
+static inline void setRgb(int Red, int Green, int Blue)
 {
-    f__color.rgb.r = (unsigned)Red & 0xff;
-    f__color.rgb.g = (unsigned)Green & 0xff;
-    f__color.rgb.b = (unsigned)Blue & 0xff;
-
+    f__color.rgb.r = Red;
+    f__color.rgb.g = Green;
+    f__color.rgb.b = Blue;
     f__color.pixel = f_color_pixelFromRgb3(Red, Green, Blue);
 }
 
 void f_color_colorSetRgb(int Red, int Green, int Blue)
 {
+    F__CHECK(Red >= 0 && Red <= 255);
+    F__CHECK(Green >= 0 && Green <= 255);
+    F__CHECK(Blue >= 0 && Blue <= 255);
+
     setRgb(Red, Green, Blue);
 
     f_platform_api__drawSetColor();
@@ -166,9 +175,13 @@ void f_color_colorSetRgb(int Red, int Green, int Blue)
 
 void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 {
-    setRgb(Red, Green, Blue);
+    F__CHECK(Red >= 0 && Red <= 255);
+    F__CHECK(Green >= 0 && Green <= 255);
+    F__CHECK(Blue >= 0 && Blue <= 255);
+    F__CHECK(Alpha >= 0 && Alpha <= F_COLOR_ALPHA_MAX);
 
-    f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
+    setRgb(Red, Green, Blue);
+    f__color.alpha = Alpha;
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
@@ -197,16 +210,14 @@ void f_color_colorSetPixel(FColorPixel Pixel)
 
 void f_color_colorSetIndex(unsigned ColorIndex)
 {
-    if(f__color.palette == NULL) {
-        F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
-    }
+    F__CHECK(f__color.palette != NULL);
 
     f_color_colorSetPixel(f_palette_getPixel(f__color.palette, ColorIndex));
 }
 
 void f_color__colorSetInternal(FColorPaletteInternal ColorIndex)
 {
-    f_color_colorSetPixel(f_palette_getPixel(g_palette, ColorIndex));
+    f_color_colorSetPixel(f_palette_getPixel(g_palette, (unsigned)ColorIndex));
 }
 
 void f_color_fillBlitSet(bool Fill)

@@ -48,6 +48,9 @@ void f_draw_linev(int X, int Y1, int Y2)
 
 void f_draw_rectangle(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     if(f__color.fillDraw) {
         f_platform_api__drawRectangleFilled(X, Y, Width, Height);
     } else {
@@ -57,6 +60,8 @@ void f_draw_rectangle(int X, int Y, int Width, int Height)
 
 void f_draw_circle(int X, int Y, int Radius)
 {
+    F__CHECK(Radius >= 0);
+
     if(f__color.fillDraw) {
         f_platform_api__drawCircleFilled(X, Y, Radius);
     } else {

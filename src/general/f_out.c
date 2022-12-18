@@ -162,6 +162,8 @@ void f_out__state(const char* Format, ...)
 
 void f_out_info(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -176,6 +178,8 @@ void f_out_info(const char* Format, ...)
 
 void f_out_warning(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -190,6 +194,8 @@ void f_out_warning(const char* Format, ...)
 
 void f_out_error(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -208,6 +214,8 @@ void f_out_error(const char* Format, ...)
 
 void f_out_errorv(const char* Format, va_list Args)
 {
+    F__CHECK(Format != NULL);
+
     outWorker(F_OUT__SOURCE_APP,
               F_OUT__TYPE_ERROR,
               F_CONFIG_OUT_STDERR,

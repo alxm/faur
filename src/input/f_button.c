@@ -120,6 +120,8 @@ FButton* f_button_new(void)
 
 FButton* f_button_dup(const FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     FButton* b = f_mem_dup(Button, sizeof(FButton));
 
     f_listintr_addLast(&g_buttons, b);
@@ -155,6 +157,9 @@ void f_button_free(FButton* Button)
 
 void f_button_bindKey(FButton* Button, FKeyId Id)
 {
+    F__CHECK(Button != NULL);
+    F__CHECK(Id > F_KEY_INVALID && Id < F_KEY_NUM);
+
     #if F_CONFIG_TRAIT_KEYBOARD
         const FPlatformButton* k = f_platform_api__inputKeyGet(Id);
 
@@ -167,14 +172,14 @@ void f_button_bindKey(FButton* Button, FKeyId Id)
         }
 
         f_list_addLast(Button->platformInputs, (FPlatformButton*)k);
-    #else
-        F_UNUSED(Button);
-        F_UNUSED(Id);
     #endif
 }
 
 void f_button_bindButton(FButton* Button, const FController* Controller, FButtonId Id)
 {
+    F__CHECK(Button != NULL);
+    F__CHECK(Id > F_BUTTON_INVALID && Id < F_BUTTON_NUM);
+
     const FPlatformButton* b = f_platform_api__inputButtonGet(Controller, Id);
 
     if(b == NULL) {
@@ -190,12 +195,17 @@ void f_button_bindButton(FButton* Button, const FController* Controller, FButton
 
 void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonId Id, ...)
 {
+    F__CHECK(Button != NULL);
+    F__CHECK(Id > F_BUTTON_INVALID && Id < F_BUTTON_NUM);
+
     va_list args;
     va_start(args, Id);
 
     FList* combo = f_list_new();
 
-    for(int i = Id; i != F_BUTTON_INVALID; i = va_arg(args, int)) {
+    for(int i = Id; i > F_BUTTON_INVALID; i = va_arg(args, int)) {
+        F__CHECK(i < F_BUTTON_NUM);
+
         const FPlatformButton* b =
             f_platform_api__inputButtonGet(Controller, i);
 
@@ -215,22 +225,30 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
 
 bool f_button_isWorking(const FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     return !f_list_sizeIsEmpty(Button->platformInputs)
         || !f_listintr_sizeIsEmpty(&Button->combos);
 }
 
 const char* f_button_nameGet(const FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     return Button->name;
 }
 
 bool f_button_pressGet(const FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     return Button->pressed;
 }
 
 bool f_button_pressGetOnce(FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     bool pressed = f_button_pressGet(Button);
 
     if(pressed) {
@@ -242,6 +260,8 @@ bool f_button_pressGetOnce(FButton* Button)
 
 void f_button_pressSetRepeat(FButton* Button, unsigned RepeatMs)
 {
+    F__CHECK(Button != NULL);
+
     if(Button->autoRepeat == NULL) {
         Button->autoRepeat = f_timer_new(RepeatMs, true);
     } else {
@@ -252,6 +272,8 @@ void f_button_pressSetRepeat(FButton* Button, unsigned RepeatMs)
 
 void f_button_pressClear(FButton* Button)
 {
+    F__CHECK(Button != NULL);
+
     Button->waitForRelease = true;
     Button->pressed = false;
 }

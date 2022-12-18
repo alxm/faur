@@ -27,6 +27,10 @@ static inline bool strFmtv(char* Buffer, size_t Size, bool OverflowOk, const cha
 
 bool f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
 {
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -39,11 +43,17 @@ bool f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, .
 
 bool f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+    F__CHECK(Format != NULL);
+
     return strFmtv(Buffer, Size, OverflowOk, Format, Args);
 }
 
 char* f_str_merge(const char* String1, ...)
 {
+    F__CHECK(String1 != NULL);
+
     va_list args;
     size_t size = 0;
 
@@ -86,6 +96,8 @@ char* f_str_dup(const char* String)
 
 char* f_str_trim(const char* String)
 {
+    F__CHECK(String != NULL);
+
     int start = 0;
     int end = (int)strlen(String) - 1;
 
@@ -102,6 +114,10 @@ char* f_str_trim(const char* String)
 
 char* f_str_subGetRange(const char* String, int Start, int End)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Start >= 0);
+    F__CHECK(Start <= End);
+
     size_t len = (size_t)(End - Start);
     char* str = f_mem_malloc(len + 1);
 
@@ -113,17 +129,25 @@ char* f_str_subGetRange(const char* String, int Start, int End)
 
 char* f_str_subGetPrefix(const char* String, int Length)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Length >= 0);
+
     return f_str_subGetRange(String, 0, Length);
 }
 
 char* f_str_subGetSuffix(const char* String, int Length)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Length >= 0);
+
     int sLen = (int)strlen(String);
     return f_str_subGetRange(String, sLen - Length, sLen);
 }
 
 int f_str_indexGetFirst(const char* String, char Character)
 {
+    F__CHECK(String != NULL);
+
     for(int i = 0; String[i] != '\0'; i++) {
         if(String[i] == Character) {
             return i;
@@ -135,6 +159,8 @@ int f_str_indexGetFirst(const char* String, char Character)
 
 int f_str_indexGetLast(const char* String, char Character)
 {
+    F__CHECK(String != NULL);
+
     for(int i = (int)strlen(String); i--; ) {
         if(String[i] == Character) {
             return i;
@@ -146,6 +172,9 @@ int f_str_indexGetLast(const char* String, char Character)
 
 bool f_str_startsWith(const char* String, const char* Prefix)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Prefix != NULL);
+
     while(*String != '\0' && *Prefix != '\0') {
         if(*String++ != *Prefix++) {
             return false;
@@ -157,6 +186,9 @@ bool f_str_startsWith(const char* String, const char* Prefix)
 
 bool f_str_endsWith(const char* String, const char* Suffix)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Suffix != NULL);
+
     const size_t str_len = strlen(String);
     const size_t suf_len = strlen(Suffix);
 
@@ -169,6 +201,8 @@ bool f_str_endsWith(const char* String, const char* Suffix)
 
 char* f_str_prefixGetToFirst(const char* String, char Marker)
 {
+    F__CHECK(String != NULL);
+
     const int index = f_str_indexGetFirst(String, Marker);
 
     if(index == -1) {
@@ -180,6 +214,8 @@ char* f_str_prefixGetToFirst(const char* String, char Marker)
 
 char* f_str_prefixGetToLast(const char* String, char Marker)
 {
+    F__CHECK(String != NULL);
+
     const int index = f_str_indexGetLast(String, Marker);
 
     if(index == -1) {
@@ -191,6 +227,8 @@ char* f_str_prefixGetToLast(const char* String, char Marker)
 
 char* f_str_suffixGetFromFirst(const char* String, char Marker)
 {
+    F__CHECK(String != NULL);
+
     const int start = f_str_indexGetFirst(String, Marker) + 1;
     int end = start;
 
@@ -207,6 +245,8 @@ char* f_str_suffixGetFromFirst(const char* String, char Marker)
 
 char* f_str_suffixGetFromLast(const char* String, char Marker)
 {
+    F__CHECK(String != NULL);
+
     const int index = f_str_indexGetLast(String, Marker);
 
     if(index == -1) {
@@ -218,6 +258,9 @@ char* f_str_suffixGetFromLast(const char* String, char Marker)
 
 FList* f_str_split(const char* String, const char* Delimiters)
 {
+    F__CHECK(String != NULL);
+    F__CHECK(Delimiters != NULL);
+
     FList* strings = f_list_new();
 
     const char* str = String;

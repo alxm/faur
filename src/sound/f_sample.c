@@ -21,6 +21,8 @@
 #if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
 FSample* f_sample_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FSample* s = f_pool__alloc(F_POOL__SAMPLE);
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {

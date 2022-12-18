@@ -20,6 +20,13 @@
 
 #include "../general/f_system_includes.h"
 
+#define F_CHECK(Condition) \
+    if(!(Condition)) \
+        F_FATAL( \
+            "%s: Failed check `%s`", \
+            __func__, \
+            #Condition )
+
 extern void F_FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_GENERAL_ERRORS_P_H

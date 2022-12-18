@@ -36,10 +36,14 @@ const FPack f_pack__random = {
 
 void f_random_generatorSet(FCallRandomPrng* Rand, FCallRandomPrngSeed* Srand)
 {
+    F__CHECK(Rand != NULL);
+
     g_rand = Rand;
     g_srand = Srand;
 
-    #if !F_CONFIG_TRAIT_NO_SEEDING
+    #if F_CONFIG_TRAIT_NO_SEEDING
+        f_random_seedSet(0);
+    #else
         f_random_seedSet((unsigned)time(NULL));
     #endif
 }
@@ -67,50 +71,45 @@ void f_random_seedSet(unsigned Seed)
 
 int f_random_int(int Max)
 {
-    if(Max <= 0) {
-        F__FATAL("f_random_int(%d): Invalid arg", Max);
-    }
+    F__CHECK(Max > 0);
 
     return g_rand() % Max;
 }
 
 unsigned f_random_intu(unsigned Max)
 {
-    if(Max == 0) {
-        F__FATAL("f_random_intu(0): Invalid arg");
-    }
+    F__CHECK(Max > 0);
 
     return (unsigned)g_rand() % Max;
 }
 
 int f_random_range(int Min, int Max)
 {
-    if(Min >= Max) {
-        F__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
-    }
+    F__CHECK((Max - Min) > 0);
 
     return Min + (g_rand() % (Max - Min));
 }
 
 unsigned f_random_rangeu(unsigned Min, unsigned Max)
 {
+    F__CHECK((Max - Min) > 0);
+
     return Min + ((unsigned)g_rand() % (Max - Min));
 }
 
 bool f_random_chance(int Something, int OutOf)
 {
-    if(Something > OutOf) {
-        F__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
-    }
+    F__CHECK(Something >= 0);
+    F__CHECK(OutOf > 0);
+    F__CHECK(Something <= OutOf);
 
     return f_random_int(OutOf) < Something;
 }
 
 bool f_random_chanceu(unsigned Something, unsigned OutOf)
 {
-    if(Something > OutOf) {
-        F__FATAL("f_random_chanceu(%d, %d): Invalid args", Something, OutOf);
-    }
+    F__CHECK(OutOf > 0);
+    F__CHECK(Something <= OutOf);
 
     return f_random_intu(OutOf) < Something;
 }

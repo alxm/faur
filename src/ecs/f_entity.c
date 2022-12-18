@@ -298,6 +298,8 @@ void f_entity__freeEx(FEntity* Entity)
 
 void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 {
+    F__CHECK(Entity != NULL);
+
     if(DebugOn) {
         F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
     } else {
@@ -311,16 +313,22 @@ void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 
 const char* f_entity_idGet(const FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     return Entity->id;
 }
 
 FEntity* f_entity_parentGet(const FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     return Entity->parent;
 }
 
 void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
+    F__CHECK(Entity != NULL);
+
     #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_parentSet(%s, %s)",
@@ -353,6 +361,9 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 
 bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
 {
+    F__CHECK(Child != NULL);
+    F__CHECK(PotentialParent != NULL);
+
     for(FEntity* p = Child->parent; p != NULL; p = p->parent) {
         if(p == PotentialParent) {
             return true;
@@ -364,6 +375,8 @@ bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
 
 void f_entity_refInc(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         F__FATAL("f_entity_refInc(%s): Entity is removed", Entity->id);
     }
@@ -386,6 +399,8 @@ void f_entity_refInc(FEntity* Entity)
 
 void f_entity_refDec(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(f_entity__ignoreRefDec) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only FEntity API that may be called by
@@ -415,11 +430,15 @@ void f_entity_refDec(FEntity* Entity)
 
 bool f_entity_removedGet(const FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
 }
 
 void f_entity_removedSet(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
             f_out__warning(
@@ -441,12 +460,16 @@ void f_entity_removedSet(FEntity* Entity)
 
 bool f_entity_activeGet(const FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)
         || Entity->lastActive == f_fps_ticksGet();
 }
 
 void f_entity_activeSet(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(Entity->muteCount > 0
         || F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
 
@@ -478,6 +501,8 @@ void f_entity_activeSet(FEntity* Entity)
 
 void f_entity_activeSetRemove(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
@@ -489,6 +514,8 @@ void f_entity_activeSetRemove(FEntity* Entity)
 
 void f_entity_activeSetPermanent(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     #if F_CONFIG_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
@@ -502,6 +529,9 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 {
+    F__CHECK(Entity != NULL);
+    F__CHECK(Component != NULL);
+
     if(!listIsIn(Entity, F_LIST__NEW)) {
         F__FATAL("f_entity_componentAdd(%s, %s): Too late",
                  Entity->id,
@@ -527,11 +557,17 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 
 bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)
 {
+    F__CHECK(Entity != NULL);
+    F__CHECK(Component != NULL);
+
     return Entity->componentsTable[Component->bitId] != NULL;
 }
 
 void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
 {
+    F__CHECK(Entity != NULL);
+    F__CHECK(Component != NULL);
+
     FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
     return instance ? instance->buffer : NULL;
@@ -539,6 +575,9 @@ void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
 
 void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
 {
+    F__CHECK(Entity != NULL);
+    F__CHECK(Component != NULL);
+
     FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
     if(instance == NULL) {
@@ -552,11 +591,15 @@ void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
 
 bool f_entity_muteGet(const FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     return Entity->muteCount > 0;
 }
 
 void f_entity_muteInc(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
             f_out__warning(
@@ -586,6 +629,8 @@ void f_entity_muteInc(FEntity* Entity)
 
 void f_entity_muteDec(FEntity* Entity)
 {
+    F__CHECK(Entity != NULL);
+
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
             f_out__warning(

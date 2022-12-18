@@ -67,6 +67,8 @@ static FPalette* newPalette(const FPixels* Pixels)
 
 FPalette* f_palette_newFromFile(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FPixels* pixels = f_platform_api__imageRead(Path);
 
     if(pixels == NULL) {
@@ -82,6 +84,8 @@ FPalette* f_palette_newFromFile(const char* Path)
 
 FPalette* f_palette_newFromSprite(const FSprite* Sprite)
 {
+    F__CHECK(Sprite != NULL);
+
     return newPalette(&Sprite->pixels);
 }
 
@@ -92,23 +96,23 @@ void f_palette_free(FPalette* Palette)
 
 FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 {
-    if(Index >= Palette->size) {
-        F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
-    }
+    F__CHECK(Palette != NULL);
+    F__CHECK(Index < Palette->size);
 
     return Palette->entries[Index].pixel;
 }
 
 FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index)
 {
-    if(Index >= Palette->size) {
-        F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
-    }
+    F__CHECK(Palette != NULL);
+    F__CHECK(Index < Palette->size);
 
     return Palette->entries[Index].rgb;
 }
 
 unsigned f_palette_sizeGet(const FPalette* Palette)
 {
+    F__CHECK(Palette != NULL);
+
     return Palette->size;
 }

@@ -34,6 +34,8 @@ static FList* dirEmbeddedOpen(FPath* Path)
 
 FDir* f_dir_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     if(!f_path_exists(Path, F_PATH_DIR) && !f_platform_api__dirCreate(Path)) {
         F__FATAL("f_dir_new(%s): Cannot create dir", Path);
     }
@@ -73,15 +75,21 @@ void f_dir_free(FDir* Dir)
 
 const FPath* f_dir_pathGet(const FDir* Dir)
 {
+    F__CHECK(Dir != NULL);
+
     return Dir->path;
 }
 
 const FList* f_dir_entriesGet(const FDir* Dir)
 {
+    F__CHECK(Dir != NULL);
+
     return Dir->files;
 }
 
 unsigned f_dir_entriesGetNum(const FDir* Dir)
 {
+    F__CHECK(Dir != NULL);
+
     return f_list_sizeGet(Dir->files);
 }

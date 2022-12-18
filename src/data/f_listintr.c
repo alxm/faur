@@ -32,6 +32,8 @@ static inline void* nodeToItem(const FListIntr* List, const FListIntrNode* Node)
 
 void f_listintr_init(FListIntr* List, size_t NodeOffset)
 {
+    F__CHECK(List != NULL);
+
     List->root.prev = &List->root;
     List->root.next = &List->root;
 
@@ -40,11 +42,15 @@ void f_listintr_init(FListIntr* List, size_t NodeOffset)
 
 void f_listintr_clear(FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     f_listintr_clearEx(List, NULL);
 }
 
 void f_listintr_clearEx(FListIntr* List, FCallFree* Free)
 {
+    F__CHECK(List != NULL);
+
     if(Free) {
         for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
             n1 != &List->root;
@@ -60,6 +66,9 @@ void f_listintr_clearEx(FListIntr* List, FCallFree* Free)
 
 void f_listintr_addFirst(FListIntr* List, void* Item)
 {
+    F__CHECK(List != NULL);
+    F__CHECK(Item != NULL);
+
     FListIntrNode* rootNode = &List->root;
     FListIntrNode* itemNode = itemToNode(List, Item);
 
@@ -72,6 +81,9 @@ void f_listintr_addFirst(FListIntr* List, void* Item)
 
 void f_listintr_addLast(FListIntr* List, void* Item)
 {
+    F__CHECK(List != NULL);
+    F__CHECK(Item != NULL);
+
     FListIntrNode* rootNode = &List->root;
     FListIntrNode* itemNode = itemToNode(List, Item);
 
@@ -84,6 +96,8 @@ void f_listintr_addLast(FListIntr* List, void* Item)
 
 void* f_listintr_getFirst(const FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     FListIntrNode* first = List->root.next;
 
     if(first == &List->root) {
@@ -95,6 +109,8 @@ void* f_listintr_getFirst(const FListIntr* List)
 
 void* f_listintr_getLast(const FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     FListIntrNode* last = List->root.prev;
 
     if(last == &List->root) {
@@ -106,6 +122,8 @@ void* f_listintr_getLast(const FListIntr* List)
 
 void* f_listintr_removeFirst(FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     FListIntrNode* first = List->root.next;
 
     if(first == &List->root) {
@@ -119,11 +137,16 @@ void* f_listintr_removeFirst(FListIntr* List)
 
 void f_listintr_removeItem(FListIntr* List, void* Item)
 {
+    F__CHECK(List != NULL);
+    F__CHECK(Item != NULL);
+
     f_listintr_removeNode(itemToNode(List, Item));
 }
 
 void f_listintr_removeNode(FListIntrNode* Node)
 {
+    F__CHECK(Node != NULL);
+
     if(Node->next == Node) {
         return;
     }
@@ -137,11 +160,16 @@ void f_listintr_removeNode(FListIntrNode* Node)
 
 bool f_listintr_sizeIsEmpty(const FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     return List->root.next == &List->root;
 }
 
 void f_listintr_apply(const FListIntr* List, FCallFree* Apply)
 {
+    F__CHECK(List != NULL);
+    F__CHECK(Apply != NULL);
+
     for(FListIntrNode *n1 = List->root.next, *n2 = n1->next;
         n1 != &List->root;
         n1 = n2, n2 = n2->next) {
@@ -152,17 +180,23 @@ void f_listintr_apply(const FListIntr* List, FCallFree* Apply)
 
 void f_listintr_nodeInit(FListIntrNode* Node)
 {
+    F__CHECK(Node != NULL);
+
     Node->prev = Node;
     Node->next = Node;
 }
 
 bool f_listintr_nodeIsLinked(const FListIntrNode* Node)
 {
+    F__CHECK(Node != NULL);
+
     return Node->next != Node;
 }
 
 F__ListIntrIt f__listintrit_new(const FListIntr* List)
 {
+    F__CHECK(List != NULL);
+
     return (F__ListIntrIt){List, List->root.next, UINT_MAX};
 }
 

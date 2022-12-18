@@ -84,6 +84,8 @@ static void read_padding(FBlobReader* Reader)
 
 FBlob* f_blob_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {

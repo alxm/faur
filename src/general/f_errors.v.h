@@ -20,6 +20,13 @@
 
 #include "f_errors.p.h"
 
+#define F__CHECK(Condition) \
+    if(!(Condition)) \
+        F__FATAL( \
+            "%s: Failed check `%s`", \
+            __func__, \
+            #Condition )
+
 extern void F__FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_GENERAL_ERRORS_V_H

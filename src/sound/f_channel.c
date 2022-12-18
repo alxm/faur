@@ -25,6 +25,9 @@ int f_channel_new(void)
 
 void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
 {
+    F__CHECK(Channel == F_CHANNEL_ANY || Channel >= 0);
+    F__CHECK(Sample != NULL);
+
     if(f_platform_api__soundMuteGet()) {
         return;
     }
@@ -53,10 +56,14 @@ void f_channel_playStart(int Channel, const FSample* Sample, unsigned Flags)
 
 void f_channel_playStop(int Channel)
 {
+    F__CHECK(Channel == F_CHANNEL_ANY || Channel >= 0);
+
     f_platform_api__soundSampleStop(Channel);
 }
 
 bool f_channel_playGet(int Channel)
 {
+    F__CHECK(Channel == F_CHANNEL_ANY || Channel >= 0);
+
     return f_platform_api__soundSampleIsPlaying(Channel);
 }

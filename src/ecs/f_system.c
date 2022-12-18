@@ -57,6 +57,8 @@ void f_system__uninit(void)
 
 void f_system_run(const FSystem* System)
 {
+    F__CHECK(System != NULL);
+
     if(System->compare) {
         f_list_sort(System->entities, (FCallListCompare*)System->compare);
     }

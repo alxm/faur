@@ -63,6 +63,8 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
 
 const void* f_component_dataGet(const void* ComponentBuffer)
 {
+    F__CHECK(ComponentBuffer != NULL);
+
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
     if(instance->entity->templ == NULL) {
@@ -76,6 +78,8 @@ const void* f_component_dataGet(const void* ComponentBuffer)
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)
 {
+    F__CHECK(ComponentBuffer != NULL);
+
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 

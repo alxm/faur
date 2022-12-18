@@ -70,6 +70,7 @@ struct FColorRgb {
     int r, g, b;
 };
 
+#include "../general/f_errors.p.h"
 #include "../graphics/f_palette.p.h"
 #include "../graphics/f_screen.p.h"
 
@@ -134,10 +135,14 @@ static inline FColorPixel f__color_flipEndianness(FColorPixel Pixel)
 
 static inline FColorPixel f_color_pixelFromRgb3(int Red, int Green, int Blue)
 {
+    F_CHECK(Red >= 0 && Red <= 255);
+    F_CHECK(Green >= 0 && Green <= 255);
+    F_CHECK(Blue >= 0 && Blue <= 255);
+
     FColorPixel p = (FColorPixel)
-        (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
-         ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
-         ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
+        (((Red >> F__PX_PACK_R) << F__PX_SHIFT_R) |
+         ((Green >> F__PX_PACK_G) << F__PX_SHIFT_G) |
+         ((Blue >> F__PX_PACK_B) << F__PX_SHIFT_B));
 
     #if F_CONFIG_SCREEN_FORMAT & F__C_ENDIAN
         p = f__color_flipEndianness(p);
@@ -148,6 +153,10 @@ static inline FColorPixel f_color_pixelFromRgb3(int Red, int Green, int Blue)
 
 static inline FColorPixel f_color_pixelFromRgb(FColorRgb Rgb)
 {
+    F_CHECK(Rgb.r >= 0 && Rgb.r <= 255);
+    F_CHECK(Rgb.g >= 0 && Rgb.g <= 255);
+    F_CHECK(Rgb.b >= 0 && Rgb.b <= 255);
+
     return f_color_pixelFromRgb3(Rgb.r, Rgb.g, Rgb.b);
 }
 
@@ -158,8 +167,9 @@ static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
     #elif F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_ARGB_8888
         return (FColorPixel)(Hexcode & 0xffffff);
     #else
-        return f_color_pixelFromRgb3(
-                (int)(Hexcode >> 16), (int)(Hexcode >> 8), (int)(Hexcode));
+        return f_color_pixelFromRgb3((int)((Hexcode >> 16) & 0xff),
+                                     (int)((Hexcode >> 8)  & 0xff),
+                                     (int)((Hexcode)       & 0xff));
     #endif
 }
 
