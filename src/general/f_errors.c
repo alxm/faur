@@ -18,62 +18,60 @@
 #include "f_errors.v.h"
 #include <faur.v.h>
 
-F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source)
+F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source, const char* Format, va_list Args)
 {
     f_out__backtrace(Source);
 
-    #if F_CONFIG_DEBUG_FATAL_SPIN
+    f_color_reset();
+    f_draw_fill();
+
+    f_font_reset();
+    f_font_lineWrapSet(f_screen_sizeGetWidth());
+    f_font_printv(Format, Args);
+
+    f_screen__draw();
+
+    #if F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SEGFAULT
+        *(volatile int*)(NULL) = 0;
+    #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SPIN
         while(true);
-    #else
-        #if F_CONFIG_OUT_CONSOLE_ENABLED
-            if(f_console__isInitialized()) {
-                f_console_showSet(true);
-                f_console__draw();
-                f_screen__draw();
-            }
-        #endif
-
-        #if F_CONFIG_DEBUG_FATAL_WAIT
-            while(true) {
-                printf("Waiting to attach debugger: PID %d\n", getpid());
-                f_time_msSpin(1000);
-            }
-        #elif !F_CONFIG_TRAIT_DESKTOP
-            #if F_CONFIG_OUT_CONSOLE_ENABLED
-                if(f_console__isInitialized()) {
-                    f_out__info("Exiting in 10s");
-                    f_console__draw();
-                    f_screen__draw();
-                    f_time_msWait(10 * 1000);
-                }
-            #endif
-        #endif
-
-        f_platform_api__customExit(EXIT_FAILURE);
-        exit(EXIT_FAILURE);
+    #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_WAIT
+        while(true) {
+            printf("Waiting to attach debugger: PID %d\n", getpid());
+            f_time_msSpin(1000);
+        }
     #endif
+
+    f_time_msWait(10 * 1000);
+
+    f_platform_api__customExit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
 }
 
 void F__FATAL(const char* Format, ...)
 {
     va_list args;
+
     va_start(args, Format);
-
     f_out__errorv(Format, args);
-
     va_end(args);
 
-    handleFatal(F_OUT__SOURCE_FAUR);
+    va_start(args, Format);
+    handleFatal(F_OUT__SOURCE_FAUR, Format, args);
+    va_end(args);
 }
 
 void F_FATAL(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
+
     va_start(args, Format);
-
     f_out_errorv(Format, args);
-
     va_end(args);
 
-    handleFatal(F_OUT__SOURCE_APP);
+    va_start(args, Format);
+    handleFatal(F_OUT__SOURCE_APP, Format, args);
+    va_end(args);
 }

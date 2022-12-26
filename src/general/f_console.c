@@ -266,11 +266,6 @@ void f_console_showSet(bool Show)
     g_show = Show;
 }
 
-bool f_console__isInitialized(void)
-{
-    return g_state == F_CONSOLE__STATE_FULL;
-}
-
 void f_console__write(FOutSource Source, FOutType Type, const char* Text)
 {
     if(g_state == F_CONSOLE__STATE_INVALID) {

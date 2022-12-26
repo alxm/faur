@@ -20,6 +20,11 @@
 
 #include "f_errors.p.h"
 
+#define F_DEBUG_FATAL_DEFAULT 0
+#define F_DEBUG_FATAL_SEGFAULT 1
+#define F_DEBUG_FATAL_SPIN 2
+#define F_DEBUG_FATAL_WAIT 3
+
 #define F__CHECK(Condition) \
     if(!(Condition)) \
         F__FATAL( \
