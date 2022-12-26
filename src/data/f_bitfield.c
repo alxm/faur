@@ -36,6 +36,10 @@ FBitfield* f_bitfield_new(unsigned NumBits)
 
 void f_bitfield_free(FBitfield* Bitfield)
 {
+    if(Bitfield == NULL) {
+        return;
+    }
+
     f_mem_free(Bitfield);
 }
 

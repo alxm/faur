@@ -55,6 +55,10 @@ FList* f_list_new(void)
 
 void f_list_free(FList* List)
 {
+    if(List == NULL) {
+        return;
+    }
+
     f_list_freeEx(List, NULL);
 }
 

@@ -120,6 +120,10 @@ FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString)
 
 void f_hash_free(FHash* Hash)
 {
+    if(Hash == NULL) {
+        return;
+    }
+
     f_hash_freeEx(Hash, NULL);
 }
 

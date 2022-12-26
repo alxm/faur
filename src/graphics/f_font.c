@@ -74,6 +74,10 @@ FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, i
 
 void f_font_free(FFont* Font)
 {
+    if(Font == NULL) {
+        return;
+    }
+
     f_sprite_free(Font);
 }
 

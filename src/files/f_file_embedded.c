@@ -30,6 +30,10 @@ FFileEmbedded* f_file_embedded__new(const FPath* Path)
 
 void f_file_embedded__free(FFileEmbedded* File)
 {
+    if(File == NULL) {
+        return;
+    }
+
     f_mem_free(File);
 }
 

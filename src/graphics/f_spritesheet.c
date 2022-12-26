@@ -75,6 +75,10 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
 
 void f_spritesheet_free(FSpriteSheet* Sheet)
 {
+    if(Sheet == NULL) {
+        return;
+    }
+
     f_hash_freeEx(Sheet, (FCallFree*)f_sprite_free);
 }
 
