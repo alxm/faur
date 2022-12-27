@@ -30,13 +30,13 @@
         Current = Next, Next = Next->next)
 
 const FList f__list_empty = {
-    {
-        NULL,
-        (FList*)&f__list_empty,
-        (FListNode*)&f__list_empty.sentinel,
-        (FListNode*)&f__list_empty.sentinel,
+    .sentinel = {
+        .content = NULL,
+        .list = (FList*)&f__list_empty,
+        .next = (FListNode*)&f__list_empty.sentinel,
+        .prev = (FListNode*)&f__list_empty.sentinel,
     },
-    0,
+    .items = 0,
 };
 
 FList* f_list_new(void)
