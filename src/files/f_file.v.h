@@ -28,7 +28,7 @@ typedef enum {
     F_FILE__OFFSET_NUM
 } FFileOffset;
 
-#include "../files/f_file_embedded.v.h"
+#include "../files/f_embed.v.h"
 #include "../platform/f_platform.v.h"
 
 struct FFile {

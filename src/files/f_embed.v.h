@@ -22,7 +22,9 @@
 
 typedef struct FEmbeddedDir FEmbeddedDir;
 typedef struct FEmbeddedFile FEmbeddedFile;
+typedef struct FFileEmbedded FFileEmbedded;
 
+#include "../files/f_file.v.h"
 #include "../files/f_path.v.h"
 #include "../general/f_init.v.h"
 
@@ -36,6 +38,11 @@ struct FEmbeddedFile {
     const char* path;
     size_t size;
     const uint8_t* buffer;
+};
+
+struct FFileEmbedded {
+    const FEmbeddedFile* data;
+    size_t index;
 };
 
 extern const FPack f_pack__embed;
@@ -52,5 +59,15 @@ extern void f_embed__fileFree(FEmbeddedFile* File);
 extern const FEmbeddedFile* f_embed__fileGet(const char* Path);
 
 extern bool f_embed__stat(const char* Path, FPathInfo* Info);
+
+extern FFileEmbedded* f_file_embedded__new(const FPath* Path);
+extern void f_file_embedded__free(FFileEmbedded* File);
+
+extern bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin);
+extern bool f_file_embedded__read(FFileEmbedded* File, void* Buffer, size_t Size);
+extern int f_file_embedded__readChar(FFileEmbedded* File);
+extern int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char);
+
+extern bool f_file_embedded__bufferRead(const char* Path, void* Buffer, size_t Size);
 
 #endif // F_INC_FILES_EMBED_V_H

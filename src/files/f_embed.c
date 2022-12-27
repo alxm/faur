@@ -149,3 +149,104 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
 
     return false;
 }
+
+FFileEmbedded* f_file_embedded__new(const FPath* Path)
+{
+    FFileEmbedded* f = f_mem_malloc(sizeof(FFileEmbedded));
+
+    f->data = f_embed__fileGet(f_path_getFull(Path));
+    f->index = 0;
+
+    return f;
+}
+
+void f_file_embedded__free(FFileEmbedded* File)
+{
+    if(File == NULL) {
+        return;
+    }
+
+    f_mem_free(File);
+}
+
+bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin)
+{
+    bool ret = false;
+    size_t off = (size_t)Offset;
+
+    switch(Origin) {
+        case F_FILE__OFFSET_START: {
+            if(Offset >= 0 && off <= File->data->size) {
+                File->index = off;
+                ret = true;
+            }
+        } break;
+
+        case F_FILE__OFFSET_CURRENT: {
+            if((Offset >= 0 && File->index + off <= File->data->size)
+                || (Offset < 0 && (size_t)-Offset <= File->index)) {
+
+                File->index += off;
+                ret = true;
+            }
+        } break;
+
+        case F_FILE__OFFSET_END: {
+            if(Offset <= 0 && (size_t)-Offset <= File->data->size) {
+                File->index = File->data->size + off;
+                ret = true;
+            }
+        } break;
+
+        default: break;
+    }
+
+    return ret;
+}
+
+bool f_file_embedded__read(FFileEmbedded* File, void* Buffer, size_t Size)
+{
+    size_t len = f_math_minz(Size, File->data->size - File->index);
+
+    memcpy(Buffer, File->data->buffer + File->index, len);
+    File->index += len;
+
+    return len == Size;
+}
+
+int f_file_embedded__readChar(FFileEmbedded* File)
+{
+    int c = EOF;
+
+    if(File->index < File->data->size) {
+        c = File->data->buffer[File->index++];
+    }
+
+    return c;
+}
+
+int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char)
+{
+    F_UNUSED(Char);
+
+    int c = EOF;
+
+    if(File->index > 0) {
+        c = File->data->buffer[--File->index];
+    }
+
+    return c;
+}
+
+bool f_file_embedded__bufferRead(const char* Path, void* Buffer, size_t Size)
+{
+    const FEmbeddedFile* data = f_embed__fileGet(Path);
+
+    if(data && data->size <= Size) {
+        memcpy(Buffer, data->buffer, data->size);
+
+        return true;
+    }
+
+    return false;
+}
