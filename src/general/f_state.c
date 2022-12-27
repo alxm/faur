@@ -323,11 +323,11 @@ bool f_state__runStep(void)
             f_screen__tick();
             f_sound__tick();
 
-            #if F_CONFIG_SCREEN_SCREENSHOTS_ENABLED
+            #if F_CONFIG_TRAIT_SCREENSHOTS
                 f_screenshot__tick();
             #endif
 
-            #if F_CONFIG_OUT_CONSOLE_ENABLED
+            #if F_CONFIG_TRAIT_CONSOLE
                 f_console__tick();
             #endif
 
@@ -375,7 +375,7 @@ bool f_state__runStep(void)
         f_fade__draw();
         f_sound__draw();
 
-        #if F_CONFIG_OUT_CONSOLE_ENABLED
+        #if F_CONFIG_TRAIT_CONSOLE
             f_console__draw();
         #endif
 
