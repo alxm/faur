@@ -106,7 +106,7 @@ void f_console__tick(void)
     }
 }
 
-#if F_CONFIG_DEBUG_MEM_MALLOC
+#if F_CONFIG_DEBUG
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -241,7 +241,7 @@ void f_console__draw(void)
         f_font_printf("PID %d\n", getpid());
         f_font_printf("%u ticks\n", f_fps_ticksGet());
 
-        #if F_CONFIG_DEBUG_MEM_MALLOC
+        #if F_CONFIG_DEBUG
             printBytes(f_mem__tally, "now");
             printBytes(f_mem__top, "top");
         #endif
