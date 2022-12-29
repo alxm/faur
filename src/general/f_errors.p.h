@@ -21,7 +21,7 @@
 #include "../general/f_system_includes.h"
 
 #define F_CHECK(Condition) \
-    if(!(Condition)) \
+    if(F_CONFIG_DEBUG && !(Condition)) \
         F_FATAL( \
             "%s: Failed check `%s`", \
             __func__, \

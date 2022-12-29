@@ -26,7 +26,7 @@
 #define F_DEBUG_FATAL_WAIT 3
 
 #define F__CHECK(Condition) \
-    if(!(Condition)) \
+    if(F_CONFIG_DEBUG && !(Condition)) \
         F__FATAL( \
             "%s: Failed check `%s`", \
             __func__, \
