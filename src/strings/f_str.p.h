@@ -21,6 +21,7 @@
 #include "../general/f_system_includes.h"
 
 #include "../data/f_list.p.h"
+#include "../general/f_errors.p.h"
 
 extern bool f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...) F__ATTRIBUTE_FORMAT(4);
 extern bool f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
@@ -49,6 +50,9 @@ extern void f_str_splitFree(FList* List);
 
 static inline bool f_str_equal(const char* String1, const char* String2)
 {
+    F_CHECK(String1 != NULL);
+    F_CHECK(String2 != NULL);
+
     return strcmp(String1, String2) == 0;
 }
 

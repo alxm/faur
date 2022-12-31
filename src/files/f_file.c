@@ -20,6 +20,10 @@
 
 bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
 {
+    F__CHECK(Path != NULL);
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+
     bool ret;
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
@@ -39,6 +43,8 @@ bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
 
 const void* f_file_bufferReadConst(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     const FEmbeddedFile* data = f_embed__fileGet(Path);
 
     return data ? data->buffer : NULL;
@@ -46,6 +52,10 @@ const void* f_file_bufferReadConst(const char* Path)
 
 bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 {
+    F__CHECK(Path != NULL);
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+
     bool ret = f_platform_api__fileBufferWrite(Path, Buffer, Size);
 
     if(!ret) {
@@ -59,11 +69,9 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 
 FFile* f_file_new(const char* Path, unsigned Mode)
 {
-    if(F_FLAGS_TEST_ALL(Mode, F_FILE_READ | F_FILE_WRITE)
-        || !F_FLAGS_TEST_ANY(Mode, F_FILE_READ | F_FILE_WRITE)) {
-
-        F__FATAL("f_file_new(%s, %x): Invalid mode", Path, Mode);
-    }
+    F__CHECK(Path != NULL);
+    F__CHECK(F_FLAGS_TEST_ANY(Mode, F_FILE_READ | F_FILE_WRITE));
+    F__CHECK(!F_FLAGS_TEST_ALL(Mode, F_FILE_READ | F_FILE_WRITE));
 
     void* file = NULL;
     FPath* path = f_path_new(Path);
@@ -116,17 +124,24 @@ void f_file_free(FFile* File)
 
 const FPath* f_file_pathGet(const FFile* File)
 {
+    F__CHECK(File != NULL);
+
     return File->path;
 }
 
 FILE* f_file_handleGet(const FFile* File)
 {
+    F__CHECK(File != NULL);
+
     return f_path_test(File->path, F_PATH_REAL)
             ? (FILE*)File->f.platform : NULL;
 }
 
 bool f_file_prefixRead(FFile* File, const char* Prefix)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Prefix != NULL);
+
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
@@ -143,11 +158,18 @@ bool f_file_prefixRead(FFile* File, const char* Prefix)
 
 void f_file_prefixWrite(FFile* File, const char* Prefix)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Prefix != NULL);
+
     f_file_write(File, Prefix, strlen(Prefix) + 1);
 }
 
 bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
@@ -167,6 +189,10 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
 
 bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+
     bool ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
 
     if(!ret) {
@@ -182,6 +208,9 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 
 bool f_file_writef(FFile* File, const char* Format, ...)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -201,6 +230,8 @@ bool f_file_writef(FFile* File, const char* Format, ...)
 
 bool f_file_flush(FFile* File)
 {
+    F__CHECK(File != NULL);
+
     return f_platform_api__fileFlush(File->f.platform);
 }
 
@@ -250,6 +281,8 @@ static int readChar(FFile* File)
 
 bool f_file_lineRead(FFile* File)
 {
+    F__CHECK(File != NULL);
+
     int ch;
 
     do {
@@ -288,16 +321,22 @@ bool f_file_lineRead(FFile* File)
 
 const char* f_file_lineBufferGet(const FFile* File)
 {
+    F__CHECK(File != NULL);
+
     return File->lineBuffer;
 }
 
 unsigned f_file_lineNumberGet(const FFile* File)
 {
+    F__CHECK(File != NULL);
+
     return File->lineNumber;
 }
 
 bool f_file_rewind(FFile* File)
 {
+    F__CHECK(File != NULL);
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
@@ -320,6 +359,9 @@ bool f_file_rewind(FFile* File)
 
 bool f_file_seekStart(FFile* File, int Offset)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Offset >= 0);
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
@@ -341,6 +383,9 @@ bool f_file_seekStart(FFile* File, int Offset)
 
 bool f_file_seekEnd(FFile* File, int Offset)
 {
+    F__CHECK(File != NULL);
+    F__CHECK(Offset <= 0);
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
@@ -362,6 +407,8 @@ bool f_file_seekEnd(FFile* File, int Offset)
 
 bool f_file_seekCurrent(FFile* File, int Offset)
 {
+    F__CHECK(File != NULL);
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {

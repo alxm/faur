@@ -57,6 +57,9 @@ void f_analog_free(FAnalog* Analog)
 
 void f_analog_bind(FAnalog* Analog, const FController* Controller, FAnalogId Id)
 {
+    F__CHECK(Analog != NULL);
+    F__CHECK(Id > F_AXIS_INVALID && Id < F_AXIS_NUM);
+
     const FPlatformAnalog* a = f_platform_api__inputAnalogGet(Controller, Id);
 
     if(a == NULL) {
@@ -72,16 +75,22 @@ void f_analog_bind(FAnalog* Analog, const FController* Controller, FAnalogId Id)
 
 bool f_analog_isWorking(const FAnalog* Analog)
 {
+    F__CHECK(Analog != NULL);
+
     return !f_list_sizeIsEmpty(Analog->platformInputs);
 }
 
 const char* f_analog_nameGet(const FAnalog* Analog)
 {
+    F__CHECK(Analog != NULL);
+
     return Analog->name;
 }
 
 FFix f_analog_valueGet(const FAnalog* Analog)
 {
+    F__CHECK(Analog != NULL);
+
     int value = 0;
 
     #define F__ANALOG_BITS 15

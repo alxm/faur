@@ -20,6 +20,10 @@
 
 FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxItemDiameter)
 {
+    F__CHECK(Width > 0);
+    F__CHECK(Height > 0);
+    F__CHECK(MaxItemDiameter > 0);
+
     FGrid* g = f_mem_malloc(sizeof(FGrid));
 
     int shift = 0;
@@ -68,6 +72,8 @@ void f_grid_free(FGrid* Grid)
 
 const FList* f_grid_nearGet(const FGrid* Grid, FVecFix Coords)
 {
+    F__CHECK(Grid != NULL);
+
     int x = f_math_clamp(f_fix_toInt(Coords.x >> Grid->shift), 0, Grid->w - 1);
     int y = f_math_clamp(f_fix_toInt(Coords.y >> Grid->shift), 0, Grid->h - 1);
 
@@ -87,6 +93,10 @@ void f_grid_itemFree(FGridItem* Item)
 
 void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVecFix Coords)
 {
+    F__CHECK(Grid != NULL);
+    F__CHECK(Item != NULL);
+    F__CHECK(Context != NULL);
+
     // remove item from all the cells it was previously in
     f_list_clearEx(Item, (FCallFree*)f_list_removeNode);
 

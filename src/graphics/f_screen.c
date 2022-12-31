@@ -136,6 +136,9 @@ void f_screen_clear(void)
 
 void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
+    F__CHECK(Sprite != NULL);
+    F__CHECK(Frame < Sprite->pixels.framesNum);
+
     f_listintr_push(&g_stack, f_pool__dup(F_POOL__STACK_SCREEN, &f__screen));
 
     f__screen.pixels = &Sprite->pixels;
@@ -172,6 +175,9 @@ void f_screen_pop(void)
 
 void f_screen_clipSet(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     if(!f_screen_boxInsideScreen(X, Y, Width, Height)) {
         f_out__error(
             "f_screen_clipSet(%d, %d, %d, %d): Invalid area on %dx%d screen",
@@ -197,33 +203,45 @@ void f_screen_clipReset(void)
     f_screen_clipSet(0, 0, f__screen.pixels->size.x, f__screen.pixels->size.y);
 }
 
-bool f_screen_boxOnScreen(int X, int Y, int W, int H)
+bool f_screen_boxOnScreen(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     return f_collide_boxAndBox((FVecInt){X, Y},
-                               (FVecInt){W, H},
+                               (FVecInt){Width, Height},
                                (FVecInt){0, 0},
                                f__screen.pixels->size);
 }
 
-bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
+bool f_screen_boxInsideScreen(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     return X >= 0 && Y >= 0
-        && X + W <= f__screen.pixels->size.x
-        && Y + H <= f__screen.pixels->size.y;
+        && X + Width <= f__screen.pixels->size.x
+        && Y + Height <= f__screen.pixels->size.y;
 }
 
-bool f_screen_boxOnClip(int X, int Y, int W, int H)
+bool f_screen_boxOnClip(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     return f_collide_boxAndBox((FVecInt){X, Y},
-                               (FVecInt){W, H},
+                               (FVecInt){Width, Height},
                                f__screen.clipStart,
                                f__screen.clipSize);
 }
 
-bool f_screen_boxInsideClip(int X, int Y, int W, int H)
+bool f_screen_boxInsideClip(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width >= 0);
+    F__CHECK(Height >= 0);
+
     return X >= f__screen.clipStart.x && Y >= f__screen.clipStart.y
-        && X + W <= f__screen.clipEnd.x && Y + H <= f__screen.clipEnd.y;
+        && X + Width <= f__screen.clipEnd.x && Y + Height <= f__screen.clipEnd.y;
 }
 
 void f_screen__toSprite(FSprite* Sprite, unsigned Frame)

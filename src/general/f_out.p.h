@@ -23,5 +23,6 @@
 extern void f_out_info(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_out_warning(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_out_error(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
+extern void f_out_errorv(const char* Format, va_list Args);
 
 #endif // F_INC_GENERAL_OUT_P_H

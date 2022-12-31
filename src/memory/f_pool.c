@@ -96,6 +96,8 @@ static void slab_new(FPool* Pool)
 
 FPool* f_pool_new(size_t Size)
 {
+    F__CHECK(Size > 0);
+
     FPool* p = f_mem_mallocz(sizeof(FPool));
 
     p->objSize = (unsigned)Size;
@@ -126,43 +128,43 @@ void f_pool_free(FPool* Pool)
 
 void* f_pool_alloc(FPool* Pool)
 {
+    F__CHECK(Pool != NULL);
+
     #if F_CONFIG_DEBUG_MEM_POOL
         return f_mem_mallocz(Pool->objSize);
+    #else
+        if(Pool->freeEntryList == NULL) {
+            slab_new(Pool);
+        }
+
+        FPoolEntryHeader* entry = Pool->freeEntryList;
+
+        Pool->freeEntryList = entry->nextFreeEntry;
+        entry->parentPool = Pool;
+
+        void* userBuffer = entry + 1;
+
+        memset(userBuffer, 0, Pool->objSize);
+
+        return userBuffer;
     #endif
-
-    if(Pool->freeEntryList == NULL) {
-        slab_new(Pool);
-    }
-
-    FPoolEntryHeader* entry = Pool->freeEntryList;
-
-    Pool->freeEntryList = entry->nextFreeEntry;
-    entry->parentPool = Pool;
-
-    void* userBuffer = entry + 1;
-
-    memset(userBuffer, 0, Pool->objSize);
-
-    return userBuffer;
 }
 
 void f_pool_release(void* Buffer)
 {
-    #if F_CONFIG_DEBUG_MEM_POOL
-        f_mem_free(Buffer);
-
-        return;
-    #endif
-
     if(Buffer == NULL) {
         return;
     }
 
-    FPoolEntryHeader* entry = (FPoolEntryHeader*)Buffer - 1;
-    FPool* pool = entry->parentPool;
+    #if F_CONFIG_DEBUG_MEM_POOL
+        f_mem_free(Buffer);
+    #else
+        FPoolEntryHeader* entry = (FPoolEntryHeader*)Buffer - 1;
+        FPool* pool = entry->parentPool;
 
-    entry->nextFreeEntry = pool->freeEntryList;
-    pool->freeEntryList = entry;
+        entry->nextFreeEntry = pool->freeEntryList;
+        pool->freeEntryList = entry;
+    #endif
 }
 
 void* f_pool__alloc(FPoolId Pool)

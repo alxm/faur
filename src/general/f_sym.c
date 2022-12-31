@@ -40,16 +40,22 @@ const FPack f_pack__sym = {
 
 void f_sym_set(const char* Name, uintptr_t Value)
 {
+    F__CHECK(Name != NULL);
+
     f_hash_add(g_map, Name, (void*)Value);
 }
 
 bool f_sym_test(const char* Name)
 {
+    F__CHECK(Name != NULL);
+
     return f_hash_contains(g_map, Name);
 }
 
 int f_sym_int(const char* Name)
 {
+    F__CHECK(Name != NULL);
+
     if(*Name == '\0') {
         return 0;
     }
@@ -63,6 +69,8 @@ int f_sym_int(const char* Name)
 
 unsigned f_sym_intu(const char* Name)
 {
+    F__CHECK(Name != NULL);
+
     if(*Name == '\0') {
         return 0;
     }
@@ -76,6 +84,8 @@ unsigned f_sym_intu(const char* Name)
 
 uintptr_t f_sym_address(const char* Name)
 {
+    F__CHECK(Name != NULL);
+
     if(*Name == '\0') {
         return 0;
     }

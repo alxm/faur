@@ -25,6 +25,8 @@ static inline bool getPathInfo(const char* Path, FPathInfo* Info)
 
 FPath* f_path_new(const char* Path)
 {
+    F__CHECK(Path != NULL);
+
     FPath* p = f_pool__alloc(F_POOL__PATH);
 
     if(!getPathInfo(Path, &p->info)) {
@@ -49,6 +51,8 @@ FPath* f_path_new(const char* Path)
 
 FPath* f_path_newf(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -83,6 +87,8 @@ void f_path_free(FPath* Path)
 
 bool f_path_exists(const char* Path, unsigned Flags)
 {
+    F__CHECK(Path != NULL);
+
     FPathInfo info;
 
     return getPathInfo(Path, &info) && F_FLAGS_TEST_ALL(info.flags, Flags);
@@ -90,30 +96,42 @@ bool f_path_exists(const char* Path, unsigned Flags)
 
 bool f_path_test(const FPath* Path, unsigned Flags)
 {
+    F__CHECK(Path != NULL);
+
     return F_FLAGS_TEST_ALL(Path->info.flags, Flags);
 }
 
 size_t f_path__sizeGet(const FPath* Path)
 {
+    F__CHECK(Path != NULL);
+
     return Path->info.size;
 }
 
 void f_path__flagsSet(FPath* Path, unsigned Flags)
 {
+    F__CHECK(Path != NULL);
+
     F_FLAGS_SET(Path->info.flags, Flags);
 }
 
 const char* f_path_getFull(const FPath* Path)
 {
+    F__CHECK(Path != NULL);
+
     return Path->full;
 }
 
 const char* f_path_getDirs(const FPath* Path)
 {
+    F__CHECK(Path != NULL);
+
     return Path->dirsPart;
 }
 
 const char* f_path_getName(const FPath* Path)
 {
+    F__CHECK(Path != NULL);
+
     return Path->namePart;
 }

@@ -149,6 +149,8 @@ unsigned f_fps_ticksGet(void)
 
 bool f_fps_ticksNth(unsigned N)
 {
+    F__CHECK(N > 0);
+
     return (g_run.frameCounter % N) == 0;
 }
 

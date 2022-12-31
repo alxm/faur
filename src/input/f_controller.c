@@ -20,6 +20,8 @@
 
 FController* f_controller_new(FCallControllerBind* Callback)
 {
+    F__CHECK(Callback != NULL);
+
     return f_platform_api__inputControllerClaim(Callback);
 }
 

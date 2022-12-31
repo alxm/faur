@@ -20,6 +20,8 @@
 
 #include "../general/f_system_includes.h"
 
+#include "../general/f_errors.p.h"
+
 typedef int32_t FFix;
 typedef uint32_t FFixu;
 
@@ -121,6 +123,8 @@ static inline FFix f_fix_mul(FFix X, FFix Y)
 
 static inline FFix f_fix_div(FFix X, FFix Y)
 {
+    F_CHECK(Y != 0);
+
     #if F_CONFIG_TRAIT_SLOW_MUL
         return (FFix)(((int64_t)X << F_FIX_BIT_PRECISION) / Y);
     #else
@@ -130,6 +134,8 @@ static inline FFix f_fix_div(FFix X, FFix Y)
 
 static inline FFix f_fix_inverse(FFix X)
 {
+    F_CHECK(X != 0);
+
     return (FFix)((int64_t)F_FIX_ONE * F_FIX_ONE / X);
 }
 
@@ -208,11 +214,15 @@ static inline FFixu f_fixu_mul(FFixu X, FFixu Y)
 
 static inline FFixu f_fixu_div(FFixu X, FFixu Y)
 {
+    F_CHECK(Y != 0);
+
     return (FFixu)(((uint64_t)X << F_FIX_BIT_PRECISION) / Y);
 }
 
 static inline FFixu f_fixu_inverse(FFixu X)
 {
+    F_CHECK(X != 0);
+
     return (FFixu)((uint64_t)F_FIX_ONE * F_FIX_ONE / X);
 }
 

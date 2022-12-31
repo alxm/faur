@@ -33,12 +33,17 @@ bool f_touch_pointGet(int X, int Y)
     return f_touch_boxGet(X - 1, Y - 1, 3, 3);
 }
 
-bool f_touch_boxGet(int X, int Y, int W, int H)
+bool f_touch_boxGet(int X, int Y, int Width, int Height)
 {
+    F__CHECK(Width > 0);
+    F__CHECK(Height > 0);
+
     if(f_platform_api__inputTouchTapGet()) {
         FVecInt coords = f_platform_api__inputTouchCoordsGet();
 
-        if(f_collide_pointInBox(coords, (FVecInt){X, Y}, (FVecInt){W, H})) {
+        if(f_collide_pointInBox(
+            coords, (FVecInt){X, Y}, (FVecInt){Width, Height})) {
+
             return true;
         }
     }

@@ -94,7 +94,7 @@ static void pending_handle(void)
 
     if(pendingState->handler == NULL) {
         if(current == NULL) {
-            F__FATAL("Pop state: stack is empty");
+            F__FATAL("Pop state: Stack is empty");
         }
 
         #if F_CONFIG_DEBUG
@@ -149,6 +149,9 @@ void f_state_callbacks(FCallState* TickPre, FCallState* TickPost, FCallState* Dr
 
 void f_state_push(FCallState* Handler, const char* Name)
 {
+    F__CHECK(Handler != NULL);
+    F__CHECK(Name != NULL);
+
     if(g_exiting) {
         #if F_CONFIG_DEBUG
             f_out__state("f_state_push(%s): Already exiting", Name);
@@ -183,6 +186,9 @@ void f_state_pop(void)
 
 void f_state_popUntil(FCallState* Handler, const char* Name)
 {
+    F__CHECK(Handler != NULL);
+    F__CHECK(Name != NULL);
+
     if(g_exiting) {
         #if F_CONFIG_DEBUG
             f_out__state("f_state_popUntil(%s): Already exiting", Name);
@@ -218,6 +224,9 @@ void f_state_popUntil(FCallState* Handler, const char* Name)
 
 void f_state_replace(FCallState* Handler, const char* Name)
 {
+    F__CHECK(Handler != NULL);
+    F__CHECK(Name != NULL);
+
     if(g_exiting) {
         #if F_CONFIG_DEBUG
             f_out__state("f_state_replace(%s): Already exiting", Name);

@@ -19,13 +19,11 @@
 #include <faur.v.h>
 
 #define F__BITS_PER_CHUNK (unsigned)(sizeof(FChunk) * 8)
-#define f__BITS_PER_CHUNK_MASK (F__BITS_PER_CHUNK - 1)
+#define F__BITS_PER_CHUNK_MASK (F__BITS_PER_CHUNK - 1)
 
 FBitfield* f_bitfield_new(unsigned NumBits)
 {
-    if(NumBits == 0) {
-        F__FATAL("f_bitfield_new: 0 bits");
-    }
+    F__CHECK(NumBits > 0);
 
     unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
     FBitfield* b = f_mem_mallocz(
@@ -43,31 +41,46 @@ void f_bitfield_free(FBitfield* Bitfield)
 
 void f_bitfield_set(FBitfield* Bitfield, unsigned Bit)
 {
-    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    F__CHECK(Bitfield != NULL);
+    F__CHECK(Bit / F__BITS_PER_CHUNK < Bitfield->numChunks);
+
+    FChunk bit = (FChunk)1 << (Bit & F__BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / F__BITS_PER_CHUNK] |= bit;
 }
 
 void f_bitfield_clear(FBitfield* Bitfield, unsigned Bit)
 {
-    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    F__CHECK(Bitfield != NULL);
+    F__CHECK(Bit / F__BITS_PER_CHUNK < Bitfield->numChunks);
+
+    FChunk bit = (FChunk)1 << (Bit & F__BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / F__BITS_PER_CHUNK] &= ~bit;
 }
 
 void f_bitfield_reset(FBitfield* Bitfield)
 {
+    F__CHECK(Bitfield != NULL);
+
     memset(Bitfield->bits, 0, Bitfield->numChunks * sizeof(FChunk));
 }
 
 bool f_bitfield_test(const FBitfield* Bitfield, unsigned Bit)
 {
+    F__CHECK(Bitfield != NULL);
+    F__CHECK(Bit / F__BITS_PER_CHUNK < Bitfield->numChunks);
+
     FChunk value = Bitfield->bits[Bit / F__BITS_PER_CHUNK];
-    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    FChunk bit = (FChunk)1 << (Bit & F__BITS_PER_CHUNK_MASK);
 
     return (value & bit) != 0;
 }
 
 bool f_bitfield_testMask(const FBitfield* Bitfield, const FBitfield* Mask)
 {
+    F__CHECK(Bitfield != NULL);
+    F__CHECK(Mask != NULL);
+    F__CHECK(Mask->numChunks <= Bitfield->numChunks);
+
     for(unsigned i = Mask->numChunks; i--; ) {
         if((Bitfield->bits[i] & Mask->bits[i]) != Mask->bits[i]) {
             return false;

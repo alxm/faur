@@ -30,6 +30,8 @@ static inline void tallyAdd(size_t Size)
 
 void* f_mem_malloc(size_t Size)
 {
+    F__CHECK(Size > 0);
+
     #if F_CONFIG_DEBUG_MEM_MALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = f_platform_api__malloc(total);
@@ -56,6 +58,8 @@ void* f_mem_malloc(size_t Size)
 
 void* f_mem_mallocz(size_t Size)
 {
+    F__CHECK(Size > 0);
+
     #if F_CONFIG_DEBUG_MEM_MALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = f_platform_api__mallocz(total);
@@ -82,11 +86,10 @@ void* f_mem_mallocz(size_t Size)
 
 void* f_mem_malloca(size_t Size, unsigned AlignExp)
 {
-    if((1u << AlignExp) < sizeof(void*)) {
-        F__FATAL("f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
-    }
+    F__CHECK(Size > 0);
+    F__CHECK((1u << AlignExp) >= sizeof(void*));
 
-    uintptr_t mask = (uintptr_t)((1 << AlignExp) - 1);
+    uintptr_t mask = (uintptr_t)((1u << AlignExp) - 1);
     void* ptr = f_mem_malloc(sizeof(void*) + Size + mask);
     uintptr_t adj = ((uintptr_t)ptr + sizeof(void*) + mask) & ~mask;
 
@@ -97,6 +100,9 @@ void* f_mem_malloca(size_t Size, unsigned AlignExp)
 
 void* f_mem_dup(const void* Buffer, size_t Size)
 {
+    F__CHECK(Buffer != NULL);
+    F__CHECK(Size > 0);
+
     void* copy = f_mem_malloc(Size);
 
     memcpy(copy, Buffer, Size);

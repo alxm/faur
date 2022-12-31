@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GENERAL_MAIN_V_H
-#define F_INC_GENERAL_MAIN_V_H
+#ifndef F_INC_GENERAL_ERRORS_V_H
+#define F_INC_GENERAL_ERRORS_V_H
 
-#include "f_main.p.h"
+#include "f_errors.p.h"
 
-extern void f__main(void);
+#define F_DEBUG_FATAL_DEFAULT 0
+#define F_DEBUG_FATAL_SEGFAULT 1
+#define F_DEBUG_FATAL_SPIN 2
+#define F_DEBUG_FATAL_WAIT 3
 
-#endif // F_INC_GENERAL_MAIN_V_H
+#define F__CHECK(Condition) \
+    if(F_CONFIG_DEBUG && !(Condition)) \
+        F__FATAL( \
+            "%s: Failed check `%s`", \
+            __func__, \
+            #Condition )
+
+extern void F__FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN F__ATTRIBUTE_FORMAT(1);
+
+#endif // F_INC_GENERAL_ERRORS_V_H

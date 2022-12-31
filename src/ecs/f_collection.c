@@ -43,11 +43,15 @@ void f_collection_free(FCollection* Collection)
 
 void f_collection_clear(FCollection* Collection)
 {
+    F__CHECK(Collection != NULL);
+
     f_list_clearEx(Collection, (FCallFree*)f_entity_removedSet);
 }
 
 void f_collection_muteInc(FCollection* Collection)
 {
+    F__CHECK(Collection != NULL);
+
     F_LIST_ITERATE(Collection, FEntity*, e) {
         f_entity_muteInc(e);
     }
@@ -55,6 +59,8 @@ void f_collection_muteInc(FCollection* Collection)
 
 void f_collection_muteDec(FCollection* Collection)
 {
+    F__CHECK(Collection != NULL);
+
     F_LIST_ITERATE(Collection, FEntity*, e) {
         f_entity_muteDec(e);
     }

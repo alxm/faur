@@ -40,9 +40,9 @@ extern void f_screen_pop(void);
 extern void f_screen_clipSet(int X, int Y, int Width, int Height);
 extern void f_screen_clipReset(void);
 
-extern bool f_screen_boxOnScreen(int X, int Y, int W, int H);
-extern bool f_screen_boxInsideScreen(int X, int Y, int W, int H);
-extern bool f_screen_boxOnClip(int X, int Y, int W, int H);
-extern bool f_screen_boxInsideClip(int X, int Y, int W, int H);
+extern bool f_screen_boxOnScreen(int X, int Y, int Width, int Height);
+extern bool f_screen_boxInsideScreen(int X, int Y, int Width, int Height);
+extern bool f_screen_boxOnClip(int X, int Y, int Width, int Height);
+extern bool f_screen_boxInsideClip(int X, int Y, int Width, int Height);
 
 #endif // F_INC_GRAPHICS_SCREEN_P_H

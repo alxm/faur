@@ -54,11 +54,21 @@ const FPack f_pack__font = {
 
 FFont* f_font_newFromFile(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
+    F__CHECK(Path != NULL);
+    F__CHECK(CharWidth >= -1);
+    F__CHECK(CharHeight >= -1);
+    F__CHECK(((CharWidth < 0) ^ (CharHeight < 0)) == 0);
+    F__CHECK(((CharWidth < 0) && (X == 0 && Y == 0)) || (CharWidth >= 0));
+
     return f_sprite_newFromFile(Path, X, Y, CharWidth, CharHeight);
 }
 
 FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight)
 {
+    F__CHECK(Sheet != NULL);
+    F__CHECK(CharWidth >= 0);
+    F__CHECK(CharHeight >= 0);
+
     return f_sprite_newFromSprite(Sheet, X, Y, CharWidth, CharHeight);
 }
 
@@ -132,11 +142,15 @@ int f_font_lineHeightGet(void)
 
 void f_font_lineHeightSet(int Height)
 {
+    F__CHECK(Height > 0);
+
     g_state.lineHeight = Height;
 }
 
 void f_font_lineWrapSet(int Width)
 {
+    F__CHECK(Width >= 0);
+
     g_state.wrapWidth = Width;
     g_state.currentLineWidth = 0;
 }
@@ -245,6 +259,8 @@ static void wrapString(const char* Text)
 
 void f_font_print(const char* Text)
 {
+    F__CHECK(Text != NULL);
+
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
 
@@ -270,6 +286,8 @@ void f_font_print(const char* Text)
 
 void f_font_printf(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     va_list args;
     va_start(args, Format);
 
@@ -280,6 +298,8 @@ void f_font_printf(const char* Format, ...)
 
 void f_font_printv(const char* Format, va_list Args)
 {
+    F__CHECK(Format != NULL);
+
     if(f_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         f_font_print(g_buffer);
     }
@@ -287,6 +307,8 @@ void f_font_printv(const char* Format, va_list Args)
 
 int f_font_widthGet(const char* Text)
 {
+    F__CHECK(Text != NULL);
+
     int width = 0;
     int charWidth = f_sprite_sizeGetWidth(g_state.font);
 
@@ -299,6 +321,8 @@ int f_font_widthGet(const char* Text)
 
 int f_font_widthGetf(const char* Format, ...)
 {
+    F__CHECK(Format != NULL);
+
     int width;
     va_list args;
 
@@ -311,6 +335,8 @@ int f_font_widthGetf(const char* Format, ...)
 
 int f_font_widthGetv(const char* Format, va_list Args)
 {
+    F__CHECK(Format != NULL);
+
     if(f_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         return f_font_widthGet(g_buffer);
     }
