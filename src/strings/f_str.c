@@ -302,5 +302,9 @@ FList* f_str_split(const char* String, const char* Delimiters)
 
 void f_str_splitFree(FList* List)
 {
+    if(List == NULL) {
+        return;
+    }
+
     f_list_freeEx(List, f_mem_free);
 }

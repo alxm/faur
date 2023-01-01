@@ -18,7 +18,7 @@
 #include "f_mem.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_DEBUG_MEM_MALLOC
+#if F_CONFIG_DEBUG
 size_t f_mem__tally, f_mem__top;
 
 static inline void tallyAdd(size_t Size)
@@ -32,7 +32,7 @@ void* f_mem_malloc(size_t Size)
 {
     F__CHECK(Size > 0);
 
-    #if F_CONFIG_DEBUG_MEM_MALLOC
+    #if F_CONFIG_DEBUG
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = f_platform_api__malloc(total);
 
@@ -60,7 +60,7 @@ void* f_mem_mallocz(size_t Size)
 {
     F__CHECK(Size > 0);
 
-    #if F_CONFIG_DEBUG_MEM_MALLOC
+    #if F_CONFIG_DEBUG
         size_t total = Size + sizeof(FMaxMemAlignType);
         FMaxMemAlignType* ptr = f_platform_api__mallocz(total);
 
@@ -116,7 +116,7 @@ void f_mem_free(void* Buffer)
         return;
     }
 
-    #if F_CONFIG_DEBUG_MEM_MALLOC
+    #if F_CONFIG_DEBUG
         FMaxMemAlignType* header = (FMaxMemAlignType*)Buffer - 1;
 
         f_mem__tally -= header->u_size;

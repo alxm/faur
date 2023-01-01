@@ -33,6 +33,10 @@ FMusic* f_music_new(const char* Path)
 
 void f_music_free(FMusic* Music)
 {
+    if(Music == NULL) {
+        return;
+    }
+
     f_platform_api__soundMusicFree(Music);
 }
 

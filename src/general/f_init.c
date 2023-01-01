@@ -20,7 +20,7 @@
 
 static const FPack* g_packs[] = {
     &f_pack__pool,
-#if F_CONFIG_OUT_CONSOLE_ENABLED
+#if F_CONFIG_TRAIT_CONSOLE
     &f_pack__console_0,
 #endif
     &f_pack__embed,
@@ -29,7 +29,7 @@ static const FPack* g_packs[] = {
     &f_pack__align,
     &f_pack__color,
     &f_pack__fps,
-#if F_CONFIG_SCREEN_SCREENSHOTS_ENABLED
+#if F_CONFIG_TRAIT_SCREENSHOTS
     &f_pack__screenshot,
 #endif
     &f_pack__sound,
@@ -43,7 +43,7 @@ static const FPack* g_packs[] = {
     &f_pack__ecs,
     &f_pack__fade,
     &f_pack__font,
-#if F_CONFIG_OUT_CONSOLE_ENABLED
+#if F_CONFIG_TRAIT_CONSOLE
     &f_pack__console_1,
 #endif
 };

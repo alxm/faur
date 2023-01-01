@@ -47,6 +47,10 @@ FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel
 
 void f_menu_free(FMenu* Menu)
 {
+    if(Menu == NULL) {
+        return;
+    }
+
     f_menu_freeEx(Menu, NULL);
 }
 

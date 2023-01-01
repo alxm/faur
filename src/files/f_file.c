@@ -129,14 +129,6 @@ const FPath* f_file_pathGet(const FFile* File)
     return File->path;
 }
 
-FILE* f_file_handleGet(const FFile* File)
-{
-    F__CHECK(File != NULL);
-
-    return f_path_test(File->path, F_PATH_REAL)
-            ? (FILE*)File->f.platform : NULL;
-}
-
 bool f_file_prefixRead(FFile* File, const char* Prefix)
 {
     F__CHECK(File != NULL);

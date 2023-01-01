@@ -22,6 +22,10 @@
 
 #include "../general/f_init.v.h"
 
+#define F_FPS_CAP_DEFAULT 0
+#define F_FPS_CAP_CONSTANT_CREDIT 1
+#define F_FPS_CAP_COMPENSATE_LAG 2
+
 extern const FPack f_pack__fps;
 
 extern void f_fps__reset(void);

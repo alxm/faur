@@ -79,6 +79,10 @@ FPath* f_path_newf(const char* Format, ...)
 
 void f_path_free(FPath* Path)
 {
+    if(Path == NULL) {
+        return;
+    }
+
     f_mem_free(Path->full);
     f_mem_free(Path->dirsPart);
     f_mem_free(Path->namePart);

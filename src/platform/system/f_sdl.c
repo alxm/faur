@@ -74,22 +74,16 @@ uint32_t f_platform_api_sdl__timeMsGet(void)
 
 void f_platform_api_sdl__timeMsWait(uint32_t Ms)
 {
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        F_UNUSED(Ms);
+    // Wait is too coarse on GP2X
+    #if F_CONFIG_SYSTEM_GP2X
+        if(Ms < 10) {
+            f_time_msSpin(Ms);
 
-        return;
-    #else
-        // Wait is too coarse on GP2X
-        #if F_CONFIG_SYSTEM_GP2X
-            if(Ms < 10) {
-                f_time_msSpin(Ms);
-
-                return;
-            }
-        #endif
-
-        SDL_Delay(Ms);
+            return;
+        }
     #endif
+
+    SDL_Delay(Ms);
 }
 #endif
 #endif // F_CONFIG_LIB_SDL

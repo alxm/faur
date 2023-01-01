@@ -107,7 +107,7 @@ static FPixels* f_png__readFile(const char* Path)
         goto cleanUp;
     }
 
-    png_init_io(png, f_file_handleGet(f));
+    png_init_io(png, (FILE*)(f->f.platform));
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
@@ -294,7 +294,7 @@ void f_platform_api_png__imageWrite(const char* Path, const FPixels* Pixels, uns
         numText++;
     }
 
-    png_init_io(png, f_file_handleGet(f));
+    png_init_io(png, (FILE*)(f->f.platform));
     png_set_rows(png, info, rows);
     png_set_text(png, info, text, numText);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);

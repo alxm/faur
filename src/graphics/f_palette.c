@@ -91,6 +91,10 @@ FPalette* f_palette_newFromSprite(const FSprite* Sprite)
 
 void f_palette_free(FPalette* Palette)
 {
+    if(Palette == NULL) {
+        return;
+    }
+
     f_mem_free(Palette);
 }
 

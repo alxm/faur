@@ -36,7 +36,6 @@ extern FFile* f_file_new(const char* Path, unsigned Mode);
 extern void f_file_free(FFile* File);
 
 extern const FPath* f_file_pathGet(const FFile* File);
-extern FILE* f_file_handleGet(const FFile* File);
 
 extern bool f_file_prefixRead(FFile* File, const char* Prefix);
 extern void f_file_prefixWrite(FFile* File, const char* Prefix);

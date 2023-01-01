@@ -134,6 +134,10 @@ FBlock* f_block_new(const char* File)
 
 void f_block_free(FBlock* Block)
 {
+    if(Block == NULL) {
+        return;
+    }
+
     if(Block->references-- > 0) {
         return;
     }

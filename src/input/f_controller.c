@@ -27,5 +27,9 @@ FController* f_controller_new(FCallControllerBind* Callback)
 
 void f_controller_free(FController* Controller)
 {
+    if(Controller == NULL) {
+        return;
+    }
+
     f_platform_api__inputControllerRelease(Controller);
 }

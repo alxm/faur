@@ -122,11 +122,11 @@ void f_fps__frame(void)
 
     g_run.lastFrameMs = nowMs;
 
-    #if F_CONFIG_FPS_CONSTANT_CREDIT
+    #if F_CONFIG_FPS_CAP == F_FPS_CAP_CONSTANT_CREDIT
         g_run.tickCreditMs = g_settings.tickFrameMs;
-    #elif F_CONFIG_FPS_CAP_LAG
-        g_run.tickCreditMs += f_math_minu(
-                                elapsedMs, g_settings.drawFrameMs * 2);
+    #elif F_CONFIG_FPS_CAP == F_FPS_CAP_COMPENSATE_LAG
+        g_run.tickCreditMs +=
+            f_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
     #else
         g_run.tickCreditMs += elapsedMs;
     #endif

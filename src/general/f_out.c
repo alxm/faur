@@ -81,7 +81,7 @@ static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char
     if(f_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
         outWorkerPrint(Source, Type, Stream, buffer);
 
-        #if F_CONFIG_OUT_CONSOLE_ENABLED
+        #if F_CONFIG_TRAIT_CONSOLE
             f_console__write(Source, Type, buffer);
         #endif
     }

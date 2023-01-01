@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_OUT_CONSOLE_ENABLED
+#if F_CONFIG_TRAIT_CONSOLE
 #include <faur_v/faur_gfx/g_console_19x7.png.h>
 
 #include <unistd.h>
@@ -74,7 +74,7 @@ static void f_console__init1(void)
     g_toggle = f_button_new();
     f_button_bindKey(g_toggle, F_KEY_F10);
     f_button_bindCombo(
-        g_toggle, NULL, F_CONFIG_OUT_CONSOLE_TOGGLE, F_BUTTON_INVALID);
+        g_toggle, NULL, F_CONFIG_TRAIT_CONSOLE_TOGGLE, F_BUTTON_INVALID);
 
     g_state = F_CONSOLE__STATE_FULL;
 }
@@ -106,7 +106,7 @@ void f_console__tick(void)
     }
 }
 
-#if F_CONFIG_DEBUG_MEM_MALLOC
+#if F_CONFIG_DEBUG
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -241,7 +241,7 @@ void f_console__draw(void)
         f_font_printf("PID %d\n", getpid());
         f_font_printf("%u ticks\n", f_fps_ticksGet());
 
-        #if F_CONFIG_DEBUG_MEM_MALLOC
+        #if F_CONFIG_DEBUG
             printBytes(f_mem__tally, "now");
             printBytes(f_mem__top, "top");
         #endif
@@ -278,4 +278,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#endif // F_CONFIG_OUT_CONSOLE_ENABLED
+#endif // F_CONFIG_TRAIT_CONSOLE

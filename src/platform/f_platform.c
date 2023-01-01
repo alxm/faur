@@ -137,7 +137,9 @@ static const FPlatformApi f__platform_api = {
 
     #if F_CONFIG_LIB_SDL && F_CONFIG_LIB_SDL_TIME
         .timeMsGet = f_platform_api_sdl__timeMsGet,
-        .timeMsWait = f_platform_api_sdl__timeMsWait,
+        #if !F_CONFIG_SYSTEM_EMSCRIPTEN
+            .timeMsWait = f_platform_api_sdl__timeMsWait,
+        #endif
     #elif F_CONFIG_SYSTEM_GAMEBUINO
         .timeMsGet = f_platform_api_gamebuino__timeMsGet,
         .timeMsWait = f_platform_api_gamebuino__timeMsWait,

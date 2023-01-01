@@ -87,6 +87,10 @@ FGridItem* f_grid_itemNew(void)
 
 void f_grid_itemFree(FGridItem* Item)
 {
+    if(Item == NULL) {
+        return;
+    }
+
     // Remove item from any lists it is in
     f_list_freeEx(Item, (FCallFree*)f_list_removeNode);
 }
