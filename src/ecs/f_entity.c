@@ -151,11 +151,9 @@ void f_entity__tick(void)
 void f_entity__flushFromSystems(void)
 {
     F_LIST_ITERATE(g_lists[F_LIST__FLUSH], FEntity*, e) {
-        #if F_CONFIG_DEBUG
-            if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
-                f_out__info("%s removed from all systems", e->id);
-            }
-        #endif
+        if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
+            f_out__info("%s removed from all systems", e->id);
+        }
 
         f_list_clearEx(e->systemNodesActive, (FCallFree*)f_list_removeNode);
         f_list_clearEx(e->systemNodesEither, (FCallFree*)f_list_removeNode);
@@ -168,11 +166,9 @@ void f_entity__flushFromSystems(void)
 
 void f_entity__flushFromSystemsActive(FEntity* Entity)
 {
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("%s removed from active-only systems", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("%s removed from active-only systems", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
     f_list_clearEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
@@ -234,11 +230,9 @@ void f_entity__free(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity__free(%s)", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity__free(%s)", Entity->id);
+    }
 
     if(Entity->collectionNode) {
         f_list_removeNode(Entity->collectionNode);
@@ -285,14 +279,16 @@ void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 {
     F__CHECK(Entity != NULL);
 
-    if(DebugOn) {
-        F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
-    } else {
-        F_FLAGS_CLEAR(Entity->flags, F_ENTITY__DEBUG);
-    }
-
     #if F_CONFIG_DEBUG
+        if(DebugOn) {
+            F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
+        } else {
+            F_FLAGS_CLEAR(Entity->flags, F_ENTITY__DEBUG);
+        }
+
         f_out__info("f_entity_debugSet(%s, %d)", Entity->id, DebugOn);
+    #else
+        F_UNUSED(DebugOn);
     #endif
 }
 
@@ -314,13 +310,11 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_parentSet(%s, %s)",
-                        Entity->id,
-                        Parent ? Parent->id : "NULL");
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_parentSet(%s, %s)",
+                    Entity->id,
+                    Parent ? Parent->id : "NULL");
+    }
 
     if(Parent
         && ((!!Parent->collectionNode != !!Entity->collectionNode)
@@ -370,14 +364,12 @@ void f_entity_refInc(FEntity* Entity)
         F__FATAL("f_entity_refInc(%s): Count too high", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_refInc(%s) %d->%d",
-                        Entity->id,
-                        Entity->references,
-                        Entity->references + 1);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_refInc(%s) %d->%d",
+                    Entity->id,
+                    Entity->references,
+                    Entity->references + 1);
+    }
 
     Entity->references++;
 }
@@ -397,14 +389,12 @@ void f_entity_refDec(FEntity* Entity)
         F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_refDec(%s) %d->%d",
-                        Entity->id,
-                        Entity->references,
-                        Entity->references - 1);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_refDec(%s) %d->%d",
+                    Entity->id,
+                    Entity->references,
+                    Entity->references - 1);
+    }
 
     Entity->references--;
 
@@ -433,11 +423,9 @@ void f_entity_removedSet(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_removedSet(%s)", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_removedSet(%s)", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVED);
     listMoveTo(Entity, F_LIST__FLUSH);
@@ -461,11 +449,9 @@ void f_entity_activeSet(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSet(%s)", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSet(%s)", Entity->id);
+    }
 
     if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
         g_activeNum++;
@@ -488,11 +474,9 @@ void f_entity_activeSetRemove(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVE_INACTIVE);
 }
@@ -501,11 +485,9 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 
@@ -529,13 +511,11 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
                  Component->stringId);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_componentAdd(%s, %s)",
-                        Entity->id,
-                        Component->stringId);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_componentAdd(%s, %s)",
+                    Entity->id,
+                    Component->stringId);
+    }
 
     return componentAdd(Entity, Component, NULL)->buffer;
 }
@@ -598,14 +578,12 @@ void f_entity_muteInc(FEntity* Entity)
         F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_muteInc(%s) %d->%d",
-                        Entity->id,
-                        Entity->muteCount,
-                        Entity->muteCount + 1);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_muteInc(%s) %d->%d",
+                    Entity->id,
+                    Entity->muteCount,
+                    Entity->muteCount + 1);
+    }
 
     if(Entity->muteCount++ == 0) {
         listMoveTo(Entity, F_LIST__FLUSH);
@@ -629,14 +607,12 @@ void f_entity_muteDec(FEntity* Entity)
         F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_muteDec(%s) %d->%d",
-                        Entity->id,
-                        Entity->muteCount,
-                        Entity->muteCount - 1);
-        }
-    #endif
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_muteDec(%s) %d->%d",
+                    Entity->id,
+                    Entity->muteCount,
+                    Entity->muteCount - 1);
+    }
 
     if(--Entity->muteCount == 0) {
         if(!f_list_sizeIsEmpty(Entity->matchingSystemsActive)
