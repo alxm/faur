@@ -24,7 +24,7 @@ typedef struct FEntity FEntity;
 
 #include "../ecs/f_component.p.h"
 
-extern FEntity* f_entity_new(const char* Template, const void* Context);
+extern FEntity* f_entity_new(const char* Id);
 
 extern void f_entity_debugSet(FEntity* Entity, bool DebugOn);
 

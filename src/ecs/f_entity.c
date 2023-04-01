@@ -202,7 +202,7 @@ unsigned f_entity__numGetActive(void)
     return g_activeNum + g_activeNumPermanent;
 }
 
-FEntity* f_entity_new(const char* Template, const void* Context)
+FEntity* f_entity_new(const char* Id)
 {
     FEntity* e = f_pool_alloc(g_pool);
 
@@ -220,24 +220,9 @@ FEntity* f_entity_new(const char* Template, const void* Context)
         e->collectionNode = f_list_addLast(f__collection, e);
     }
 
-    if(Template) {
-        char id[64];
-        const FTemplate* t = f_template__get(Template);
-
-        if(!f_str_fmt(id, sizeof(id), false, "%s#%08X", Template, t->iNumber)) {
-            id[0] = '\0';
-        }
-
-        e->id = f_str_dup(id);
-        e->templ = t;
-
+    if(Id) {
+        e->id = f_str_dup(Id);
         F_FLAGS_SET(e->flags, F_ENTITY__ALLOC_STRING_ID);
-
-        F_LIST_ITERATE(t->componentsAll, const FComponent*, c) {
-            componentAdd(e, c, t->data[c->bitId]);
-        }
-
-        f_template__initRun(t, e, Context);
     }
 
     return e;
