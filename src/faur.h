@@ -39,7 +39,6 @@ F_EXTERN_C_START
 #include "ecs/f_ecs.p.h"
 #include "ecs/f_entity.p.h"
 #include "ecs/f_system.p.h"
-#include "ecs/f_template.p.h"
 #include "files/f_blob.p.h"
 #include "files/f_dir.p.h"
 #include "files/f_file.p.h"

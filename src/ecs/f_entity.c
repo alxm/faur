@@ -35,16 +35,6 @@ static unsigned g_activeNumPermanent; // Number of always-active entities
 
 bool f_entity__ignoreRefDec; // Set to prevent using freed entities
 
-static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* Data)
-{
-    FComponentInstance* c = f_component__instanceNew(Component, Entity, Data);
-
-    Entity->componentsTable[Component->bitId] = c;
-    f_bitfield_set(Entity->componentBits, Component->bitId);
-
-    return c;
-}
-
 static inline bool canDelete(const FEntity* Entity)
 {
     return Entity->references == 0
@@ -517,7 +507,12 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
                     Component->stringId);
     }
 
-    return componentAdd(Entity, Component, NULL)->buffer;
+    FComponentInstance* c = f_component__instanceNew(Component, Entity);
+
+    Entity->componentsTable[Component->bitId] = c;
+    f_bitfield_set(Entity->componentBits, Component->bitId);
+
+    return c->buffer;
 }
 
 bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)

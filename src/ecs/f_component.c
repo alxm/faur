@@ -61,21 +61,6 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
             ((uint8_t*)ComponentBuffer - offsetof(FComponentInstance, buffer));
 }
 
-const void* f_component_dataGet(const void* ComponentBuffer)
-{
-    F__CHECK(ComponentBuffer != NULL);
-
-    const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
-
-    if(instance->entity->templ == NULL) {
-        F__FATAL("f_component_dataGet(%s.%s): No template",
-                 instance->entity->id,
-                 instance->component->stringId);
-    }
-
-    return instance->entity->templ->data[instance->component->bitId];
-}
-
 FEntity* f_component_entityGet(const void* ComponentBuffer)
 {
     F__CHECK(ComponentBuffer != NULL);
@@ -83,35 +68,7 @@ FEntity* f_component_entityGet(const void* ComponentBuffer)
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 
-void* f_component__dataInit(const FComponent* Component, const FBlock* Block)
-{
-    if(Component->dataSize > 0) {
-        void* buffer = f_mem_mallocz(Component->dataSize);
-
-        if(Component->dataInit) {
-            Component->dataInit(buffer, Block);
-        }
-
-        return buffer;
-    }
-
-    return NULL;
-}
-
-void f_component__dataFree(const FComponent* Component, void* Buffer)
-{
-    if(Buffer == NULL) {
-        return;
-    }
-
-    if(Component->dataFree) {
-        Component->dataFree(Buffer);
-    }
-
-    f_mem_free(Buffer);
-}
-
-FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data)
+FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity)
 {
     FComponentInstance* c = f_pool_alloc(g_pools[Component->bitId]);
 
@@ -119,7 +76,7 @@ FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntit
     c->entity = Entity;
 
     if(Component->init) {
-        Component->init(c->buffer, Data);
+        Component->init(c->buffer);
     }
 
     return c;

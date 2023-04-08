@@ -23,7 +23,6 @@
 #include "../data/f_list.v.h"
 #include "../ecs/f_component.v.h"
 #include "../ecs/f_system.v.h"
-#include "../ecs/f_template.v.h"
 
 #define F_ENTITY__ACTIVE_REMOVED F_FLAGS_BIT(0) // kicked by active-only system
 #define F_ENTITY__ACTIVE_PERMANENT F_FLAGS_BIT(1) // always report as active
@@ -34,7 +33,6 @@
 
 struct FEntity {
     char* id; // specified name for debugging
-    const FTemplate* templ; // template used to init this entity's components
     FEntity* parent; // manually associated parent entity
     FListNode* node; // list node in one of FEntityList
     FListNode* collectionNode; // FCollection list nod

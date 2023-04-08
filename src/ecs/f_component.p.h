@@ -28,32 +28,25 @@ typedef struct FComponent FComponent;
 typedef void FCallComponentDataInit(void* Data, const FBlock* Config);
 typedef void FCallComponentDataFree(void* Data);
 
-typedef void FCallComponentInstanceInit(void* Self, const void* Data);
+typedef void FCallComponentInstanceInit(void* Self);
 typedef void FCallComponentInstanceFree(void* Self);
 
 struct FComponent {
     unsigned size; // total size of FComponentInstance + user data that follows
-    unsigned dataSize; // size of template data buffer
     const char* stringId; // unique string ID
     FCallComponentInstanceInit* init; // sets component buffer default values
     FCallComponentInstanceFree* free; // does not free the actual comp buffer
-    FCallComponentDataInit* dataInit; // init template buffer with FBlock
-    FCallComponentDataFree* dataFree; // does not free the template buffer
     unsigned bitId; // unique number ID
 };
 
-#define F_COMPONENT(Name, DataSize, DataInit, DataFree, InstanceSize, InstanceInit, InstanceFree) \
-    FComponent Name = {                                                                           \
-        .size = (unsigned)InstanceSize,                                                           \
-        .init = (FCallComponentInstanceInit*)InstanceInit,                                        \
-        .free = (FCallComponentInstanceFree*)InstanceFree,                                        \
-        .dataSize = (unsigned)DataSize,                                                           \
-        .dataInit = (FCallComponentDataInit*)DataInit,                                            \
-        .dataFree = (FCallComponentDataFree*)DataFree,                                            \
-        .stringId = F_STRINGIFY(Name),                                                            \
+#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree) \
+    FComponent Name = {                                             \
+        .size = (unsigned)InstanceSize,                             \
+        .init = (FCallComponentInstanceInit*)InstanceInit,          \
+        .free = (FCallComponentInstanceFree*)InstanceFree,          \
+        .stringId = F_STRINGIFY(Name),                              \
     }
 
-extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);
 
 #endif // F_INC_ECS_COMPONENT_P_H

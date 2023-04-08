@@ -29,7 +29,6 @@ F_EXTERN_C_START
 #include "ecs/f_ecs.v.h"
 #include "ecs/f_entity.v.h"
 #include "ecs/f_system.v.h"
-#include "ecs/f_template.v.h"
 #include "files/f_blob.v.h"
 #include "files/f_embed.v.h"
 #include "files/f_file.v.h"

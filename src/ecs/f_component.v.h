@@ -38,10 +38,7 @@ extern FHash* f_component__index;
 extern void f_component__init(FComponent* const* Components, size_t ComponentsNum);
 extern void f_component__uninit(void);
 
-extern void* f_component__dataInit(const FComponent* Component, const FBlock* Block);
-extern void f_component__dataFree(const FComponent* Component, void* Buffer);
-
-extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data);
+extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity);
 extern void f_component__instanceFree(FComponentInstance* Instance);
 
 #endif // F_INC_ECS_COMPONENT_V_H
