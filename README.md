@@ -111,7 +111,7 @@ Web (Wasm) | Linux | Emscripten | | [Emscripten Notes](https://www.alxm.org/note
 ***Embedded Linux***
 GP2X, GP2X Wiz | Linux | Open2x SDK | Debian: `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
 Caanoo | Linux | GPH SDK | Debian: `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)
-Open Pandora | Linux | Pandora SDK | Debian: `ia32-libs` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
+Open Pandora | Linux | Pandora SDK | Debian: `ia32-libs libxml2-utils` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
 ***Arduino***
 Gamebuino META | Linux | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | Arduino: `Gamebuino META 1.3`<br><br>Debian: `ffmpeg`<br><br>Fedora: `ffmpeg-free` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
 ODROID-GO | Linux | Arduino 1.8.13, Arduino-ESP32 1.0.6 | Arduino: `ODROID-GO 1.0.0`<br><br>Debian: `python3-serial` `python-is-python3`<br><br>Fedora: `python3-pyserial` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
