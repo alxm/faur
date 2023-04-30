@@ -21,14 +21,12 @@
 #include "../general/f_out.p.h"
 
 typedef enum {
-    F_OUT__SOURCE_INVALID = -1,
     F_OUT__SOURCE_FAUR,
     F_OUT__SOURCE_APP,
     F_OUT__SOURCE_NUM
 } FOutSource;
 
 typedef enum {
-    F_OUT__TYPE_INVALID = -1,
     F_OUT__TYPE_INFO,
     F_OUT__TYPE_WARNING,
     F_OUT__TYPE_ERROR,

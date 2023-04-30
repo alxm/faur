@@ -19,12 +19,11 @@
 #include <faur.v.h>
 
 typedef enum {
-    F__FADE_INVALID = -1,
+    F__FADE_NONE,
     F__FADE_TOCOLOR,
     F__FADE_FROMCOLOR,
     F__FADE_SCREENS,
     F__FADE_CUSTOM,
-    F__FADE_NUM
 } FFadeOpId;
 
 static struct {
@@ -36,9 +35,7 @@ static struct {
         FColorPixel color;
         FCallFade* callback;
     } u;
-} g_fade = {
-    .op = F__FADE_INVALID,
-};
+} g_fade;
 
 static void f_fade__init(void)
 {
@@ -112,7 +109,7 @@ void f_fade_startCustom(FCallFade* Callback, unsigned DurationMs)
 
 void f_fade__tick(void)
 {
-    if(g_fade.op == F__FADE_INVALID) {
+    if(g_fade.op == F__FADE_NONE) {
         return;
     }
 
@@ -120,13 +117,13 @@ void f_fade__tick(void)
 
     if(g_fade.angle > F_DEG_090_FIX) {
         g_fade.event = 0;
-        g_fade.op = F__FADE_INVALID;
+        g_fade.op = F__FADE_NONE;
     }
 }
 
 void f_fade__draw(void)
 {
-    if(g_fade.op == F__FADE_INVALID) {
+    if(g_fade.op == F__FADE_NONE) {
         return;
     }
 

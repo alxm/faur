@@ -23,7 +23,6 @@
 #endif
 
 typedef enum {
-    F_COLOR__INVALID = -1,
     F_COLOR__BLACK = 30,
     F_COLOR__RED = 31,
     F_COLOR__GREEN = 32,

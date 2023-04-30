@@ -81,7 +81,7 @@ typedef enum {
     F_KEY_F10,
     F_KEY_F11,
     F_KEY_F12,
-    F_KEY_NUM,
+    F_KEY_NUM
 } FKeyId;
 
 #include "../input/f_controller.p.h"

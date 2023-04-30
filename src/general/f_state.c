@@ -43,7 +43,6 @@ static void pending_push(FCallState* Handler, const char* Name)
 
     e->name = Name;
     e->handler = Handler;
-    e->stage = F__STATE_STAGE_INVALID;
 
     f_listintr_addLast(&g_pending, e);
 }

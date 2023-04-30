@@ -121,7 +121,7 @@ static void optimizeAlphaBlending(void)
 
 void f_color_blendSet(FColorBlend Blend)
 {
-    F__CHECK(Blend > F_COLOR_BLEND_INVALID && Blend < F_COLOR_BLEND_NUM);
+    F__CHECK(Blend < F_COLOR_BLEND_NUM);
 
     f__color.blend = Blend;
 

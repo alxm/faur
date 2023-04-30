@@ -21,7 +21,6 @@
 #include "f_pool.p.h"
 
 typedef enum {
-    F_POOL__INVALID = -1,
     F_POOL__BLOCK,
     F_POOL__CONSOLE,
     F_POOL__HASHENTRY,
@@ -38,7 +37,8 @@ typedef enum {
     F_POOL__STACK_SCREEN,
     F_POOL__STACK_STATE,
     F_POOL__TIMER,
-    F_POOL__NUM
+    F_POOL__NUM,
+    F_ENUM_SIGNED(FPoolId)
 } FPoolId;
 
 typedef union FPoolEntryHeader FPoolEntryHeader;

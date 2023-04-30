@@ -21,19 +21,17 @@
 #include "../general/f_system_includes.h"
 
 typedef enum {
-    F_ALIGN_X_INVALID = -1,
+    F_ALIGN_X_NONE,
     F_ALIGN_X_LEFT,
     F_ALIGN_X_CENTER,
     F_ALIGN_X_RIGHT,
-    F_ALIGN_X_NUM
 } FAlignX;
 
 typedef enum {
-    F_ALIGN_Y_INVALID = -1,
+    F_ALIGN_Y_NONE,
     F_ALIGN_Y_TOP,
     F_ALIGN_Y_CENTER,
     F_ALIGN_Y_BOTTOM,
-    F_ALIGN_Y_NUM
 } FAlignY;
 
 extern void f_align_push(void);

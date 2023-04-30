@@ -21,7 +21,6 @@
 #include "f_file.p.h"
 
 typedef enum {
-    F_FILE__OFFSET_INVALID = -1,
     F_FILE__OFFSET_START,
     F_FILE__OFFSET_CURRENT,
     F_FILE__OFFSET_END,

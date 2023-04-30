@@ -25,12 +25,12 @@
 #include <unistd.h>
 
 typedef enum {
-    F_CONSOLE__STATE_INVALID = -1,
+    F_CONSOLE__STATE_OFF,
     F_CONSOLE__STATE_BASIC,
     F_CONSOLE__STATE_FULL,
 } FConsoleState;
 
-static FConsoleState g_state = F_CONSOLE__STATE_INVALID;
+static FConsoleState g_state;
 static FList* g_lines;
 static unsigned g_linesPerScreen;
 static FButton* g_toggle;
@@ -81,7 +81,7 @@ static void f_console__init1(void)
 
 static void f_console__uninit1(void)
 {
-    g_state = F_CONSOLE__STATE_INVALID;
+    g_state = F_CONSOLE__STATE_OFF;
 
     f_list_freeEx(g_lines, (FCallFree*)line_free);
     f_button_free(g_toggle);
@@ -268,7 +268,7 @@ void f_console_showSet(bool Show)
 
 void f_console__write(FOutSource Source, FOutType Type, const char* Text)
 {
-    if(g_state == F_CONSOLE__STATE_INVALID) {
+    if(g_state == F_CONSOLE__STATE_OFF) {
         return;
     }
 
