@@ -36,33 +36,13 @@ def main():
 """\
 #include "c_{name}.h"
 
-typedef struct {{
-    int startValue;
-}} {ctype}Data;
-
 struct {ctype} {{
     int value;
 }};
 
-static void c_{name}_dataInit({ctype}Data* Data, const FBlock* Config)
+static void c_{name}_instanceInit({ctype}* {paramVar})
 {{
-    F_UNUSED(Config);
-
-    Data->startValue = 2;
-}}
-
-static void c_{name}_dataFree({ctype}Data* Data)
-{{
-    F_UNUSED(Data);
-}}
-
-static void c_{name}_instanceInit({ctype}* {paramVar}, const {ctype}Data* Data)
-{{
-    if(Data == NULL) {{
-        {paramVar}->value = 1;
-    }} else {{
-        {paramVar}->value = Data->startValue;
-    }}
+    {paramVar}->value = 1;
 }}
 
 static void c_{name}_instanceFree({ctype}* {paramVar})
@@ -72,9 +52,6 @@ static void c_{name}_instanceFree({ctype}* {paramVar})
 
 F_COMPONENT(
     c_{name},
-    sizeof({ctype}Data),
-    c_{name}_dataInit,
-    c_{name}_dataFree,
     sizeof({ctype}),
     c_{name}_instanceInit,
     c_{name}_instanceFree
