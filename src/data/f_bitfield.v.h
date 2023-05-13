@@ -22,9 +22,22 @@
 
 typedef unsigned long FChunk;
 
+typedef enum {
+    F_BITFIELD_32,
+    F_BITFIELD_64,
+    F_BITFIELD_FLEX
+} FBitfieldType;
+
 struct FBitfield {
-    unsigned numChunks;
-    FChunk bits[1]; // [numChunks]
+    FBitfieldType type;
+    union {
+        uint32_t u32;
+        uint64_t u64;
+        struct {
+            unsigned numChunks;
+            FChunk chunks[1]; // [numChunks]
+        } flex;
+    } u;
 };
 
 #endif // F_INC_DATA_BITFIELD_V_H

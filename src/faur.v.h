@@ -21,6 +21,7 @@
 #include "faur.h"
 
 F_EXTERN_C_START
+#include "data/f_bitfield.v.h"
 #include "data/f_block.v.h"
 #include "data/f_hash.v.h"
 #include "data/f_list.v.h"
