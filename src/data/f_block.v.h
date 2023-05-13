@@ -28,10 +28,6 @@ struct FBlock {
     FHash* index; // FHash<const char*, FList<const FBlock*>> indexed by text
     const FBlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
-    int references; // added when merged into another parent block
 };
-
-extern void f_block__refInc(FBlock* Block);
-extern void f_block__merge(FBlock* Dst, const FBlock* Src);
 
 #endif // F_INC_DATA_BLOCK_V_H
