@@ -109,13 +109,13 @@ void f_entity__tick(void)
         if(!F_FLAGS_TEST_ANY(e->flags, F_ENTITY__ACTIVE_REMOVED)) {
             F_LIST_ITERATE(e->matchingSystemsActive, FSystem*, system) {
                 f_list_addLast(
-                    e->systemNodesActive, f_system__entityAdd(system, e));
+                    e->systemNodesActive, f_list_addLast(system->entities, e));
             }
         }
 
         F_LIST_ITERATE(e->matchingSystemsRest, FSystem*, system) {
             f_list_addLast(
-                e->systemNodesEither, f_system__entityAdd(system, e));
+                e->systemNodesEither, f_list_addLast(system->entities, e));
         }
 
         listAddTo(e, F_LIST__DEFAULT);
@@ -412,8 +412,8 @@ void f_entity_activeSet(FEntity* Entity)
 
         // Add entity back to active-only systems
         F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
-            f_list_addLast(
-                Entity->systemNodesActive, f_system__entityAdd(system, Entity));
+            f_list_addLast(Entity->systemNodesActive,
+                           f_list_addLast(system->entities, Entity));
         }
     }
 }
