@@ -20,7 +20,7 @@
 
 #include "../general/f_system_includes.h"
 
-typedef struct FList FCollection;
+typedef struct FListIntr FCollection;
 
 extern void f_collection_set(FCollection* Collection);
 

@@ -246,13 +246,12 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        unsigned eTotal = f_entity__numGet();
-        unsigned eActive = f_entity__numGetActive();
+        f_font_printf("%u entities\n", f_entity__num);
 
-        f_font_printf("%u entities\n", eTotal);
-
-        if(eTotal > 0) {
-            f_font_printf("%u active (%u%%)", eActive, 100 * eActive / eTotal);
+        if(f_entity__num > 0) {
+            f_font_printf(
+                "%u active (%u%%)",
+                f_entity__numActive, 100 * f_entity__numActive / f_entity__num);
         }
     }
 

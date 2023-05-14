@@ -21,6 +21,7 @@
 #include "f_entity.p.h"
 
 #include "../data/f_list.v.h"
+#include "../ecs/f_collection.v.h"
 #include "../ecs/f_component.v.h"
 #include "../ecs/f_system.v.h"
 
@@ -31,11 +32,23 @@
 #define F_ENTITY__REMOVE_INACTIVE F_FLAGS_BIT(4) // mark for removal if kicked
 #define F_ENTITY__ALLOC_STRING_ID F_FLAGS_BIT(5) // free string ID if set
 
+typedef enum {
+    F_LIST__DEFAULT, // no pending changes
+    F_LIST__NEW, // new entities that aren't in any systems yet
+    F_LIST__RESTORE, // entities matched to systems, to be added to them
+    F_LIST__FLUSH, // muted or removed entities, to be flushed from systems
+    F_LIST__FREE, // entities to be freed at the end of current frame
+    F_LIST__NUM,
+    F_ENUM_SIGNED(FEntityList)
+} FEntityList;
+
 struct FEntity {
     char* id; // specified name for debugging
     FEntity* parent; // manually associated parent entity
-    FListNode* node; // list node in one of FEntityList
-    FListNode* collectionNode; // FCollection list nod
+    FListIntrNode node; // list node in one of FEntityList
+    FEntityList uniqueList; // bucket list this entity is in
+    FListIntrNode collectionNode; // collection list node
+    const FCollection* collectionList; // collection backpointer
     FList* matchingSystemsActive; // FList<FSystem*>
     FList* matchingSystemsRest; // FList<FSystem*>
     FList* systemNodesActive; // FList<FListNode*> in active-only FSystem lists
@@ -48,6 +61,9 @@ struct FEntity {
     FComponentInstance* componentsTable[1]; // [f_component__num] Buffer/NULL
 };
 
+extern unsigned f_entity__num;
+extern unsigned f_entity__numActive;
+
 extern bool f_entity__ignoreRefDec;
 
 extern void f_entity__init(void);
@@ -55,11 +71,8 @@ extern void f_entity__uninit(void);
 
 extern void f_entity__tick(void);
 extern void f_entity__flushFromSystems(void);
-extern unsigned f_entity__numGet(void);
-extern unsigned f_entity__numGetActive(void);
 
 extern void f_entity__free(FEntity* Entity);
-extern void f_entity__freeEx(FEntity* Entity);
 
 extern void f_entity__flushFromSystemsActive(FEntity* Entity);
 

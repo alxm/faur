@@ -18,20 +18,12 @@
 #include "f_entity.v.h"
 #include <faur.v.h>
 
-typedef enum {
-    F_LIST__DEFAULT, // no pending changes
-    F_LIST__NEW, // new entities that aren't in any systems yet
-    F_LIST__RESTORE, // entities matched to systems, to be added to them
-    F_LIST__FLUSH, // muted or removed entities, to be flushed from systems
-    F_LIST__FREE, // entities to be freed at the end of current frame
-    F_LIST__NUM,
-    F_ENUM_SIGNED(FEntityList)
-} FEntityList;
-
 static FPool* g_pool; // To allocate entities from
-static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
-static unsigned g_activeNum; // Number of active entities this frame
+static FListIntr g_lists[F_LIST__NUM]; // FListIntr<FEntity*>
 static unsigned g_activeNumPermanent; // Number of always-active entities
+
+unsigned f_entity__num; // Number of entities this frame
+unsigned f_entity__numActive; // Number of active entities this frame
 
 bool f_entity__ignoreRefDec; // Set to prevent using freed entities
 
@@ -43,18 +35,18 @@ static inline bool canDelete(const FEntity* Entity)
 
 static inline bool listIsIn(const FEntity* Entity, FEntityList List)
 {
-    return f_list__nodeGetList(Entity->node) == g_lists[List];
+    return Entity->uniqueList == List;
 }
 
 static inline void listAddTo(FEntity* Entity, FEntityList List)
 {
-    Entity->node = f_list_addLast(g_lists[List], Entity);
+    f_listintr_addLast(&g_lists[List], Entity);
+    Entity->uniqueList = List;
 }
 
 static inline void listMoveTo(FEntity* Entity, FEntityList List)
 {
-    f_list_removeNode(Entity->node);
-
+    f_listintr_removeNode(&Entity->node);
     listAddTo(Entity, List);
 }
 
@@ -65,7 +57,7 @@ void f_entity__init(void)
                     + sizeof(FComponentInstance*) * (f_component__num - 1));
 
     for(int i = F_LIST__NUM; i--; ) {
-        g_lists[i] = f_list_new();
+        f_listintr_init(&g_lists[i], FEntity, node);
     }
 }
 
@@ -74,7 +66,7 @@ void f_entity__uninit(void)
     f_entity__ignoreRefDec = true;
 
     for(int i = F_LIST__NUM; i--; ) {
-        f_list_freeEx(g_lists[i], (FCallFree*)f_entity__free);
+        f_listintr_clearEx(&g_lists[i], (FCallFree*)f_entity__free);
     }
 
     f_pool_free(g_pool);
@@ -82,16 +74,12 @@ void f_entity__uninit(void)
 
 void f_entity__tick(void)
 {
-    if(g_lists[0] == NULL) {
-        return;
-    }
-
-    g_activeNum = 0;
+    f_entity__numActive = g_activeNumPermanent;
 
     f_entity__flushFromSystems();
 
     // Check what systems the new entities match
-    F_LIST_ITERATE(g_lists[F_LIST__NEW], FEntity*, e) {
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__NEW], FEntity*, e) {
         for(unsigned s = f_system__num; s--; ) {
             FSystem* system = f_system__array[s];
 
@@ -108,7 +96,7 @@ void f_entity__tick(void)
     }
 
     // Add entities to the systems they match
-    F_LIST_ITERATE(g_lists[F_LIST__RESTORE], FEntity*, e) {
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__RESTORE], FEntity*, e) {
         #if F_CONFIG_DEBUG
             if(f_list_sizeIsEmpty(e->matchingSystemsActive)
                 && f_list_sizeIsEmpty(e->matchingSystemsRest)) {
@@ -133,14 +121,14 @@ void f_entity__tick(void)
         listAddTo(e, F_LIST__DEFAULT);
     }
 
-    f_list_clear(g_lists[F_LIST__NEW]);
-    f_list_clear(g_lists[F_LIST__RESTORE]);
-    f_list_clearEx(g_lists[F_LIST__FREE], (FCallFree*)f_entity__free);
+    f_listintr_clear(&g_lists[F_LIST__NEW]);
+    f_listintr_clear(&g_lists[F_LIST__RESTORE]);
+    f_listintr_clearEx(&g_lists[F_LIST__FREE], (FCallFree*)f_entity__free);
 }
 
 void f_entity__flushFromSystems(void)
 {
-    F_LIST_ITERATE(g_lists[F_LIST__FLUSH], FEntity*, e) {
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__FLUSH], FEntity*, e) {
         if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
             f_out__info("%s removed from all systems", e->id);
         }
@@ -151,7 +139,7 @@ void f_entity__flushFromSystems(void)
         listAddTo(e, canDelete(e) ? F_LIST__FREE : F_LIST__DEFAULT);
     }
 
-    f_list_clear(g_lists[F_LIST__FLUSH]);
+    f_listintr_clear(&g_lists[F_LIST__FLUSH]);
 }
 
 void f_entity__flushFromSystemsActive(FEntity* Entity)
@@ -166,26 +154,6 @@ void f_entity__flushFromSystemsActive(FEntity* Entity)
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVE_INACTIVE)) {
         f_entity_removedSet(Entity);
     }
-}
-
-unsigned f_entity__numGet(void)
-{
-    if(g_lists[0] == NULL) {
-        return 0;
-    }
-
-    unsigned sum = 0;
-
-    for(int i = F_LIST__NUM; i--; ) {
-        sum += f_list_sizeGet(g_lists[i]);
-    }
-
-    return sum;
-}
-
-unsigned f_entity__numGetActive(void)
-{
-    return g_activeNum + g_activeNumPermanent;
 }
 
 FEntity* f_entity_new(const char* Id)
@@ -203,13 +171,18 @@ FEntity* f_entity_new(const char* Id)
     e->lastActive = f_fps_ticksGet() - 1;
 
     if(f__collection) {
-        e->collectionNode = f_list_addLast(f__collection, e);
+        e->collectionList = f__collection;
+        f_listintr_addLast(f__collection, e);
+    } else {
+        f_listintr_nodeInit(&e->collectionNode);
     }
 
     if(Id) {
         e->id = f_str_dup(Id);
         F_FLAGS_SET(e->flags, F_ENTITY__ALLOC_STRING_ID);
     }
+
+    f_entity__num++;
 
     return e;
 }
@@ -224,10 +197,8 @@ void f_entity__free(FEntity* Entity)
         f_out__info("f_entity__free(%s)", Entity->id);
     }
 
-    if(Entity->collectionNode) {
-        f_list_removeNode(Entity->collectionNode);
-    }
-
+    f_listintr_removeNode(&Entity->node);
+    f_listintr_removeNode(&Entity->collectionNode);
     f_list_free(Entity->matchingSystemsActive);
     f_list_free(Entity->matchingSystemsRest);
     f_list_freeEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
@@ -249,20 +220,12 @@ void f_entity__free(FEntity* Entity)
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
         g_activeNumPermanent--;
+        f_entity__numActive--;
     }
 
     f_pool_release(Entity);
-}
 
-void f_entity__freeEx(FEntity* Entity)
-{
-    if(Entity == NULL) {
-        return;
-    }
-
-    f_list_removeNode(Entity->node);
-
-    f_entity__free(Entity);
+    f_entity__num--;
 }
 
 void f_entity_debugSet(FEntity* Entity, bool DebugOn)
@@ -306,12 +269,7 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
                     Parent ? Parent->id : "NULL");
     }
 
-    if(Parent
-        && ((!!Parent->collectionNode != !!Entity->collectionNode)
-            || (Parent->collectionNode
-                && f_list__nodeGetList(Parent->collectionNode)
-                    != f_list__nodeGetList(Entity->collectionNode)))) {
-
+    if(Parent && Parent->collectionList != Entity->collectionList) {
         F__FATAL("f_entity_parentSet(%s, %s): Different collections",
                  Entity->id,
                  Parent->id);
@@ -444,7 +402,7 @@ void f_entity_activeSet(FEntity* Entity)
     }
 
     if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
-        g_activeNum++;
+        f_entity__numActive++;
     }
 
     Entity->lastActive = f_fps_ticksGet();
@@ -482,6 +440,7 @@ void f_entity_activeSetPermanent(FEntity* Entity)
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 
     g_activeNumPermanent++;
+    f_entity__numActive++;
 }
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
