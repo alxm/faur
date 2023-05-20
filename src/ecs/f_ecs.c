@@ -36,7 +36,7 @@ const FPack f_pack__ecs = {
     f_ecs__uninit,
 };
 
-void f_ecs__set(FComponent* const* Components, size_t ComponentsNum, FSystem* const* Systems, size_t SystemsNum)
+void f_ecs__set(FComponent* const* Components, size_t ComponentsNum, const FSystem* const* Systems, size_t SystemsNum)
 {
     f_component__init(Components, ComponentsNum);
     f_system__init(Systems, SystemsNum);

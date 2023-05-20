@@ -49,8 +49,8 @@ struct FEntity {
     FEntityList uniqueList; // bucket list this entity is in
     FListIntrNode collectionNode; // collection list node
     const FCollection* collectionList; // collection backpointer
-    FList* matchingSystemsActive; // FList<FSystem*>
-    FList* matchingSystemsRest; // FList<FSystem*>
+    FList* matchingSystemsActive; // FList<const FSystem*>
+    FList* matchingSystemsRest; // FList<const FSystem*>
     FList* systemNodesActive; // FList<FListNode*> in active-only FSystem lists
     FList* systemNodesEither; // FList<FListNode*> in rest FSystem lists
     FBitfield* componentBits; // each component's bit is set

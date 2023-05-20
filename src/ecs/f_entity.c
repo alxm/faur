@@ -81,13 +81,15 @@ void f_entity__tick(void)
     // Check what systems the new entities match
     F_LISTINTR_ITERATE(&g_lists[F_LIST__NEW], FEntity*, e) {
         for(unsigned s = f_system__num; s--; ) {
-            FSystem* system = f_system__array[s];
+            const FSystem* system = f_system__array[s];
 
-            if(f_bitfield_testMask(e->componentBits, system->componentBits)) {
+            if(f_bitfield_testMask(
+                e->componentBits, system->runtime->componentBits)) {
+
                 if(system->onlyActiveEntities) {
-                    f_list_addLast(e->matchingSystemsActive, system);
+                    f_list_addLast(e->matchingSystemsActive, (FSystem*)system);
                 } else {
-                    f_list_addLast(e->matchingSystemsRest, system);
+                    f_list_addLast(e->matchingSystemsRest, (FSystem*)system);
                 }
             }
         }
@@ -107,15 +109,15 @@ void f_entity__tick(void)
         #endif
 
         if(!F_FLAGS_TEST_ANY(e->flags, F_ENTITY__ACTIVE_REMOVED)) {
-            F_LIST_ITERATE(e->matchingSystemsActive, FSystem*, system) {
-                f_list_addLast(
-                    e->systemNodesActive, f_list_addLast(system->entities, e));
+            F_LIST_ITERATE(e->matchingSystemsActive, const FSystem*, system) {
+                f_list_addLast(e->systemNodesActive,
+                               f_list_addLast(system->runtime->entities, e));
             }
         }
 
-        F_LIST_ITERATE(e->matchingSystemsRest, FSystem*, system) {
-            f_list_addLast(
-                e->systemNodesEither, f_list_addLast(system->entities, e));
+        F_LIST_ITERATE(e->matchingSystemsRest, const FSystem*, system) {
+            f_list_addLast(e->systemNodesEither,
+                           f_list_addLast(system->runtime->entities, e));
         }
 
         listAddTo(e, F_LIST__DEFAULT);
@@ -453,9 +455,9 @@ void f_entity_activeSet(FEntity* Entity)
         F_FLAGS_CLEAR(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
-        F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
+        F_LIST_ITERATE(Entity->matchingSystemsActive, const FSystem*, system) {
             f_list_addLast(Entity->systemNodesActive,
-                           f_list_addLast(system->entities, Entity));
+                           f_list_addLast(system->runtime->entities, Entity));
         }
     }
 }

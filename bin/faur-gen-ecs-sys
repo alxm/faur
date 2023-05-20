@@ -53,7 +53,7 @@ f"""\
 
 #include <faur.h>
 
-extern FSystem s_{sys_name};
+extern const FSystem s_{sys_name};
 """)
 
 if __name__ == '__main__':

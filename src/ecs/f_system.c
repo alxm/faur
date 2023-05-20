@@ -18,19 +18,19 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-FSystem* const* f_system__array; // [f_system__num]
+const FSystem* const* f_system__array; // [f_system__num]
 unsigned f_system__num;
 
-void f_system__init(FSystem* const* Systems, size_t SystemsNum)
+void f_system__init(const FSystem* const* Systems, size_t SystemsNum)
 {
     f_system__array = Systems;
     f_system__num = (unsigned)SystemsNum;
 
     for(unsigned s = f_system__num; s--; ) {
-        FSystem* sys = f_system__array[s];
+        const FSystem* sys = f_system__array[s];
 
-        sys->entities = f_list_new();
-        sys->componentBits = f_bitfield_new(f_component__num);
+        sys->runtime->entities = f_list_new();
+        sys->runtime->componentBits = f_bitfield_new(f_component__num);
 
         for(unsigned c = sys->componentsNum; c--; ) {
             if(sys->components[c] == NULL) {
@@ -40,7 +40,8 @@ void f_system__init(FSystem* const* Systems, size_t SystemsNum)
                          sys->componentsNum);
             }
 
-            f_bitfield_set(sys->componentBits, sys->components[c]->bitId);
+            f_bitfield_set(
+                sys->runtime->componentBits, sys->components[c]->bitId);
         }
     }
 }
@@ -48,10 +49,10 @@ void f_system__init(FSystem* const* Systems, size_t SystemsNum)
 void f_system__uninit(void)
 {
     for(unsigned s = f_system__num; s--; ) {
-        FSystem* sys = f_system__array[s];
+        const FSystem* system = f_system__array[s];
 
-        f_list_free(sys->entities);
-        f_bitfield_free(sys->componentBits);
+        f_list_free(system->runtime->entities);
+        f_bitfield_free(system->runtime->componentBits);
     }
 }
 
@@ -60,11 +61,12 @@ void f_system_run(const FSystem* System)
     F__CHECK(System != NULL);
 
     if(System->compare) {
-        f_list_sort(System->entities, (FCallListCompare*)System->compare);
+        f_list_sort(
+            System->runtime->entities, (FCallListCompare*)System->compare);
     }
 
     if(System->onlyActiveEntities) {
-        F_LIST_ITERATE(System->entities, FEntity*, entity) {
+        F_LIST_ITERATE(System->runtime->entities, FEntity*, entity) {
             if(f_entity_activeGet(entity)) {
                 System->handler(entity);
             } else {
@@ -72,7 +74,7 @@ void f_system_run(const FSystem* System)
             }
         }
     } else {
-        F_LIST_ITERATE(System->entities, FEntity*, entity) {
+        F_LIST_ITERATE(System->runtime->entities, FEntity*, entity) {
             System->handler(entity);
         }
     }

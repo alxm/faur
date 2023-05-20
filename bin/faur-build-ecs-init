@@ -38,7 +38,7 @@ def main():
 
     rules = [
         Rule(components, 'extern FComponent (c(_[a-zA-Z0-9]+)+);'),
-        Rule(systems, 'extern FSystem (s(_[a-zA-Z0-9]+)+);'),
+        Rule(systems, 'extern const FSystem (s(_[a-zA-Z0-9]+)+);'),
     ]
 
     for h in headers:
@@ -72,7 +72,7 @@ void f_ecs__populate(void)
 {components}
     }};
 
-    static FSystem* const systems[{systems_num}] = {{
+    static const FSystem* const systems[{systems_num}] = {{
 {systems}
     }};
 
