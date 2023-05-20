@@ -437,6 +437,15 @@ void f_entity_activeSetPermanent(FEntity* Entity)
         f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
     }
 
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
+        #if F_CONFIG_DEBUG
+            f_out__warning(
+                "f_entity_activeSetPermanent(%s): Already set", Entity->id);
+        #endif
+
+        return;
+    }
+
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 
     g_activeNumPermanent++;
