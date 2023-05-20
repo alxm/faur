@@ -40,9 +40,9 @@ void f_collection_free(FCollection* Collection)
         return;
     }
 
-    f_entity__ignoreRefDec = true;
+    f_entity__bulkFreeInProgress = true;
     f_listintr_apply(Collection, (FCallFree*)f_entity__free);
-    f_entity__ignoreRefDec = false;
+    f_entity__bulkFreeInProgress = false;
 
     if(f__collection == Collection) {
         f__collection = NULL;

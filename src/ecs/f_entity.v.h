@@ -64,7 +64,7 @@ struct FEntity {
 extern unsigned f_entity__num;
 extern unsigned f_entity__numActive;
 
-extern bool f_entity__ignoreRefDec;
+extern bool f_entity__bulkFreeInProgress;
 
 extern void f_entity__init(void);
 extern void f_entity__uninit(void);
