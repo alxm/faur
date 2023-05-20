@@ -129,7 +129,7 @@ void f_entity__tick(void)
 void f_entity__flushFromSystems(void)
 {
     F_LISTINTR_ITERATE(&g_lists[F_LIST__FLUSH], FEntity*, e) {
-        if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
+        if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
             f_out__info("%s removed from all systems", e->id);
         }
 
@@ -144,7 +144,7 @@ void f_entity__flushFromSystems(void)
 
 void f_entity__flushFromSystemsActive(FEntity* Entity)
 {
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("%s removed from active-only systems", Entity->id);
     }
 
@@ -193,7 +193,7 @@ void f_entity__free(FEntity* Entity)
         return;
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity__free(%s)", Entity->id);
     }
 
@@ -232,7 +232,7 @@ void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
+    if(F_CONFIG_DEBUG) {
         if(DebugOn) {
             F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
         } else {
@@ -240,9 +240,7 @@ void f_entity_debugSet(FEntity* Entity, bool DebugOn)
         }
 
         f_out__info("f_entity_debugSet(%s, %d)", Entity->id, DebugOn);
-    #else
-        F_UNUSED(DebugOn);
-    #endif
+    }
 }
 
 const char* f_entity_idGet(const FEntity* Entity)
@@ -263,7 +261,7 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
     F__CHECK(Entity != NULL);
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_parentSet(%s, %s)",
                     Entity->id,
                     Parent ? Parent->id : "NULL");
@@ -312,7 +310,7 @@ void f_entity_refInc(FEntity* Entity)
         F__FATAL("f_entity_refInc(%s): Count too high", Entity->id);
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_refInc(%s) %d->%d",
                     Entity->id,
                     Entity->references,
@@ -337,7 +335,7 @@ void f_entity_refDec(FEntity* Entity)
         F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_refDec(%s) %d->%d",
                     Entity->id,
                     Entity->references,
@@ -371,7 +369,7 @@ void f_entity_removedSet(FEntity* Entity)
         return;
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_removedSet(%s)", Entity->id);
     }
 
@@ -397,7 +395,7 @@ void f_entity_activeSet(FEntity* Entity)
         return;
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_activeSet(%s)", Entity->id);
     }
 
@@ -422,7 +420,7 @@ void f_entity_activeSetRemove(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
     }
 
@@ -433,7 +431,7 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
     }
 
@@ -469,7 +467,7 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
                  Component->stringId);
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_componentAdd(%s, %s)",
                     Entity->id,
                     Component->stringId);
@@ -541,7 +539,7 @@ void f_entity_muteInc(FEntity* Entity)
         F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_muteInc(%s) %d->%d",
                     Entity->id,
                     Entity->muteCount,
@@ -570,7 +568,7 @@ void f_entity_muteDec(FEntity* Entity)
         F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
     }
 
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
         f_out__info("f_entity_muteDec(%s) %d->%d",
                     Entity->id,
                     Entity->muteCount,
