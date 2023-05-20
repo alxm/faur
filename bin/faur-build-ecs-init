@@ -30,7 +30,6 @@ def main():
     externs = []
     components = []
     systems = []
-    entities = []
 
     class Rule:
         def __init__(self, List, Pattern):
@@ -78,16 +77,13 @@ void f_ecs__populate(void)
     }};
 
     f_ecs__set(components, {components_num}, systems, {systems_num});
-
-{entities}
 }}
 """.format(cmd = g_tool.get_cmd(),
            externs = '\n'.join(externs),
            components = '\n'.join([f'        &{c},' for c in components]),
            components_num = len(components),
            systems = '\n'.join([f'        &{s},' for s in systems]),
-           systems_num = len(systems),
-           entities = '\n'.join([f'    f_sym_set({e});' for e in entities]))
+           systems_num = len(systems))
     else:
         content = f"""\
 //
