@@ -18,13 +18,13 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-FComponent* const* f_component__array; // [f_component__num]
+const FComponent* const* f_component__array; // [f_component__num]
 unsigned f_component__num;
-FHash* f_component__index; // FHash<const char*, FComponent*>
+FHash* f_component__index; // FHash<const char*, const FComponent*>
 
 static FPool** g_pools;
 
-void f_component__init(FComponent* const* Components, size_t ComponentsNum)
+void f_component__init(const FComponent* const* Components, size_t ComponentsNum)
 {
     f_component__array = Components;
     f_component__num = (unsigned)ComponentsNum;
@@ -33,15 +33,17 @@ void f_component__init(FComponent* const* Components, size_t ComponentsNum)
     g_pools = f_mem_malloc(ComponentsNum * sizeof(FPool*));
 
     for(unsigned c = f_component__num; c--; ) {
-        FComponent* com = f_component__array[c];
+        const FComponent* component = f_component__array[c];
 
-        com->size +=
-            (unsigned)(sizeof(FComponentInstance) - sizeof(FMaxMemAlignType));
-        com->bitId = c;
+        component->runtime->bitId = c;
 
-        f_hash_add(f_component__index, com->stringId, com);
+        f_hash_add(
+            f_component__index, component->stringId, (FComponent*)component);
 
-        g_pools[c] = f_pool_new(com->size);
+        g_pools[c] = f_pool_new(
+                        component->size
+                            + (unsigned)(sizeof(FComponentInstance)
+                            - sizeof(FMaxMemAlignType)));
     }
 }
 
@@ -70,7 +72,7 @@ FEntity* f_component_entityGet(const void* ComponentBuffer)
 
 FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity)
 {
-    FComponentInstance* c = f_pool_alloc(g_pools[Component->bitId]);
+    FComponentInstance* c = f_pool_alloc(g_pools[Component->runtime->bitId]);
 
     c->component = Component;
     c->entity = Entity;

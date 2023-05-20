@@ -31,11 +31,11 @@ struct FComponentInstance {
     FMaxMemAlignType buffer[1];
 };
 
-extern FComponent* const* f_component__array;
+extern const FComponent* const* f_component__array;
 extern unsigned f_component__num;
 extern FHash* f_component__index;
 
-extern void f_component__init(FComponent* const* Components, size_t ComponentsNum);
+extern void f_component__init(const FComponent* const* Components, size_t ComponentsNum);
 extern void f_component__uninit(void);
 
 extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity);

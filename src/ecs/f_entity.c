@@ -519,7 +519,7 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
                  Component->stringId);
     }
 
-    if(Entity->componentsTable[Component->bitId] != NULL) {
+    if(Entity->componentsTable[Component->runtime->bitId] != NULL) {
         F__FATAL("f_entity_componentAdd(%s, %s): Already added",
                  Entity->id,
                  Component->stringId);
@@ -533,8 +533,8 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 
     FComponentInstance* c = f_component__instanceNew(Component, Entity);
 
-    Entity->componentsTable[Component->bitId] = c;
-    f_bitfield_set(Entity->componentBits, Component->bitId);
+    Entity->componentsTable[Component->runtime->bitId] = c;
+    f_bitfield_set(Entity->componentBits, Component->runtime->bitId);
 
     return c->buffer;
 }
@@ -548,7 +548,7 @@ bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)
         F__FATAL("f_entity_componentHas: Free in progress");
     }
 
-    return Entity->componentsTable[Component->bitId] != NULL;
+    return Entity->componentsTable[Component->runtime->bitId] != NULL;
 }
 
 void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
@@ -560,7 +560,8 @@ void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
         F__FATAL("f_entity_componentGet: Free in progress");
     }
 
-    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
+    FComponentInstance* instance =
+        Entity->componentsTable[Component->runtime->bitId];
 
     return instance ? instance->buffer : NULL;
 }
@@ -574,7 +575,8 @@ void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
         F__FATAL("f_entity_componentReq: Free in progress");
     }
 
-    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
+    FComponentInstance* instance =
+        Entity->componentsTable[Component->runtime->bitId];
 
     if(instance == NULL) {
         F__FATAL("f_entity_componentReq(%s, %s): Missing component",

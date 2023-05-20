@@ -31,20 +31,27 @@ typedef void FCallComponentDataFree(void* Data);
 typedef void FCallComponentInstanceInit(void* Self);
 typedef void FCallComponentInstanceFree(void* Self);
 
+typedef struct {
+    unsigned bitId; // unique number ID
+} F__ComponentRuntime;
+
 struct FComponent {
-    unsigned size; // total size of FComponentInstance + user data that follows
+    F__ComponentRuntime* runtime; // all the non-constant data
     const char* stringId; // unique string ID
+    unsigned size; // size of user data that follows FComponentInstance
     FCallComponentInstanceInit* init; // sets component buffer default values
     FCallComponentInstanceFree* free; // does not free the actual comp buffer
-    unsigned bitId; // unique number ID
 };
 
-#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree) \
-    FComponent Name = {                                             \
-        .size = (unsigned)InstanceSize,                             \
-        .init = (FCallComponentInstanceInit*)InstanceInit,          \
-        .free = (FCallComponentInstanceFree*)InstanceFree,          \
-        .stringId = F_STRINGIFY(Name),                              \
+#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree)  \
+    static F__ComponentRuntime F_GLUE2(f__component_runtime_, Name); \
+                                                                     \
+    const FComponent Name = {                                        \
+        .runtime = &F_GLUE2(f__component_runtime_, Name),            \
+        .stringId = F_STRINGIFY(Name),                               \
+        .size = (unsigned)InstanceSize,                              \
+        .init = (FCallComponentInstanceInit*)InstanceInit,           \
+        .free = (FCallComponentInstanceFree*)InstanceFree,           \
     }
 
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);

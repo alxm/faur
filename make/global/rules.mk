@@ -32,7 +32,7 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 				    grep \
 					-l \
 					-e "extern const FSystem s_" \
-					-e "extern FComponent c_" \
+					-e "extern const FComponent c_" \
 					{} +)
 
 #

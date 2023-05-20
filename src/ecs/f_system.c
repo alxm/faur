@@ -40,8 +40,8 @@ void f_system__init(const FSystem* const* Systems, size_t SystemsNum)
                          sys->componentsNum);
             }
 
-            f_bitfield_set(
-                sys->runtime->componentBits, sys->components[c]->bitId);
+            f_bitfield_set(sys->runtime->componentBits,
+                           sys->components[c]->runtime->bitId);
         }
     }
 }

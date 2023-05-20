@@ -37,7 +37,7 @@ def main():
             self.pattern = re.compile(Pattern)
 
     rules = [
-        Rule(components, 'extern FComponent (c(_[a-zA-Z0-9]+)+);'),
+        Rule(components, 'extern const FComponent (c(_[a-zA-Z0-9]+)+);'),
         Rule(systems, 'extern const FSystem (s(_[a-zA-Z0-9]+)+);'),
     ]
 
@@ -68,7 +68,7 @@ def main():
 
 void f_ecs__populate(void)
 {{
-    static FComponent* const components[{components_num}] = {{
+    static const FComponent* const components[{components_num}] = {{
 {components}
     }};
 
