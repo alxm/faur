@@ -47,7 +47,7 @@ static void c_{name}_instanceInit({ctype}* {paramVar})
 
 static void c_{name}_instanceFree({ctype}* {paramVar})
 {{
-    F_UNUSED({paramVar});
+    {paramVar}->value = 0;
 }}
 
 F_COMPONENT(

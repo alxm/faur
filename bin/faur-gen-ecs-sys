@@ -35,7 +35,7 @@ f"""\
 
 static void s_{sys_name}_handler(FEntity* Entity)
 {{
-    F_UNUSED(Entity);
+    f_out_info("Handling entity '%s'\\n", f_entity_idGet(Entity));
 }}
 
 F_SYSTEM(

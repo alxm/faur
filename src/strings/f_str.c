@@ -141,6 +141,7 @@ char* f_str_subGetSuffix(const char* String, int Length)
     F__CHECK(Length >= 0);
 
     int sLen = (int)strlen(String);
+
     return f_str_subGetRange(String, sLen - Length, sLen);
 }
 

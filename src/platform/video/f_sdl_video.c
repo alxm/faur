@@ -152,12 +152,7 @@ static FVecInt sdlScreenSizeGetNative(void)
 
 static void mouseCursorSet(bool Show)
 {
-    #if F_CONFIG_LIB_SDL_CURSOR
-        int setting = Show ? SDL_ENABLE : SDL_DISABLE;
-    #else
-        F_UNUSED(Show);
-        int setting = SDL_DISABLE;
-    #endif
+    int setting = (F_CONFIG_LIB_SDL_CURSOR && Show) ? SDL_ENABLE : SDL_DISABLE;
 
     if(SDL_ShowCursor(setting) < 0) {
         f_out__error("SDL_ShowCursor: %s", SDL_GetError());
