@@ -46,10 +46,10 @@ struct FSystem {
 };
 
 #define F_SYSTEM(Name, Handler, SortCompare, OnlyActiveEntities, ...) \
-    static F__SystemRuntime F_GLUE2(f__system_runtime_, Name);        \
+    static F__SystemRuntime F_GLUE2(f__system_runtime__, Name);       \
                                                                       \
     const FSystem Name = {                                            \
-        .runtime = &F_GLUE2(f__system_runtime_, Name),                \
+        .runtime = &F_GLUE2(f__system_runtime__, Name),               \
         .stringId = F_STRINGIFY(Name),                                \
         .handler = Handler,                                           \
         .compare = SortCompare,                                       \

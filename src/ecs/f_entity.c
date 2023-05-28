@@ -74,6 +74,10 @@ void f_entity__uninit(void)
 
 void f_entity__tick(void)
 {
+    if(!f_ecs__isInit()) {
+        return;
+    }
+
     f_entity__numActive = g_activeNumPermanent;
 
     f_entity__flushFromSystems();
@@ -160,6 +164,8 @@ void f_entity__flushFromSystemsActive(FEntity* Entity)
 
 FEntity* f_entity_new(const char* Id)
 {
+    F__CHECK(f_ecs__isInit());
+
     if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
         F__FATAL("f_entity_new(%s): Free in progress", Id);
     }

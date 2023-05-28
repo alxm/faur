@@ -20,4 +20,17 @@
 
 #include "../general/f_system_includes.h"
 
+#include "../ecs/f_component.p.h"
+#include "../ecs/f_system.p.h"
+
+#define F_ECS(Components, Systems) \
+    static const FComponent* f__c[] = Components; \
+    static const FSystem* f__s[] = Systems; \
+    f__ecs_init(f__c, F_ARRAY_LEN(f__c), f__s, F_ARRAY_LEN(f__s))
+
+#define F_COMPONENTS(...) {__VA_ARGS__}
+#define F_SYSTEMS(...) {__VA_ARGS__}
+
+extern void f__ecs_init(const FComponent* Components[], size_t ComponentsNum, const FSystem* Systems[], size_t SystemsNum);
+
 #endif // F_INC_ECS_ECS_P_H

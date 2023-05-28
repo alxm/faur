@@ -58,6 +58,7 @@ void f_system__uninit(void)
 
 void f_system_run(const FSystem* System)
 {
+    F__CHECK(f_ecs__isInit());
     F__CHECK(System != NULL);
 
     if(System->compare) {

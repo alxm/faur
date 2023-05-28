@@ -18,26 +18,31 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
-static void f_ecs__init(void)
-{
-    f_ecs__populate();
-}
-
 static void f_ecs__uninit(void)
 {
-    f_entity__uninit();
-    f_system__uninit();
-    f_component__uninit();
+    if(f_ecs__isInit()) {
+        f_entity__uninit();
+        f_system__uninit();
+        f_component__uninit();
+    }
 }
 
 const FPack f_pack__ecs = {
     "ECS",
-    f_ecs__init,
+    NULL,
     f_ecs__uninit,
 };
 
-void f_ecs__set(const FComponent* const* Components, size_t ComponentsNum, const FSystem* const* Systems, size_t SystemsNum)
+void f__ecs_init(const FComponent* Components[], size_t ComponentsNum, const FSystem* Systems[], size_t SystemsNum)
 {
+    F__CHECK(!f_ecs__isInit());
+    F__CHECK(Components != NULL);
+    F__CHECK(ComponentsNum > 0);
+    F__CHECK(Systems != NULL);
+    F__CHECK(SystemsNum > 0);
+
+    f_out__info("ECS: %zu components, %zu systems", ComponentsNum, SystemsNum);
+
     f_component__init(Components, ComponentsNum);
     f_system__init(Systems, SystemsNum);
     f_entity__init();

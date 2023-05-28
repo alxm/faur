@@ -27,6 +27,8 @@ void f_collection_set(FCollection* Collection)
 
 FCollection* f_collection_new(void)
 {
+    F__CHECK(f_ecs__isInit());
+
     FListIntr* l = f_pool__alloc(F_POOL__LISTINTR);
 
     f_listintr_init(l, FEntity, collectionNode);
