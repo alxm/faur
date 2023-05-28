@@ -20,7 +20,6 @@
 
 const FComponent* const* f_component__array; // [f_component__num]
 unsigned f_component__num;
-FHash* f_component__index; // FHash<const char*, const FComponent*>
 
 static FPool** g_pools;
 
@@ -28,7 +27,6 @@ void f_component__init(const FComponent* const* Components, size_t ComponentsNum
 {
     f_component__array = Components;
     f_component__num = (unsigned)ComponentsNum;
-    f_component__index = f_hash_newStr(256, false);
 
     g_pools = f_mem_malloc(ComponentsNum * sizeof(FPool*));
 
@@ -36,9 +34,6 @@ void f_component__init(const FComponent* const* Components, size_t ComponentsNum
         const FComponent* component = f_component__array[c];
 
         component->runtime->bitId = c;
-
-        f_hash_add(
-            f_component__index, component->stringId, (FComponent*)component);
 
         g_pools[c] = f_pool_new(
                         component->size
@@ -54,7 +49,6 @@ void f_component__uninit(void)
     }
 
     f_mem_free(g_pools);
-    f_hash_free(f_component__index);
 }
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
