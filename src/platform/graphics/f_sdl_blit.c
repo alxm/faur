@@ -22,12 +22,12 @@
 #include <SDL2/SDL.h>
 
 typedef enum {
-    F_SIDE__INVALID = -1,
     F_SIDE__NORMAL, // non-colorkey: alpha:0xff
     F_SIDE__COLORMOD_BITMAP, // colorkey: RGB:0xffffff
     F_SIDE__COLORMOD_FLAT, // non-colorkey: RGB:0xffffff
     F_SIDE__ALPHA_MASK, // all: alpha:RGB
-    F_SIDE__NUM
+    F_SIDE__NUM,
+    F_ENUM_SIGNED(FTextureSide)
 } FTextureSide;
 
 typedef struct {

@@ -21,7 +21,6 @@
 #include "../general/f_system_includes.h"
 
 typedef enum {
-    F_MENU_STATE_INVALID = -1,
     F_MENU_STATE_RUNNING,
     F_MENU_STATE_SELECTED,
     F_MENU_STATE_CANCELED

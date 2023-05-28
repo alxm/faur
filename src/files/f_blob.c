@@ -150,7 +150,7 @@ FBlob* f_blob_new(const char* Path)
 
     reader.alignMask = (1u << alignExp) - 1;
 
-    f_out_info("f_blob_new(%s): %u entries", Path, (unsigned)numEntries);
+    f_out__info("f_blob_new(%s): %u entries", Path, (unsigned)numEntries);
 
     while(numEntries--) {
         uint8_t entryType = read_uint8(&reader);

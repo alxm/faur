@@ -18,32 +18,14 @@
 #include "f_entity.v.h"
 #include <faur.v.h>
 
-typedef enum {
-    F_LIST__INVALID = -1,
-    F_LIST__DEFAULT, // no pending changes
-    F_LIST__NEW, // new entities that aren't in any systems yet
-    F_LIST__RESTORE, // entities matched to systems, to be added to them
-    F_LIST__FLUSH, // muted or removed entities, to be flushed from systems
-    F_LIST__FREE, // entities to be freed at the end of current frame
-    F_LIST__NUM
-} FEntityList;
-
 static FPool* g_pool; // To allocate entities from
-static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
-static unsigned g_activeNum; // Number of active entities this frame
+static FListIntr g_lists[F_LIST__NUM]; // FListIntr<FEntity*>
 static unsigned g_activeNumPermanent; // Number of always-active entities
 
-bool f_entity__ignoreRefDec; // Set to prevent using freed entities
+unsigned f_entity__num; // Number of entities this frame
+unsigned f_entity__numActive; // Number of active entities this frame
 
-static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* Data)
-{
-    FComponentInstance* c = f_component__instanceNew(Component, Entity, Data);
-
-    Entity->componentsTable[Component->bitId] = c;
-    f_bitfield_set(Entity->componentBits, Component->bitId);
-
-    return c;
-}
+bool f_entity__bulkFreeInProgress; // Set to prevent using freed entities
 
 static inline bool canDelete(const FEntity* Entity)
 {
@@ -53,18 +35,18 @@ static inline bool canDelete(const FEntity* Entity)
 
 static inline bool listIsIn(const FEntity* Entity, FEntityList List)
 {
-    return f_list__nodeGetList(Entity->node) == g_lists[List];
+    return Entity->uniqueList == List;
 }
 
 static inline void listAddTo(FEntity* Entity, FEntityList List)
 {
-    Entity->node = f_list_addLast(g_lists[List], Entity);
+    f_listintr_addLast(&g_lists[List], Entity);
+    Entity->uniqueList = List;
 }
 
 static inline void listMoveTo(FEntity* Entity, FEntityList List)
 {
-    f_list_removeNode(Entity->node);
-
+    f_listintr_removeNode(&Entity->node);
     listAddTo(Entity, List);
 }
 
@@ -75,16 +57,16 @@ void f_entity__init(void)
                     + sizeof(FComponentInstance*) * (f_component__num - 1));
 
     for(int i = F_LIST__NUM; i--; ) {
-        g_lists[i] = f_list_new();
+        f_listintr_init(&g_lists[i], FEntity, node);
     }
 }
 
 void f_entity__uninit(void)
 {
-    f_entity__ignoreRefDec = true;
+    f_entity__bulkFreeInProgress = true;
 
     for(int i = F_LIST__NUM; i--; ) {
-        f_list_freeEx(g_lists[i], (FCallFree*)f_entity__free);
+        f_listintr_clearEx(&g_lists[i], (FCallFree*)f_entity__free);
     }
 
     f_pool_free(g_pool);
@@ -92,24 +74,26 @@ void f_entity__uninit(void)
 
 void f_entity__tick(void)
 {
-    if(g_lists[0] == NULL) {
+    if(!f_ecs__isInit()) {
         return;
     }
 
-    g_activeNum = 0;
+    f_entity__numActive = g_activeNumPermanent;
 
     f_entity__flushFromSystems();
 
     // Check what systems the new entities match
-    F_LIST_ITERATE(g_lists[F_LIST__NEW], FEntity*, e) {
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__NEW], FEntity*, e) {
         for(unsigned s = f_system__num; s--; ) {
-            FSystem* system = f_system__array[s];
+            const FSystem* system = f_system__array[s];
 
-            if(f_bitfield_testMask(e->componentBits, system->componentBits)) {
+            if(f_bitfield_testMask(
+                e->componentBits, system->runtime->componentBits)) {
+
                 if(system->onlyActiveEntities) {
-                    f_list_addLast(e->matchingSystemsActive, system);
+                    f_list_addLast(e->matchingSystemsActive, (FSystem*)system);
                 } else {
-                    f_list_addLast(e->matchingSystemsRest, system);
+                    f_list_addLast(e->matchingSystemsRest, (FSystem*)system);
                 }
             }
         }
@@ -118,7 +102,7 @@ void f_entity__tick(void)
     }
 
     // Add entities to the systems they match
-    F_LIST_ITERATE(g_lists[F_LIST__RESTORE], FEntity*, e) {
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__RESTORE], FEntity*, e) {
         #if F_CONFIG_DEBUG
             if(f_list_sizeIsEmpty(e->matchingSystemsActive)
                 && f_list_sizeIsEmpty(e->matchingSystemsRest)) {
@@ -129,33 +113,31 @@ void f_entity__tick(void)
         #endif
 
         if(!F_FLAGS_TEST_ANY(e->flags, F_ENTITY__ACTIVE_REMOVED)) {
-            F_LIST_ITERATE(e->matchingSystemsActive, FSystem*, system) {
-                f_list_addLast(
-                    e->systemNodesActive, f_system__entityAdd(system, e));
+            F_LIST_ITERATE(e->matchingSystemsActive, const FSystem*, system) {
+                f_list_addLast(e->systemNodesActive,
+                               f_list_addLast(system->runtime->entities, e));
             }
         }
 
-        F_LIST_ITERATE(e->matchingSystemsRest, FSystem*, system) {
-            f_list_addLast(
-                e->systemNodesEither, f_system__entityAdd(system, e));
+        F_LIST_ITERATE(e->matchingSystemsRest, const FSystem*, system) {
+            f_list_addLast(e->systemNodesEither,
+                           f_list_addLast(system->runtime->entities, e));
         }
 
         listAddTo(e, F_LIST__DEFAULT);
     }
 
-    f_list_clear(g_lists[F_LIST__NEW]);
-    f_list_clear(g_lists[F_LIST__RESTORE]);
-    f_list_clearEx(g_lists[F_LIST__FREE], (FCallFree*)f_entity__free);
+    f_listintr_clear(&g_lists[F_LIST__NEW]);
+    f_listintr_clear(&g_lists[F_LIST__RESTORE]);
+    f_listintr_clearEx(&g_lists[F_LIST__FREE], (FCallFree*)f_entity__free);
 }
 
 void f_entity__flushFromSystems(void)
 {
-    F_LIST_ITERATE(g_lists[F_LIST__FLUSH], FEntity*, e) {
-        #if F_CONFIG_DEBUG
-            if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
-                f_out__info("%s removed from all systems", e->id);
-            }
-        #endif
+    F_LISTINTR_ITERATE(&g_lists[F_LIST__FLUSH], FEntity*, e) {
+        if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
+            f_out__info("%s removed from all systems", e->id);
+        }
 
         f_list_clearEx(e->systemNodesActive, (FCallFree*)f_list_removeNode);
         f_list_clearEx(e->systemNodesEither, (FCallFree*)f_list_removeNode);
@@ -163,16 +145,14 @@ void f_entity__flushFromSystems(void)
         listAddTo(e, canDelete(e) ? F_LIST__FREE : F_LIST__DEFAULT);
     }
 
-    f_list_clear(g_lists[F_LIST__FLUSH]);
+    f_listintr_clear(&g_lists[F_LIST__FLUSH]);
 }
 
 void f_entity__flushFromSystemsActive(FEntity* Entity)
 {
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("%s removed from active-only systems", Entity->id);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("%s removed from active-only systems", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
     f_list_clearEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
@@ -182,28 +162,14 @@ void f_entity__flushFromSystemsActive(FEntity* Entity)
     }
 }
 
-unsigned f_entity__numGet(void)
+FEntity* f_entity_new(const char* Id)
 {
-    if(g_lists[0] == NULL) {
-        return 0;
+    F__CHECK(f_ecs__isInit());
+
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_new(%s): Free in progress", Id);
     }
 
-    unsigned sum = 0;
-
-    for(int i = F_LIST__NUM; i--; ) {
-        sum += f_list_sizeGet(g_lists[i]);
-    }
-
-    return sum;
-}
-
-unsigned f_entity__numGetActive(void)
-{
-    return g_activeNum + g_activeNumPermanent;
-}
-
-FEntity* f_entity_new(const char* Template, const void* Context)
-{
     FEntity* e = f_pool_alloc(g_pool);
 
     listAddTo(e, F_LIST__NEW);
@@ -217,28 +183,18 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     e->lastActive = f_fps_ticksGet() - 1;
 
     if(f__collection) {
-        e->collectionNode = f_list_addLast(f__collection, e);
+        e->collectionList = f__collection;
+        f_listintr_addLast(f__collection, e);
+    } else {
+        f_listintr_nodeInit(&e->collectionNode);
     }
 
-    if(Template) {
-        char id[64];
-        const FTemplate* t = f_template__get(Template);
-
-        if(!f_str_fmt(id, sizeof(id), false, "%s#%08X", Template, t->iNumber)) {
-            id[0] = '\0';
-        }
-
-        e->id = f_str_dup(id);
-        e->templ = t;
-
+    if(Id) {
+        e->id = f_str_dup(Id);
         F_FLAGS_SET(e->flags, F_ENTITY__ALLOC_STRING_ID);
-
-        F_LIST_ITERATE(t->componentsAll, const FComponent*, c) {
-            componentAdd(e, c, t->data[c->bitId]);
-        }
-
-        f_template__initRun(t, e, Context);
     }
+
+    f_entity__num++;
 
     return e;
 }
@@ -249,16 +205,12 @@ void f_entity__free(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity__free(%s)", Entity->id);
-        }
-    #endif
-
-    if(Entity->collectionNode) {
-        f_list_removeNode(Entity->collectionNode);
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity__free(%s)", Entity->id);
     }
 
+    f_listintr_removeNode(&Entity->node);
+    f_listintr_removeNode(&Entity->collectionNode);
     f_list_free(Entity->matchingSystemsActive);
     f_list_free(Entity->matchingSystemsRest);
     f_list_freeEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
@@ -280,40 +232,40 @@ void f_entity__free(FEntity* Entity)
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
         g_activeNumPermanent--;
+        f_entity__numActive--;
     }
 
     f_pool_release(Entity);
-}
 
-void f_entity__freeEx(FEntity* Entity)
-{
-    if(Entity == NULL) {
-        return;
-    }
-
-    f_list_removeNode(Entity->node);
-
-    f_entity__free(Entity);
+    f_entity__num--;
 }
 
 void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 {
     F__CHECK(Entity != NULL);
 
-    if(DebugOn) {
-        F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
-    } else {
-        F_FLAGS_CLEAR(Entity->flags, F_ENTITY__DEBUG);
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_debugSet: Free in progress");
     }
 
-    #if F_CONFIG_DEBUG
+    if(F_CONFIG_DEBUG) {
+        if(DebugOn) {
+            F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
+        } else {
+            F_FLAGS_CLEAR(Entity->flags, F_ENTITY__DEBUG);
+        }
+
         f_out__info("f_entity_debugSet(%s, %d)", Entity->id, DebugOn);
-    #endif
+    }
 }
 
 const char* f_entity_idGet(const FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
+
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_idGet: Free in progress");
+    }
 
     return Entity->id;
 }
@@ -322,6 +274,10 @@ FEntity* f_entity_parentGet(const FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_parentGet: Free in progress");
+    }
+
     return Entity->parent;
 }
 
@@ -329,20 +285,17 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_parentSet(%s, %s)",
-                        Entity->id,
-                        Parent ? Parent->id : "NULL");
-        }
-    #endif
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_parentSet: Free in progress");
+    }
 
-    if(Parent
-        && ((!!Parent->collectionNode != !!Entity->collectionNode)
-            || (Parent->collectionNode
-                && f_list__nodeGetList(Parent->collectionNode)
-                    != f_list__nodeGetList(Entity->collectionNode)))) {
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_parentSet(%s, %s)",
+                    Entity->id,
+                    Parent ? Parent->id : "NULL");
+    }
 
+    if(Parent && Parent->collectionList != Entity->collectionList) {
         F__FATAL("f_entity_parentSet(%s, %s): Different collections",
                  Entity->id,
                  Parent->id);
@@ -364,6 +317,10 @@ bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
     F__CHECK(Child != NULL);
     F__CHECK(PotentialParent != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_parentHas: Free in progress");
+    }
+
     for(FEntity* p = Child->parent; p != NULL; p = p->parent) {
         if(p == PotentialParent) {
             return true;
@@ -377,6 +334,10 @@ void f_entity_refInc(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_refInc: Free in progress");
+    }
+
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         F__FATAL("f_entity_refInc(%s): Entity is removed", Entity->id);
     }
@@ -385,14 +346,12 @@ void f_entity_refInc(FEntity* Entity)
         F__FATAL("f_entity_refInc(%s): Count too high", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_refInc(%s) %d->%d",
-                        Entity->id,
-                        Entity->references,
-                        Entity->references + 1);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_refInc(%s) %d->%d",
+                    Entity->id,
+                    Entity->references,
+                    Entity->references + 1);
+    }
 
     Entity->references++;
 }
@@ -401,7 +360,7 @@ void f_entity_refDec(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    if(f_entity__ignoreRefDec) {
+    if(f_entity__bulkFreeInProgress) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only FEntity API that may be called by
         // components' FCallComponentInstanceFree callbacks.
@@ -412,14 +371,12 @@ void f_entity_refDec(FEntity* Entity)
         F__FATAL("f_entity_refDec(%s): Count too low", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_refDec(%s) %d->%d",
-                        Entity->id,
-                        Entity->references,
-                        Entity->references - 1);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_refDec(%s) %d->%d",
+                    Entity->id,
+                    Entity->references,
+                    Entity->references - 1);
+    }
 
     Entity->references--;
 
@@ -432,12 +389,20 @@ bool f_entity_removedGet(const FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_removedGet: Free in progress");
+    }
+
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
 }
 
 void f_entity_removedSet(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
+
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_removedSet: Free in progress");
+    }
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
@@ -448,11 +413,9 @@ void f_entity_removedSet(FEntity* Entity)
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_removedSet(%s)", Entity->id);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_removedSet(%s)", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVED);
     listMoveTo(Entity, F_LIST__FLUSH);
@@ -462,6 +425,10 @@ bool f_entity_activeGet(const FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_activeGet: Free in progress");
+    }
+
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)
         || Entity->lastActive == f_fps_ticksGet();
 }
@@ -470,20 +437,22 @@ void f_entity_activeSet(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_activeSet: Free in progress");
+    }
+
     if(Entity->muteCount > 0
         || F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
 
         return;
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSet(%s)", Entity->id);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSet(%s)", Entity->id);
+    }
 
     if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
-        g_activeNum++;
+        f_entity__numActive++;
     }
 
     Entity->lastActive = f_fps_ticksGet();
@@ -492,9 +461,9 @@ void f_entity_activeSet(FEntity* Entity)
         F_FLAGS_CLEAR(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
-        F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
-            f_list_addLast(
-                Entity->systemNodesActive, f_system__entityAdd(system, Entity));
+        F_LIST_ITERATE(Entity->matchingSystemsActive, const FSystem*, system) {
+            f_list_addLast(Entity->systemNodesActive,
+                           f_list_addLast(system->runtime->entities, Entity));
         }
     }
 }
@@ -503,11 +472,13 @@ void f_entity_activeSetRemove(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_activeSetRemove: Free in progress");
+    }
+
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSetRemove(%s)", Entity->id);
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVE_INACTIVE);
 }
@@ -516,15 +487,27 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_activeSetPermanent: Free in progress");
+    }
+
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_activeSetPermanent(%s)", Entity->id);
+    }
+
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)) {
+        #if F_CONFIG_DEBUG
+            f_out__warning(
+                "f_entity_activeSetPermanent(%s): Already set", Entity->id);
+        #endif
+
+        return;
+    }
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 
     g_activeNumPermanent++;
+    f_entity__numActive++;
 }
 
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
@@ -532,27 +515,34 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
     F__CHECK(Entity != NULL);
     F__CHECK(Component != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_componentAdd: Free in progress");
+    }
+
     if(!listIsIn(Entity, F_LIST__NEW)) {
         F__FATAL("f_entity_componentAdd(%s, %s): Too late",
                  Entity->id,
                  Component->stringId);
     }
 
-    if(Entity->componentsTable[Component->bitId] != NULL) {
+    if(Entity->componentsTable[Component->runtime->bitId] != NULL) {
         F__FATAL("f_entity_componentAdd(%s, %s): Already added",
                  Entity->id,
                  Component->stringId);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_componentAdd(%s, %s)",
-                        Entity->id,
-                        Component->stringId);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_componentAdd(%s, %s)",
+                    Entity->id,
+                    Component->stringId);
+    }
 
-    return componentAdd(Entity, Component, NULL)->buffer;
+    FComponentInstance* c = f_component__instanceNew(Component, Entity);
+
+    Entity->componentsTable[Component->runtime->bitId] = c;
+    f_bitfield_set(Entity->componentBits, Component->runtime->bitId);
+
+    return c->buffer;
 }
 
 bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)
@@ -560,7 +550,11 @@ bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)
     F__CHECK(Entity != NULL);
     F__CHECK(Component != NULL);
 
-    return Entity->componentsTable[Component->bitId] != NULL;
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_componentHas: Free in progress");
+    }
+
+    return Entity->componentsTable[Component->runtime->bitId] != NULL;
 }
 
 void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
@@ -568,7 +562,12 @@ void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
     F__CHECK(Entity != NULL);
     F__CHECK(Component != NULL);
 
-    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_componentGet: Free in progress");
+    }
+
+    FComponentInstance* instance =
+        Entity->componentsTable[Component->runtime->bitId];
 
     return instance ? instance->buffer : NULL;
 }
@@ -578,7 +577,12 @@ void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
     F__CHECK(Entity != NULL);
     F__CHECK(Component != NULL);
 
-    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_componentReq: Free in progress");
+    }
+
+    FComponentInstance* instance =
+        Entity->componentsTable[Component->runtime->bitId];
 
     if(instance == NULL) {
         F__FATAL("f_entity_componentReq(%s, %s): Missing component",
@@ -593,12 +597,20 @@ bool f_entity_muteGet(const FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
 
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_muteGet: Free in progress");
+    }
+
     return Entity->muteCount > 0;
 }
 
 void f_entity_muteInc(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
+
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_muteInc: Free in progress");
+    }
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
@@ -613,14 +625,12 @@ void f_entity_muteInc(FEntity* Entity)
         F__FATAL("f_entity_muteInc(%s): Count too high", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_muteInc(%s) %d->%d",
-                        Entity->id,
-                        Entity->muteCount,
-                        Entity->muteCount + 1);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_muteInc(%s) %d->%d",
+                    Entity->id,
+                    Entity->muteCount,
+                    Entity->muteCount + 1);
+    }
 
     if(Entity->muteCount++ == 0) {
         listMoveTo(Entity, F_LIST__FLUSH);
@@ -630,6 +640,10 @@ void f_entity_muteInc(FEntity* Entity)
 void f_entity_muteDec(FEntity* Entity)
 {
     F__CHECK(Entity != NULL);
+
+    if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
+        F__FATAL("f_entity_muteDec: Free in progress");
+    }
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_DEBUG
@@ -644,14 +658,12 @@ void f_entity_muteDec(FEntity* Entity)
         F__FATAL("f_entity_muteDec(%s): Count too low", Entity->id);
     }
 
-    #if F_CONFIG_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info("f_entity_muteDec(%s) %d->%d",
-                        Entity->id,
-                        Entity->muteCount,
-                        Entity->muteCount - 1);
-        }
-    #endif
+    if(F_CONFIG_DEBUG && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+        f_out__info("f_entity_muteDec(%s) %d->%d",
+                    Entity->id,
+                    Entity->muteCount,
+                    Entity->muteCount - 1);
+    }
 
     if(--Entity->muteCount == 0) {
         if(!f_list_sizeIsEmpty(Entity->matchingSystemsActive)

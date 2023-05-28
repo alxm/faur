@@ -81,7 +81,7 @@ void f_spritelayers_add(FSpriteLayers* Layers, FSprite* Sprite, FColorBlend Blen
 {
     F__CHECK(Layers != NULL);
     F__CHECK(Sprite != NULL);
-    F__CHECK(Blend > F_COLOR_BLEND_INVALID && Blend < F_COLOR_BLEND_NUM);
+    F__CHECK(Blend < F_COLOR_BLEND_NUM);
     F__CHECK(Red >= 0 && Red <= 255);
     F__CHECK(Green >= 0 && Green <= 255);
     F__CHECK(Blue >= 0 && Blue <= 255);

@@ -27,6 +27,7 @@
 #endif
 
 static const unsigned g_sizes[F_POOL__NUM] = {
+    [F_POOL__BITFIELD] = sizeof(FBitfield),
     [F_POOL__BLOCK] = sizeof(FBlock),
     [F_POOL__CONSOLE] = sizeof(FConsoleLine),
     [F_POOL__HASHENTRY] = sizeof(F__HashEntry),

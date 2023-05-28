@@ -34,9 +34,4 @@ struct FList {
 
 extern const FList f__list_empty;
 
-static inline FList* f_list__nodeGetList(const FListNode* Node)
-{
-    return Node->list;
-}
-
 #endif // F_INC_DATA_LIST_V_H

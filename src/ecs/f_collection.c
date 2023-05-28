@@ -27,7 +27,13 @@ void f_collection_set(FCollection* Collection)
 
 FCollection* f_collection_new(void)
 {
-    return f_list_new();
+    F__CHECK(f_ecs__isInit());
+
+    FListIntr* l = f_pool__alloc(F_POOL__LISTINTR);
+
+    f_listintr_init(l, FEntity, collectionNode);
+
+    return l;
 }
 
 void f_collection_free(FCollection* Collection)
@@ -36,27 +42,29 @@ void f_collection_free(FCollection* Collection)
         return;
     }
 
-    f_entity__ignoreRefDec = true;
-    f_list_freeEx(Collection, (FCallFree*)f_entity__freeEx);
-    f_entity__ignoreRefDec = false;
+    f_entity__bulkFreeInProgress = true;
+    f_listintr_apply(Collection, (FCallFree*)f_entity__free);
+    f_entity__bulkFreeInProgress = false;
 
     if(f__collection == Collection) {
         f__collection = NULL;
     }
+
+    f_pool_release(Collection);
 }
 
 void f_collection_clear(FCollection* Collection)
 {
     F__CHECK(Collection != NULL);
 
-    f_list_clearEx(Collection, (FCallFree*)f_entity_removedSet);
+    f_listintr_clearEx(Collection, (FCallFree*)f_entity_removedSet);
 }
 
 void f_collection_muteInc(FCollection* Collection)
 {
     F__CHECK(Collection != NULL);
 
-    F_LIST_ITERATE(Collection, FEntity*, e) {
+    F_LISTINTR_ITERATE(Collection, FEntity*, e) {
         f_entity_muteInc(e);
     }
 }
@@ -65,7 +73,7 @@ void f_collection_muteDec(FCollection* Collection)
 {
     F__CHECK(Collection != NULL);
 
-    F_LIST_ITERATE(Collection, FEntity*, e) {
+    F_LISTINTR_ITERATE(Collection, FEntity*, e) {
         f_entity_muteDec(e);
     }
 }

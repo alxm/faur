@@ -203,7 +203,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
 
     FList* combo = f_list_new();
 
-    for(int i = Id; i > F_BUTTON_INVALID; i = va_arg(args, int)) {
+    for(int i = Id; i != F_BUTTON_INVALID; i = va_arg(args, int)) {
         F__CHECK(i < F_BUTTON_NUM);
 
         const FPlatformButton* b =

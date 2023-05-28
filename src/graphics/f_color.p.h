@@ -21,7 +21,6 @@
 #include "../general/f_system_includes.h"
 
 typedef enum {
-    F_COLOR_BLEND_INVALID = -1,
     F_COLOR_BLEND_SOLID,
     F_COLOR_BLEND_ALPHA,
     F_COLOR_BLEND_ALPHA_25,

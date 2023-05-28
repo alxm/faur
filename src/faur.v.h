@@ -21,6 +21,7 @@
 #include "faur.h"
 
 F_EXTERN_C_START
+#include "data/f_bitfield.v.h"
 #include "data/f_block.v.h"
 #include "data/f_hash.v.h"
 #include "data/f_list.v.h"
@@ -29,7 +30,6 @@ F_EXTERN_C_START
 #include "ecs/f_ecs.v.h"
 #include "ecs/f_entity.v.h"
 #include "ecs/f_system.v.h"
-#include "ecs/f_template.v.h"
 #include "files/f_blob.v.h"
 #include "files/f_embed.v.h"
 #include "files/f_file.v.h"
@@ -41,7 +41,6 @@ F_EXTERN_C_START
 #include "general/f_main.v.h"
 #include "general/f_out.v.h"
 #include "general/f_state.v.h"
-#include "general/f_sym.v.h"
 #include "graphics/f_align.v.h"
 #include "graphics/f_color.v.h"
 #include "graphics/f_fade.v.h"

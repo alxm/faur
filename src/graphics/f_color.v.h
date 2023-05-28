@@ -21,7 +21,6 @@
 #include "f_color.p.h"
 
 typedef enum {
-    F_COLOR__PAL_INVALID = -1,
     F_COLOR__PAL_BROWN1,
     F_COLOR__PAL_BROWN2,
     F_COLOR__PAL_GRAY1,
@@ -32,7 +31,6 @@ typedef enum {
     F_COLOR__PAL_GREEN2,
     F_COLOR__PAL_CHARTREUSE1,
     F_COLOR__PAL_CHARTREUSE2,
-    F_COLOR__PAL_NUM
 } FColorPaletteInternal;
 
 typedef struct FColorState FColorState;

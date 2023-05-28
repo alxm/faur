@@ -33,14 +33,14 @@ def main():
 f"""\
 #include "s_{sys_name}.h"
 
-static void h_{sys_name}(FEntity* Entity)
+static void s_{sys_name}_handler(FEntity* Entity)
 {{
-    F_UNUSED(Entity);
+    f_out_info("Handling entity '%s'\\n", f_entity_idGet(Entity));
 }}
 
 F_SYSTEM(
     s_{sys_name},
-    h_{sys_name},
+    s_{sys_name}_handler,
     NULL,
     false,
     NULL // &c_1, &c_2, ...
@@ -53,7 +53,7 @@ f"""\
 
 #include <faur.h>
 
-extern FSystem s_{sys_name};
+extern const FSystem s_{sys_name};
 """)
 
 if __name__ == '__main__':

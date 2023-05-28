@@ -20,29 +20,35 @@
 
 F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source, const char* Format, va_list Args)
 {
-    f_out__backtrace(Source);
+    static bool g_handleFatalInProgress;
 
-    f_color_reset();
-    f_draw_fill();
+    if(!g_handleFatalInProgress) {
+        g_handleFatalInProgress = true;
 
-    f_font_reset();
-    f_font_lineWrapSet(f_screen_sizeGetWidth());
-    f_font_printv(Format, Args);
+        f_out__backtrace(Source);
 
-    f_screen__draw();
+        f_color_reset();
+        f_draw_fill();
 
-    #if F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SEGFAULT
-        *(volatile int*)(NULL) = 0;
-    #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SPIN
-        while(true);
-    #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_WAIT
-        while(true) {
-            printf("Waiting to attach debugger: PID %d\n", getpid());
-            f_time_msSpin(1000);
-        }
-    #endif
+        f_font_reset();
+        f_font_lineWrapSet(f_screen_sizeGetWidth());
+        f_font_printv(Format, Args);
 
-    f_time_msWait(10 * 1000);
+        f_screen__draw();
+
+        #if F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SEGFAULT
+            *(volatile int*)(NULL) = 0;
+        #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_SPIN
+            while(true);
+        #elif F_CONFIG_DEBUG_FATAL == F_DEBUG_FATAL_WAIT
+            while(true) {
+                printf("Waiting to attach debugger: PID %d\n", getpid());
+                f_time_msSpin(1000);
+            }
+        #else
+            f_time_msWait(10 * 1000);
+        #endif
+    }
 
     f_platform_api__customExit(EXIT_FAILURE);
     exit(EXIT_FAILURE);

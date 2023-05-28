@@ -30,26 +30,33 @@ typedef struct FSystem FSystem;
 typedef void FCallSystemHandler(FEntity* Entity);
 typedef int FCallSystemSort(const FEntity* A, const FEntity* B);
 
-struct FSystem {
-    const char* stringId; // unique string ID
+typedef struct {
     FList* entities; // entities currently picked up by this system
-    const FComponent** components; // [componentsNum]
     FBitfield* componentBits; // IDs of components that this system works on
+} F__SystemRuntime;
+
+struct FSystem {
+    F__SystemRuntime* runtime; // all the non-constant data
+    const char* stringId; // unique string ID
     FCallSystemHandler* handler; // invoked on each entity in list
     FCallSystemSort* compare; // for sorting the entities list before running
-    unsigned componentsNum; // length of components array
     bool onlyActiveEntities; // kick out entities that are not marked active
+    const FComponent** components; // [componentsNum]
+    unsigned componentsNum; // length of components array
 };
 
 #define F_SYSTEM(Name, Handler, SortCompare, OnlyActiveEntities, ...) \
-    FSystem Name = {                                                  \
+    static F__SystemRuntime F_GLUE2(f__system_runtime__, Name);       \
+                                                                      \
+    const FSystem Name = {                                            \
+        .runtime = &F_GLUE2(f__system_runtime__, Name),               \
+        .stringId = F_STRINGIFY(Name),                                \
         .handler = Handler,                                           \
         .compare = SortCompare,                                       \
         .onlyActiveEntities = OnlyActiveEntities,                     \
         .components = (const FComponent*[]){__VA_ARGS__},             \
         .componentsNum = sizeof((const FComponent*[]){__VA_ARGS__})   \
                             / sizeof(const FComponent*),              \
-        .stringId = F_STRINGIFY(Name),                                \
     }
 
 extern void f_system_run(const FSystem* System);

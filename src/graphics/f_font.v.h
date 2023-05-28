@@ -21,7 +21,6 @@
 #include "f_font.p.h"
 
 typedef enum {
-    F_FONT__ID_INVALID = -1,
     F_FONT__ID_BLOCK,
     F_FONT__ID_KEYED,
     F_FONT__ID_NUM

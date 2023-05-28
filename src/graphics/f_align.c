@@ -64,14 +64,11 @@ void f_align_reset(void)
 
 void f_align_set(FAlignX X, FAlignY Y)
 {
-    F__CHECK(X >= F_ALIGN_X_INVALID && X < F_ALIGN_X_NUM);
-    F__CHECK(Y >= F_ALIGN_Y_INVALID && Y < F_ALIGN_Y_NUM);
-
-    if(X != F_ALIGN_X_INVALID) {
+    if(X != F_ALIGN_X_NONE) {
         f__align.x = X;
     }
 
-    if(Y != F_ALIGN_Y_INVALID) {
+    if(Y != F_ALIGN_Y_NONE) {
         f__align.y = Y;
     }
 }

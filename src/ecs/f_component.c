@@ -18,30 +18,27 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-FComponent* const* f_component__array; // [f_component__num]
+const FComponent* const* f_component__array; // [f_component__num]
 unsigned f_component__num;
-FHash* f_component__index; // FHash<const char*, FComponent*>
 
 static FPool** g_pools;
 
-void f_component__init(FComponent* const* Components, size_t ComponentsNum)
+void f_component__init(const FComponent* const* Components, size_t ComponentsNum)
 {
     f_component__array = Components;
     f_component__num = (unsigned)ComponentsNum;
-    f_component__index = f_hash_newStr(256, false);
 
     g_pools = f_mem_malloc(ComponentsNum * sizeof(FPool*));
 
     for(unsigned c = f_component__num; c--; ) {
-        FComponent* com = f_component__array[c];
+        const FComponent* component = f_component__array[c];
 
-        com->size +=
-            (unsigned)(sizeof(FComponentInstance) - sizeof(FMaxMemAlignType));
-        com->bitId = c;
+        component->runtime->bitId = c;
 
-        f_hash_add(f_component__index, com->stringId, com);
-
-        g_pools[c] = f_pool_new(com->size);
+        g_pools[c] = f_pool_new(
+                        component->size
+                            + (unsigned)(sizeof(FComponentInstance)
+                            - sizeof(FMaxMemAlignType)));
     }
 }
 
@@ -52,28 +49,12 @@ void f_component__uninit(void)
     }
 
     f_mem_free(g_pools);
-    f_hash_free(f_component__index);
 }
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
     return (void*)
             ((uint8_t*)ComponentBuffer - offsetof(FComponentInstance, buffer));
-}
-
-const void* f_component_dataGet(const void* ComponentBuffer)
-{
-    F__CHECK(ComponentBuffer != NULL);
-
-    const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
-
-    if(instance->entity->templ == NULL) {
-        F__FATAL("f_component_dataGet(%s.%s): No template",
-                 instance->entity->id,
-                 instance->component->stringId);
-    }
-
-    return instance->entity->templ->data[instance->component->bitId];
 }
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)
@@ -83,43 +64,15 @@ FEntity* f_component_entityGet(const void* ComponentBuffer)
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 
-void* f_component__dataInit(const FComponent* Component, const FBlock* Block)
+FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity)
 {
-    if(Component->dataSize > 0) {
-        void* buffer = f_mem_mallocz(Component->dataSize);
-
-        if(Component->dataInit) {
-            Component->dataInit(buffer, Block);
-        }
-
-        return buffer;
-    }
-
-    return NULL;
-}
-
-void f_component__dataFree(const FComponent* Component, void* Buffer)
-{
-    if(Buffer == NULL) {
-        return;
-    }
-
-    if(Component->dataFree) {
-        Component->dataFree(Buffer);
-    }
-
-    f_mem_free(Buffer);
-}
-
-FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data)
-{
-    FComponentInstance* c = f_pool_alloc(g_pools[Component->bitId]);
+    FComponentInstance* c = f_pool_alloc(g_pools[Component->runtime->bitId]);
 
     c->component = Component;
     c->entity = Entity;
 
     if(Component->init) {
-        Component->init(c->buffer, Data);
+        Component->init(c->buffer);
     }
 
     return c;

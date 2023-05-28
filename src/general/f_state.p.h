@@ -21,7 +21,6 @@
 #include "../general/f_system_includes.h"
 
 typedef enum {
-    F__STATE_STAGE_INVALID = -1,
     F__STATE_STAGE_INIT,
     F__STATE_STAGE_TICK,
     F__STATE_STAGE_DRAW,
