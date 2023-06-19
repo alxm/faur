@@ -115,6 +115,21 @@ ifdef F_CONFIG_LIB_SDL_CONFIG
 endif
 
 #
+# Static files to copy to the build bin dir
+#
+F_BUILD_DIR_STATIC_PREFIX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static
+
+ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/$(F_BUILD_PLATFORM) ; echo $$?), 0)
+    F_CONFIG_FILES_COPY_STATIC += $(F_BUILD_PLATFORM)
+endif
+
+ifeq ($(F_CONFIG_LIB_SDL), 2)
+    ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/sdl2 ; echo $$?), 0)
+	F_CONFIG_FILES_COPY_STATIC += sdl2
+    endif
+endif
+
+#
 # Default make targets
 #
 F_MAKE_ALL += \
@@ -200,7 +215,7 @@ valgrindall : all
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) $(F_BUILD_DIR_BIN)
 
 #
 # Not file targets
