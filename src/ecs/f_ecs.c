@@ -33,7 +33,7 @@ const FPack f_pack__ecs = {
     f_ecs__uninit,
 };
 
-void f__ecs_init(const FComponent* Components[], size_t ComponentsNum, const FSystem* Systems[], size_t SystemsNum)
+void f__ecs_init(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum)
 {
     F__CHECK(!f_ecs__isInit());
     F__CHECK(Components != NULL);
