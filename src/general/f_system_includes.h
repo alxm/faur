@@ -37,6 +37,10 @@
 #define F_GLUE4(A, B, C, D) F_GLUE2(A, F_GLUE3(B, C, D))
 #define F_GLUE5(A, B, C, D, E) F_GLUE2(A, F_GLUE4(B, C, D, E))
 
+#define F_DO_ONCE(FlagName) \
+    static bool FlagName; \
+    if(!FlagName && (FlagName = true, true))
+
 #define F__ATTRIBUTE_ALIGN(AlignExp) __attribute__((aligned (1 << (AlignExp))))
 #define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
 #define F__ATTRIBUTE_FORMAT(FormatIndex) \
