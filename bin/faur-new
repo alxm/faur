@@ -72,19 +72,19 @@ void f_main(void)
 
         context.up = f_button_new();
         f_button_bindKey(context.up, F_KEY_UP);
-        f_button_bindButton(context.up, NULL, F_BUTTON_UP);
+        f_button_bindButton(context.up, F_BUTTON_UP);
 
         context.down = f_button_new();
         f_button_bindKey(context.down, F_KEY_DOWN);
-        f_button_bindButton(context.down, NULL, F_BUTTON_DOWN);
+        f_button_bindButton(context.down, F_BUTTON_DOWN);
 
         context.left = f_button_new();
         f_button_bindKey(context.left, F_KEY_LEFT);
-        f_button_bindButton(context.left, NULL, F_BUTTON_LEFT);
+        f_button_bindButton(context.left, F_BUTTON_LEFT);
 
         context.right = f_button_new();
         f_button_bindKey(context.right, F_KEY_RIGHT);
-        f_button_bindButton(context.right, NULL, F_BUTTON_RIGHT);
+        f_button_bindButton(context.right, F_BUTTON_RIGHT);
     }}
 
     F_STATE_TICK

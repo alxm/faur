@@ -93,7 +93,8 @@ extern FButton* f_button_dup(const FButton* Button);
 extern void f_button_free(FButton* Button);
 
 extern void f_button_bindKey(FButton* Button, FKeyId Id);
-extern void f_button_bindButton(FButton* Button, const FController* Controller, FButtonId Id);
+extern void f_button_bindButton(FButton* Button, FButtonId Id);
+extern void f_button_bindButtonEx(FButton* Button, const FController* Controller, FButtonId Id);
 extern void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonId Id, ...);
 
 extern bool f_button_isWorking(const FButton* Button);
