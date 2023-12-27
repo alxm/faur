@@ -20,7 +20,7 @@
 import os
 import time
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
 """
 Design pattern:
@@ -52,7 +52,7 @@ category/f_sample.c
     <api implementations>
 """
 
-g_tool = Tool('folder name')
+g_tool = FTool('folder name')
 
 def main():
     folder = g_tool.args.get('folder')

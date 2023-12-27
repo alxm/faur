@@ -17,9 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('name')
+g_tool = FTool('name')
 
 def main():
     sys_name = g_tool.args.get('name').lower()

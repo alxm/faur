@@ -21,9 +21,9 @@ import http.server
 import socketserver
 import threading
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('file')
+g_tool = FTool('file')
 
 def main():
     host = 'localhost'

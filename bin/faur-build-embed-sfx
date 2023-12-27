@@ -19,9 +19,9 @@
 
 import subprocess
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('wav-file gen-file var-suffix sound-format')
+g_tool = FTool('wav-file gen-file var-suffix sound-format')
 
 def main():
     wav_file = g_tool.args.get('wav-file')

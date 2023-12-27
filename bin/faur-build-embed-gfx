@@ -21,7 +21,7 @@ import re
 
 from PIL import Image
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
 def format_rgb565(Pixel):
     r, g, b = Pixel
@@ -69,7 +69,7 @@ g_formats = {
     'F_COLOR_FORMAT_ABGR_8888': format_abgr8888,
 }
 
-g_tool = Tool('image-file gen-file var-suffix color-key-hex screen-format')
+g_tool = FTool('image-file gen-file var-suffix color-key-hex screen-format')
 
 def main():
     image_file = g_tool.args.get('image-file')

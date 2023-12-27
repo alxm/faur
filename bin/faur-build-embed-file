@@ -19,9 +19,9 @@
 
 import os
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('bin-file gen-file original-path var-prefix')
+g_tool = FTool('bin-file gen-file original-path var-prefix')
 
 def main():
     bin_file = g_tool.args.get('bin-file')

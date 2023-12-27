@@ -19,9 +19,9 @@
 
 import os
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('blob-file root-dir [files...]')
+g_tool = FTool('blob-file root-dir [files...]')
 
 def main():
     blob = Blob(g_tool.args.get('root-dir'), g_tool.args.get('files'))

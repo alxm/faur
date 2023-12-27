@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-class Param:
+class FParam:
     def __init__(self, IsOptional, IsList):
         self.is_optional = IsOptional
         self.is_list = IsList
@@ -35,7 +35,7 @@ class Param:
     def set(self, Argument):
         self.__values.append(Argument)
 
-class Args:
+class FArgs:
     def __init__(self, Tool, ParamNames):
         self.__tool = Tool
         self.__params = {}
@@ -52,7 +52,7 @@ class Args:
                 name = name[ : -3]
                 is_list = True
 
-            self.__params[name] = Param(is_optional, is_list)
+            self.__params[name] = FParam(is_optional, is_list)
 
     def init(self, Argv):
         param = None

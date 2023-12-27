@@ -19,9 +19,9 @@
 
 import os
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('gen-file gen-dir var-prefix [headers...]')
+g_tool = FTool('gen-file gen-dir var-prefix [headers...]')
 
 def main():
     c_file = g_tool.args.get('gen-file')
