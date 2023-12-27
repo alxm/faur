@@ -4,7 +4,7 @@
 
 Features include software or accelerated 2D graphics, abstractions for inputs and sound, application state management, entity-component-system model, and utilities to help with data, files, math, memory, strings, time, and more.
 
-Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices I like, including the GP2X handheld and a few Arduino compatibles. The build system uses GNU Make 4.1 and Python 3.6 or later.
+Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices like the GP2X and Gamebuino handhelds. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
 ## Install on Debian-based Linux
 
@@ -25,6 +25,19 @@ $ make run FAUR_PATH=../../../faur
 ![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")
 
 Move the square with the arrow keys or with a game controller.
+
+### Project Files
+
+```
+$ tree hello/
+
+hello/
+├── build/
+│   └── make/
+│       └── Makefile
+└── src/
+    └── main.c
+```
 
 ### hello/src/main.c
 
@@ -90,7 +103,7 @@ void f_main(void)
 ### hello/build/make/Makefile
 
 ```make
-F_CONFIG_APP_AUTHOR := <author>
+F_CONFIG_APP_AUTHOR := <name>
 F_CONFIG_APP_NAME := hello
 
 include $(FAUR_PATH)/make/default.mk
@@ -98,7 +111,7 @@ include $(FAUR_PATH)/make/default.mk
 
 ## Cross-Compile for Other Platforms
 
-I started Faur by collecting my [GP2X games'](https://www.alxm.org/games/gamepark.html) shared code into a library. Over time I added support for more platforms:
+I started Faur by collecting my [GP2X games'](https://www.alxm.org/games/gamepark.html) shared code into a static library. Over time I added support for more platforms:
 
 Target | Host | Toolchain | Dependencies | More Info
 --- | --- | --- | --- | ---
@@ -120,7 +133,7 @@ The default toolchain paths are in `make/global/sdk.mk`, and they can be overrid
 
 ## License
 
-Copyright 2010-2022 Alex Margarit (alex@alxm.org)
+Copyright 2010-2024 Alex Margarit (alex@alxm.org)
 
 * Source code licensed under [GNU GPL 3.0](https://www.gnu.org/licenses/gpl.html) (file `LICENSE`)
 * Other content licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (file `media/CC-BY-NC-ND`)
