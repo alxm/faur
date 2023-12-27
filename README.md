@@ -17,7 +17,7 @@ $ git clone https://github.com/alxm/faur.git
 ## Create New Project
 
 ```sh
-$ faur/bin/faur-new hello
+$ faur/bin/faur-new --name hello
 $ cd hello/build/make
 $ make run FAUR_PATH=../../../faur
 ```

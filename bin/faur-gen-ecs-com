@@ -19,10 +19,10 @@
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('ComponentName')
+g_tool = Tool('name')
 
 def main():
-    comp_name = g_tool.args.get('ComponentName')
+    comp_name = g_tool.args.get('name')
     comp_name_lower = comp_name.lower()
 
     struct_name = f'C{comp_name}'

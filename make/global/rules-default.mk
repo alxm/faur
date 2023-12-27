@@ -169,7 +169,7 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 
 $(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL) $(F_FAUR_DIR_BIN)/faur-blob
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-blob $@ $(F_DIR_ROOT_FROM_MAKE) $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS)
+	$(F_FAUR_DIR_BIN)/faur-blob --blob-file $@ --root-dir $(F_DIR_ROOT_FROM_MAKE) --files $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS)
 
 #
 # Project source code, including generated code

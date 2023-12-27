@@ -21,13 +21,13 @@ import os
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('File.bin File.h OriginalPath CVarPrefix')
+g_tool = Tool('bin-file gen-file original-path var-prefix')
 
 def main():
-    bin_file = g_tool.args.get('File.bin')
-    h_file = g_tool.args.get('File.h')
-    original_path = g_tool.args.get('OriginalPath')
-    cvar_prefix = g_tool.args.get('CVarPrefix')
+    bin_file = g_tool.args.get('bin-file')
+    h_file = g_tool.args.get('gen-file')
+    original_path = g_tool.args.get('original-path')
+    cvar_prefix = g_tool.args.get('var-prefix')
 
     if os.path.isdir(bin_file):
         content = process_dir(bin_file, cvar_prefix, original_path)

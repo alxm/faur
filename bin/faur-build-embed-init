@@ -21,13 +21,13 @@ import os
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('File.c GenDir CVarPrefix ...')
+g_tool = Tool('gen-file gen-dir var-prefix [headers...]')
 
 def main():
-    c_file = g_tool.args.get('File.c')
-    gen_dir = g_tool.args.get('GenDir')
-    cvar_prefix = g_tool.args.get('CVarPrefix')
-    h_files = g_tool.args.get('...')
+    c_file = g_tool.args.get('gen-file')
+    gen_dir = g_tool.args.get('gen-dir')
+    cvar_prefix = g_tool.args.get('var-prefix')
+    h_files = g_tool.args.get('headers')
 
     includes = []
     dirs = []
@@ -37,7 +37,7 @@ def main():
         for h in h_files:
             includes.append(f'#include "embed/{h}"')
 
-            no_h = h[: -2]
+            no_h = h[ : -2]
 
             if os.path.isdir(f'{gen_dir}/{no_h}'):
                 dirs.append(g_tool.sanitize_c_var(no_h))

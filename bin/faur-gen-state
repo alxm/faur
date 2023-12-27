@@ -19,10 +19,10 @@
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('StateName')
+g_tool = Tool('name')
 
 def main():
-    state_name = g_tool.args.get('StateName').lower()
+    state_name = g_tool.args.get('name').lower()
 
     state_c = f't_{state_name}.c'
     state_h = f't_{state_name}.h'

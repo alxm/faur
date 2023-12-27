@@ -21,10 +21,10 @@ import os
 
 from faur.tool.tool import Tool
 
-g_tool = Tool('ProjectName')
+g_tool = Tool('name')
 
 def main():
-    project_name = g_tool.args.get('ProjectName').replace(' ', '-')
+    project_name = g_tool.args.get('name').replace(' ', '-')
 
     if project_name != os.path.basename(project_name):
         g_tool.out.error(f'Project name cannot be a path: {project_name}')

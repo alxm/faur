@@ -15,73 +15,88 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+class Param:
+    def __init__(self, IsOptional, IsList):
+        self.is_optional = IsOptional
+        self.is_list = IsList
+        self.__values = []
+
+    def is_empty(self):
+        return len(self.__values) == 0
+
+    def get(self):
+        if self.is_list:
+            return self.__values
+        elif len(self.__values) > 0:
+            return self.__values[0]
+        else:
+            return None
+
+    def set(self, Argument):
+        self.__values.append(Argument)
+
 class Args:
-    def __init__(self, Tool, ArgNames, FlagNames):
+    def __init__(self, Tool, ParamNames):
         self.__tool = Tool
-        self.arg_names = ArgNames.split()
-        self.arg_db = {}
-        self.flag_names = ['-q'] + FlagNames.split()
-        self.flag_db = {}
+        self.__params = {}
+
+        for name in ParamNames.split():
+            is_optional = False
+            is_list = False
+
+            if name[0] == '[' and name[-1] == ']':
+                name = name[1 : -1]
+                is_optional = True
+
+            if name.endswith('...'):
+                name = name[ : -3]
+                is_list = True
+
+            self.__params[name] = Param(is_optional, is_list)
 
     def init(self, Argv):
-        required_num = 0
-        optional_num = 0
-        has_tail = False
-        arg_names = self.arg_names
+        param = None
 
-        arg_values = [a.strip() for a in Argv]
-        arg_values = [a for a in arg_values if len(a) > 0]
+        for arg in Argv:
+            if arg.startswith('--'):
+                if arg[2 : ] in self.__params:
+                    param = self.__params[arg[2 : ]]
+                    continue
 
-        for value in arg_values:
-            if value in self.flag_names:
-                self.flag_db[value] = True
-                arg_values = arg_values[1 : ]
-            else:
-                break
+            if param is None:
+                self.__tool.usage(f'Invalid argument {arg}')
 
-        for name in arg_names:
-            if has_tail:
-                self.__tool.out.error('... must be the last argument')
-            elif name == '...':
-                if optional_num > 0:
-                    self.__tool.out.error(
-                        'Cannot have both optional args and ...')
+            param.set(arg)
 
-                has_tail = True
-            elif name[0] == '[' and name[-1] == ']':
-                optional_num += 1
-            elif optional_num > 0:
-                self.__tool.out.error(
-                    'Cannot pass required args after optional args')
-            else:
-                required_num += 1
-
-        if len(arg_values) < required_num:
-            self.__tool.usage('All required arguments must be present')
-
-        if has_tail:
-            arg_names = arg_names[ : -1]
-            self.arg_db['...'] = arg_values[required_num : ]
-
-        for name, value in zip(arg_names, arg_values):
-            self.arg_db[name] = value
+        for name, param in self.__params.items():
+            if param.is_empty() and not param.is_optional:
+                self.__tool.usage(f'Missing argument --{name}')
 
     def usage(self):
+        values = ['Lorem', 'Ipsum', 'Dolor', 'Sit', 'Amet']
+        values_index = 0
         message = ''
 
-        for flag in self.flag_names:
-            message += f' [{flag}]'
+        for name, param in self.__params.items():
+            message += ' '
 
-        for arg in self.arg_names:
-            message += f' {arg}'
+            if param.is_optional:
+                message += '['
+
+            message += f'--{name} \033[3m{values[values_index]}\033[0m'
+
+            if param.is_list:
+                message += '...'
+
+            if param.is_optional:
+                message += ']'
+
+            values_index = (values_index + 1) % len(values)
 
         return message
 
     def get(self, Name):
-        if Name in self.arg_db:
-            return self.arg_db[Name]
-        else:
-            return ''
+        if Name not in self.__params:
+            self.__tool.out.error(f'Unknown parameter {Name}')
 
-    def get_flag(self, Flag):
-        return Flag in self.flag_db
+        return self.__params[Name].get()

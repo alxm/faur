@@ -52,12 +52,12 @@ category/f_sample.c
     <api implementations>
 """
 
-g_tool = Tool('Folder Name')
+g_tool = Tool('folder name')
 
 def main():
-    folder = g_tool.args.get('Folder')
+    folder = g_tool.args.get('folder')
     pack_folder = folder.strip('./').lower().replace(' ', '_')
-    pack_name = g_tool.args.get('Name').lower().replace(' ', '_')
+    pack_name = g_tool.args.get('name').lower().replace(' ', '_')
 
     if len(pack_folder) < 1:
         g_tool.out.error(f'Invalid path {folder}')
