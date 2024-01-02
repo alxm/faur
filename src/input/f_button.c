@@ -175,7 +175,15 @@ void f_button_bindKey(FButton* Button, FKeyId Id)
     #endif
 }
 
-void f_button_bindButton(FButton* Button, const FController* Controller, FButtonId Id)
+void f_button_bindButton(FButton* Button, FButtonId Id)
+{
+    F__CHECK(Button != NULL);
+    F__CHECK(Id > F_BUTTON_INVALID && Id < F_BUTTON_NUM);
+
+    f_button_bindButtonEx(Button, NULL, Id);
+}
+
+void f_button_bindButtonEx(FButton* Button, const FController* Controller, FButtonId Id)
 {
     F__CHECK(Button != NULL);
     F__CHECK(Id > F_BUTTON_INVALID && Id < F_BUTTON_NUM);

@@ -115,6 +115,22 @@ ifdef F_CONFIG_LIB_SDL_CONFIG
 endif
 
 #
+# Static files to copy to the build bin dir
+#
+F_BUILD_DIR_STATIC ?=
+F_BUILD_DIR_STATIC_PREFIX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static
+
+ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/$(F_BUILD_PLATFORM) ; echo $$?), 0)
+    F_BUILD_DIR_STATIC += $(F_BUILD_PLATFORM)
+endif
+
+ifeq ($(F_CONFIG_LIB_SDL), 2)
+    ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/sdl2 ; echo $$?), 0)
+	F_BUILD_DIR_STATIC += sdl2
+    endif
+endif
+
+#
 # Default make targets
 #
 F_MAKE_ALL += \
@@ -122,7 +138,7 @@ F_MAKE_ALL += \
     $(F_BUILD_LINK_BIN_MEDIA) \
     $(F_BUILD_LINK_BIN_SCREENSHOTS) \
 
-ifdef F_CONFIG_FILES_COPY_STATIC
+ifdef F_BUILD_DIR_STATIC
     F_MAKE_ALL += copystatic
 endif
 
@@ -153,7 +169,7 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 
 $(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL) $(F_FAUR_DIR_BIN)/faur-blob
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-blob $@ $(F_DIR_ROOT_FROM_MAKE) $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS)
+	$(F_FAUR_DIR_BIN)/faur-blob --blob-file $@ --root-dir $(F_DIR_ROOT_FROM_MAKE) --files $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_ABS)
 
 #
 # Project source code, including generated code
@@ -200,7 +216,7 @@ valgrindall : all
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_CONFIG_FILES_COPY_STATIC:%=$(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_BUILD_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_BUILD_DIR_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) $(F_BUILD_DIR_BIN)
 
 #
 # Not file targets

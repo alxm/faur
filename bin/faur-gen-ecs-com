@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('ComponentName')
+g_tool = FTool('name')
 
 def main():
-    comp_name = g_tool.args.get('ComponentName')
+    comp_name = g_tool.args.get('name')
     comp_name_lower = comp_name.lower()
 
     struct_name = f'C{comp_name}'

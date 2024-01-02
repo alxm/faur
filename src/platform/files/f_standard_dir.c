@@ -59,7 +59,7 @@ bool f_platform_api_standard__dirCreate(const char* Path)
 {
     int ret;
 
-    #if F_CONFIG_SYSTEM_MINGW
+    #if F_CONFIG_SYSTEM_MINGW64
         ret = mkdir(Path);
     #else
         ret = mkdir(Path, S_IRWXU);

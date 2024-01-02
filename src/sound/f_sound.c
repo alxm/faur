@@ -59,10 +59,10 @@ static void f_sound__init(void)
             g_volTimer = f_timer_new(F__VOLBAR_SHOW_MS, false);
 
             g_volumeUpButton = f_button_new();
-            f_button_bindButton(g_volumeUpButton, NULL, F_BUTTON_VOLUP);
+            f_button_bindButton(g_volumeUpButton, F_BUTTON_VOLUP);
 
             g_volumeDownButton = f_button_new();
-            f_button_bindButton(g_volumeDownButton, NULL, F_BUTTON_VOLDOWN);
+            f_button_bindButton(g_volumeDownButton, F_BUTTON_VOLDOWN);
         #else
             adjustSoundVolume(g_volumeMax);
         #endif

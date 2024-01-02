@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('StateName')
+g_tool = FTool('name')
 
 def main():
-    state_name = g_tool.args.get('StateName').lower()
+    state_name = g_tool.args.get('name').lower()
 
     state_c = f't_{state_name}.c'
     state_h = f't_{state_name}.h'

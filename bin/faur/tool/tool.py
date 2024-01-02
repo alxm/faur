@@ -20,27 +20,23 @@ import re
 import subprocess
 import sys
 
-from faur.tool.args import Args
-from faur.tool.files import Files
-from faur.tool.output import Output
+from faur.tool.args import FArgs
+from faur.tool.files import FFiles
+from faur.tool.output import FOutput
 
-class Tool:
-    def __init__(self, ArgNames, FlagNames = ''):
+class FTool:
+    def __init__(self, ArgNames):
         self.name = os.path.basename(sys.argv[0])
-        self.out = Output(self)
-        self.args = Args(self, ArgNames, FlagNames)
-        self.files = Files(self)
-        self.sanitize_pattern = re.compile('[\.\-/]')
+        self.out = FOutput(self)
+        self.args = FArgs(self, ArgNames)
+        self.files = FFiles(self)
+        self.__sanitize_pattern = re.compile('[\.\-/]')
 
         self.args.init(sys.argv[1 : ])
         self.files.init()
 
-    def usage(self, ErrorMessage = None):
-        message = ''
-
-        if ErrorMessage:
-            message += ErrorMessage + '\n'
-
+    def usage(self, ErrorMessage):
+        message = ErrorMessage + '\n'
         message += f'Usage: {self.name}'
         message += self.args.usage()
 
@@ -60,4 +56,4 @@ class Tool:
             sys.exit(status)
 
     def sanitize_c_var(self, Name):
-        return self.sanitize_pattern.sub('_', Name)
+        return self.__sanitize_pattern.sub('_', Name)

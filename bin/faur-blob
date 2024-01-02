@@ -19,14 +19,14 @@
 
 import os
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('DstBlobFile RootDir ...')
+g_tool = FTool('blob-file root-dir [files...]')
 
 def main():
-    blob = Blob(g_tool.args.get('RootDir'), g_tool.args.get('...'))
+    blob = Blob(g_tool.args.get('root-dir'), g_tool.args.get('files'))
 
-    g_tool.files.write_bytes(g_tool.args.get('DstBlobFile'), blob.buffer)
+    g_tool.files.write_bytes(g_tool.args.get('blob-file'), blob.buffer)
 
 class Blob:
     def __init__(self, RootDir, Files):

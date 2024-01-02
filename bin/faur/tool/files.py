@@ -17,7 +17,7 @@
 
 import os
 
-class Files:
+class FFiles:
     def __init__(self, Tool):
         self.__tool = Tool
 

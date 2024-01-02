@@ -21,9 +21,9 @@ import http.server
 import socketserver
 import threading
 
-from faur.tool.tool import Tool
+from faur.tool.tool import FTool
 
-g_tool = Tool('File')
+g_tool = FTool('file')
 
 def main():
     host = 'localhost'
@@ -42,7 +42,7 @@ def main():
         g_tool.run_shell('firefox -new-window http://{host}:{port}/{file}'
             .format(host = host,
                     port = port,
-                    file = g_tool.args.get('File')))
+                    file = g_tool.args.get('file')))
 
         input('\nPress ENTER to exit web server\n\n')
 

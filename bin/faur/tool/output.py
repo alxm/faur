@@ -17,7 +17,7 @@
 
 import sys
 
-class Color:
+class FColor:
     Black = '0;30'
     DarkGray = '1;30'
     Red = '0;31'
@@ -35,34 +35,31 @@ class Color:
     LightGray = '0;37'
     White = '1;37'
 
-class Output:
+class FOutput:
     def __init__(self, Tool):
         self.__tool = Tool
         self.__title = self.__colorfmt(
-                        ('[f', Color.White),
-                        ('a', Color.LightBlue),
-                        ('u', Color.LightGreen),
-                        ('r', Color.Yellow),
-                        (f'{self.__tool.name[4 : ]}]', Color.White))
+                        ('[f', FColor.White),
+                        ('a', FColor.LightBlue),
+                        ('u', FColor.LightGreen),
+                        ('r', FColor.Yellow),
+                        (f'{self.__tool.name[4 : ]}]', FColor.White))
 
     def __colorfmt(self, *Args):
         return ''.join(f'\033[{color}m{text}\033[0m' for (text, color) in Args)
 
     def __worker(self, Tag, TagColor, Text, OutputFile):
-        if self.__tool.args.get_flag('-q'):
-            return
-
         tag = self.__colorfmt((f'[{Tag}]', TagColor))
 
         for line in Text.splitlines():
             print(f'{self.__title}{tag} {line}', file = OutputFile)
 
     def note(self, Text):
-        self.__worker('Note', Color.LightGreen, Text, sys.stdout)
+        self.__worker('Note', FColor.LightGreen, Text, sys.stdout)
 
     def error(self, Text):
-        self.__worker('Error', Color.LightRed, Text, sys.stderr)
+        self.__worker('Error', FColor.LightRed, Text, sys.stderr)
         sys.exit(1)
 
     def shell(self, Text):
-        self.__worker('Shell', Color.LightPurple, Text, sys.stdout)
+        self.__worker('Shell', FColor.LightPurple, Text, sys.stdout)
