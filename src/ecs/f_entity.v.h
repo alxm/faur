@@ -38,8 +38,7 @@ typedef enum {
     F_LIST__RESTORE, // entities matched to systems, to be added to them
     F_LIST__FLUSH, // muted or removed entities, to be flushed from systems
     F_LIST__FREE, // entities to be freed at the end of current frame
-    F_LIST__NUM,
-    F_ENUM_SIGNED(FEntityList)
+    F_LIST__NUM
 } FEntityList;
 
 struct FEntity {

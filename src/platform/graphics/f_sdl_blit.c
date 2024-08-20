@@ -26,8 +26,7 @@ typedef enum {
     F_SIDE__COLORMOD_BITMAP, // colorkey: RGB:0xffffff
     F_SIDE__COLORMOD_FLAT, // non-colorkey: RGB:0xffffff
     F_SIDE__ALPHA_MASK, // all: alpha:RGB
-    F_SIDE__NUM,
-    F_ENUM_SIGNED(FTextureSide)
+    F_SIDE__NUM
 } FTextureSide;
 
 typedef struct {
