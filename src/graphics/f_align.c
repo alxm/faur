@@ -22,11 +22,6 @@ FAlign f__align;
 
 static F_LISTINTR(g_stack, FAlign, listNode);
 
-static void f_align__init(void)
-{
-    f_align_reset();
-}
-
 static void f_align__uninit(void)
 {
     f_listintr_apply(&g_stack, f_pool_release);
@@ -34,7 +29,7 @@ static void f_align__uninit(void)
 
 const FPack f_pack__align = {
     "Align",
-    f_align__init,
+    NULL,
     f_align__uninit,
 };
 
