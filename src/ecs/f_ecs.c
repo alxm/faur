@@ -18,6 +18,11 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
+static void f_ecs__init(void)
+{
+    f_ecs__populate();
+}
+
 static void f_ecs__uninit(void)
 {
     if(f_ecs__isInit()) {
@@ -29,13 +34,12 @@ static void f_ecs__uninit(void)
 
 const FPack f_pack__ecs = {
     "ECS",
-    NULL,
+    f_ecs__init,
     f_ecs__uninit,
 };
 
-void f__ecs_init(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum)
+void f_ecs__set(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum)
 {
-    F__CHECK(!f_ecs__isInit());
     F__CHECK(Components != NULL);
     F__CHECK(ComponentsNum > 0);
     F__CHECK(Systems != NULL);

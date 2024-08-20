@@ -26,6 +26,9 @@
 
 extern const FPack f_pack__ecs;
 
+extern void f_ecs__populate(void);
+extern void f_ecs__set(const FComponent* const* Components, size_t ComponentsNum, const FSystem* const* Systems, size_t SystemsNum);
+
 static inline bool f_ecs__isInit(void)
 {
     return f_component__num > 0 && f_system__num > 0;

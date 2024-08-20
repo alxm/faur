@@ -21,6 +21,21 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     -I$(F_BUILD_DIR_GEN_UID) \
 
 #
+# The file that initializes ECS
+#
+F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
+F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
+				-type f \
+				-name "*.h" \
+				-not -path "$(F_BUILD_DIR_GEN_ROOT)/*" \
+				-exec \
+				    grep \
+					-l \
+					-e "extern const FSystem s_" \
+					-e "extern const FComponent c_" \
+					{} +)
+
+#
 # Project root-relative paths to embedded files
 #
 F_BUILD_FILES_EMBED_BIN_PATHS_C_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_C), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
@@ -50,6 +65,7 @@ F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$
 # All generated source code
 #
 F_BUILD_FILES_GEN_C := \
+    $(F_BUILD_FILES_ECS_INIT) \
     $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
@@ -93,6 +109,13 @@ all_build : $(F_MAKE_ALL)
 # Code generation target
 #
 gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
+
+#
+# ECS init code
+#
+$(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --headers $(F_BUILD_FILES_ECS_HEADERS)
 
 #
 # Embedded files
