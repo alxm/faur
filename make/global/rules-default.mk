@@ -209,10 +209,10 @@ run : all
 	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)
 
 valgrind : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind ./$(F_BUILD_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 ./$(F_BUILD_FILE_BIN)
 
 valgrindall : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
@@ -221,4 +221,4 @@ copystatic :
 #
 # Not file targets
 #
-.PHONY : copystatic run valgrind
+.PHONY : run valgrind valgrindall copystatic
