@@ -27,8 +27,8 @@
 struct FButton {
     FListIntrNode listNode;
     const char* name; // friendly name
-    FList* platformInputs; // FList<FPlatformButton*>
-    FListIntr combos; // FListIntr<FButtonCombo*>
+    FList* platformInputs; // FList<const FPlatformButton*>
+    FList* combos; // FList<FList<const FPlatformButton*>>
     FTimer* autoRepeat;
     bool isClone;
     bool waitForRelease;

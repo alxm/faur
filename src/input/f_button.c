@@ -18,11 +18,6 @@
 #include "f_button.v.h"
 #include <faur.v.h>
 
-typedef struct {
-    FListIntrNode listNode;
-    FList* andButtons; // FList<FPlatformButton*>
-} FButtonCombo;
-
 #if F_CONFIG_TRAIT_KEYBOARD
 static const char* g_keyNames[F_KEY_NUM] = {
     [F_KEY_UP] = "Up",
@@ -112,8 +107,7 @@ FButton* f_button_new(void)
 
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
-
-    f_listintr_init(&b->combos, FButtonCombo, listNode);
+    b->combos = f_list_new();
 
     return b;
 }
@@ -143,10 +137,7 @@ void f_button_free(FButton* Button)
     f_listintr_removeNode(&Button->listNode);
 
     if(!Button->isClone) {
-        F_LISTINTR_ITERATE(&Button->combos, FButtonCombo*, combo) {
-            f_list_free(combo->andButtons);
-        }
-
+        f_list_freeEx(Button->combos, (FCallFree*)f_list_free);
         f_list_free(Button->platformInputs);
     }
 
@@ -209,7 +200,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
     va_list args;
     va_start(args, Id);
 
-    FList* combo = f_list_new();
+    FList* combo = NULL;
 
     for(int i = Id; i != F_BUTTON_INVALID; i = va_arg(args, int)) {
         F__CHECK(i < F_BUTTON_NUM);
@@ -218,14 +209,16 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
             f_platform_api__inputButtonGet(Controller, i);
 
         if(b) {
+            if(combo == NULL) {
+                combo = f_list_new();
+            }
+
             f_list_addLast(combo, (FPlatformButton*)b);
         }
     }
 
-    if(f_list_sizeIsEmpty(combo)) {
-        f_list_free(combo);
-    } else {
-        f_listintr_addFirst(&Button->combos, combo);
+    if(combo) {
+        f_list_addFirst(Button->combos, combo);
     }
 
     va_end(args);
@@ -236,7 +229,7 @@ bool f_button_isWorking(const FButton* Button)
     F__CHECK(Button != NULL);
 
     return !f_list_sizeIsEmpty(Button->platformInputs)
-        || !f_listintr_sizeIsEmpty(&Button->combos);
+        || !f_list_sizeIsEmpty(Button->combos);
 }
 
 const char* f_button_nameGet(const FButton* Button)
@@ -298,15 +291,13 @@ void f_input_button__tick(void)
             }
         }
 
-        if(!f_listintr_sizeIsEmpty(&b->combos)) {
-            F_LISTINTR_ITERATE(&b->combos, FButtonCombo*, combo) {
-                F_LIST_ITERATE(combo->andButtons, const FPlatformButton*, pb) {
-                    if(!f_platform_api__inputButtonPressGet(pb)) {
-                        break;
-                    } else if(F_LIST_IS_LAST()) {
-                        pressed = true;
-                        goto done;
-                    }
+        F_LIST_ITERATE(b->combos, const FList*, buttons) {
+            F_LIST_ITERATE(buttons, const FPlatformButton*, pb) {
+                if(!f_platform_api__inputButtonPressGet(pb)) {
+                    break;
+                } else if(F_LIST_IS_LAST()) {
+                    pressed = true;
+                    goto done;
                 }
             }
         }
