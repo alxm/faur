@@ -18,17 +18,11 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-const FComponent* const* f_component__array; // [f_component__num]
-unsigned f_component__num;
-
 static FPool** g_pools;
 
-void f_component__init(const FComponent* const* Components, size_t ComponentsNum)
+void f_component__init(void)
 {
-    f_component__array = Components;
-    f_component__num = (unsigned)ComponentsNum;
-
-    g_pools = f_mem_malloc(ComponentsNum * sizeof(FPool*));
+    g_pools = f_mem_malloc(f_component__num * sizeof(FPool*));
 
     for(unsigned c = f_component__num; c--; ) {
         const FComponent* component = f_component__array[c];

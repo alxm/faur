@@ -20,7 +20,15 @@
 
 static void f_ecs__init(void)
 {
-    f_ecs__populate();
+    if(f_component__num == 0 || f_system__num == 0) {
+        return;
+    }
+
+    f_out__info("%u components, %u systems", f_component__num, f_system__num);
+
+    f_component__init();
+    f_system__init();
+    f_entity__init();
 }
 
 static void f_ecs__uninit(void)
@@ -37,17 +45,3 @@ const FPack f_pack__ecs = {
     f_ecs__init,
     f_ecs__uninit,
 };
-
-void f_ecs__set(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum)
-{
-    F__CHECK(Components != NULL);
-    F__CHECK(ComponentsNum > 0);
-    F__CHECK(Systems != NULL);
-    F__CHECK(SystemsNum > 0);
-
-    f_out__info("ECS: %zu components, %zu systems", ComponentsNum, SystemsNum);
-
-    f_component__init(Components, ComponentsNum);
-    f_system__init(Systems, SystemsNum);
-    f_entity__init();
-}
