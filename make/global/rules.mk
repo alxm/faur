@@ -23,16 +23,18 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP := \
 #
 # The file that initializes ECS
 #
-F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
-F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
+F_BUILD_FILES_ECS_INIT_C := $(F_BUILD_DIR_GEN)/g_ecs_init.c
+F_BUILD_FILES_ECS_INIT_H := $(F_BUILD_DIR_GEN)/g_ecs_init.h
+
+F_BUILD_FILES_ECS_SOURCES := $(shell find $(F_BUILD_DIR_SRC) \
 				-type f \
-				-name "*.h" \
+				-name "*.c" \
 				-not -path "$(F_BUILD_DIR_GEN_ROOT)/*" \
 				-exec \
 				    grep \
 					-l \
-					-e "extern const FSystem s_" \
-					-e "extern const FComponent c_" \
+					-e "F_COMPONENT" \
+					-e "F_SYSTEM" \
 					{} +)
 
 #
@@ -65,13 +67,14 @@ F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$
 # All generated source code
 #
 F_BUILD_FILES_GEN_C := \
-    $(F_BUILD_FILES_ECS_INIT) \
+    $(F_BUILD_FILES_ECS_INIT_C) \
     $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
     $(F_BUILD_FILES_FAUR_GFX_C) \
 
 F_BUILD_FILES_GEN_H := \
+    $(F_BUILD_FILES_ECS_INIT_H) \
     $(F_BUILD_FILES_GFX_H) \
     $(F_BUILD_FILES_SFX_H) \
 
@@ -113,9 +116,13 @@ gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_G
 #
 # ECS init code
 #
-$(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+$(F_BUILD_FILES_ECS_INIT_C) : $(F_BUILD_FILES_ECS_SOURCES) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --headers $(F_BUILD_FILES_ECS_HEADERS)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --files $(F_BUILD_FILES_ECS_SOURCES)
+
+$(F_BUILD_FILES_ECS_INIT_H) : $(F_BUILD_FILES_ECS_SOURCES) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --files $(F_BUILD_FILES_ECS_SOURCES)
 
 #
 # Embedded files

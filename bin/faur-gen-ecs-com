@@ -76,8 +76,6 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 
 #include <faur.h>
 
-extern const FComponent c_{name};
-
 typedef struct {ctype} {ctype};
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
