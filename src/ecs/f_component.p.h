@@ -43,13 +43,13 @@ struct FComponent {
     FCallComponentInstanceFree* free; // does not free the actual comp buffer
 };
 
-#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree)  \
+#define F_COMPONENT(Name, Type, InstanceInit, InstanceFree)          \
     static F__ComponentRuntime F_GLUE2(f__component_runtime_, Name); \
                                                                      \
     const FComponent Name = {                                        \
         .runtime = &F_GLUE2(f__component_runtime_, Name),            \
         .stringId = F_STRINGIFY(Name),                               \
-        .size = (unsigned)InstanceSize,                              \
+        .size = (unsigned)sizeof(Type),                              \
         .init = (FCallComponentInstanceInit*)InstanceInit,           \
         .free = (FCallComponentInstanceFree*)InstanceFree,           \
     }

@@ -52,7 +52,7 @@ static void c_{name}_instanceFree({ctype}* {paramVar})
 
 F_COMPONENT(
     c_{name},
-    sizeof({ctype}),
+    {ctype},
     c_{name}_instanceInit,
     c_{name}_instanceFree
 );
