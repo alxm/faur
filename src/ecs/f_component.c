@@ -19,13 +19,11 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS
-static FPool** g_pools;
+static FPool* g_pools[F_CONFIG_ECS_COM_NUM];
 
 void f_component__init(void)
 {
-    g_pools = f_mem_malloc(f_component__num * sizeof(FPool*));
-
-    for(unsigned c = f_component__num; c--; ) {
+    for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
         const FComponent* component = f_component__array[c];
 
         component->runtime->bitId = c;
@@ -39,11 +37,9 @@ void f_component__init(void)
 
 void f_component__uninit(void)
 {
-    for(unsigned c = f_component__num; c--; ) {
+    for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
         f_pool_free(g_pools[c]);
     }
-
-    f_mem_free(g_pools);
 }
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)

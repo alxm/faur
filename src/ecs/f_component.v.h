@@ -32,7 +32,6 @@ struct FComponentInstance {
 };
 
 extern const FComponent* const f_component__array[];
-extern const unsigned f_component__num;
 
 extern void f_component__init(void);
 extern void f_component__uninit(void);

@@ -21,7 +21,6 @@
 #include "f_system.p.h"
 
 extern const FSystem* const f_system__array[];
-extern const unsigned f_system__num;
 
 extern void f_system__init(void);
 extern void f_system__uninit(void);

@@ -53,22 +53,16 @@ def main():
 
 #include "g_ecs_init.h"
 
-const unsigned f_component__num = {components_num};
-
 const FComponent* const f_component__array[] = {{{components}
     NULL
 }};
-
-const unsigned f_system__num = {systems_num};
 
 const FSystem* const f_system__array[] = {{{systems}
     NULL
 }};
 """.format(cmd = g_tool.get_cmd(),
            components = ''.join([f'\n    &{c},' for c in components]),
-           components_num = len(components),
-           systems = ''.join([f'\n    &{s},' for s in systems]),
-           systems_num = len(systems))
+           systems = ''.join([f'\n    &{s},' for s in systems]))
     else:
         g_tool.usage('Gen file must be a .c or .h file')
 

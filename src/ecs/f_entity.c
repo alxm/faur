@@ -19,7 +19,6 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS
-static FPool* g_pool; // To allocate entities from
 static FListIntr g_lists[F_LIST__NUM]; // FListIntr<FEntity*>
 static unsigned g_activeNumPermanent; // Number of always-active entities
 
@@ -53,10 +52,6 @@ static inline void listMoveTo(FEntity* Entity, FEntityList List)
 
 void f_entity__init(void)
 {
-    g_pool = f_pool_new(
-                sizeof(FEntity)
-                    + sizeof(FComponentInstance*) * (f_component__num - 1));
-
     for(int i = F_LIST__NUM; i--; ) {
         f_listintr_init(&g_lists[i], FEntity, node);
     }
@@ -69,8 +64,6 @@ void f_entity__uninit(void)
     for(int i = F_LIST__NUM; i--; ) {
         f_listintr_clearEx(&g_lists[i], (FCallFree*)f_entity__free);
     }
-
-    f_pool_free(g_pool);
 }
 
 void f_entity__tick(void)
@@ -81,7 +74,7 @@ void f_entity__tick(void)
 
     // Check what systems the new entities match
     F_LISTINTR_ITERATE(&g_lists[F_LIST__NEW], FEntity*, e) {
-        for(unsigned s = f_system__num; s--; ) {
+        for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
             const FSystem* system = f_system__array[s];
 
             if(f_bitfield_testMask(
@@ -165,7 +158,7 @@ FEntity* f_entity_new(const char* Id)
         F__FATAL("f_entity_new(%s): Free in progress", Id);
     }
 
-    FEntity* e = f_pool_alloc(g_pool);
+    FEntity* e = f_pool__alloc(F_POOL__ENTITY);
 
     listAddTo(e, F_LIST__NEW);
 
@@ -174,7 +167,7 @@ FEntity* f_entity_new(const char* Id)
     e->matchingSystemsRest = f_list_new();
     e->systemNodesActive = f_list_new();
     e->systemNodesEither = f_list_new();
-    e->componentBits = f_bitfield_new(f_component__num);
+    e->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
     e->lastActive = f_fps_ticksGet() - 1;
 
     if(f__collection) {
@@ -211,7 +204,7 @@ void f_entity__free(FEntity* Entity)
     f_list_freeEx(Entity->systemNodesActive, (FCallFree*)f_list_removeNode);
     f_list_freeEx(Entity->systemNodesEither, (FCallFree*)f_list_removeNode);
 
-    for(unsigned c = f_component__num; c--; ) {
+    for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
         f_component__instanceFree(Entity->componentsTable[c]);
     }
 

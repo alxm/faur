@@ -19,9 +19,15 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS
+#if F_CONFIG_ECS_COM_NUM <= 0 || F_CONFIG_ECS_SYS_NUM <= 0
+    #error FAUR_ERROR: Invalid F_CONFIG_ECS
+#endif
+
 static void f_ecs__init(void)
 {
-    f_out__info("%u components, %u systems", f_component__num, f_system__num);
+    f_out__info("%u components, %u systems",
+                F_CONFIG_ECS_COM_NUM,
+                F_CONFIG_ECS_SYS_NUM);
 
     f_component__init();
     f_system__init();

@@ -21,11 +21,11 @@
 #if F_CONFIG_ECS
 void f_system__init(void)
 {
-    for(unsigned s = f_system__num; s--; ) {
+    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
         const FSystem* sys = f_system__array[s];
 
         sys->runtime->entities = f_list_new();
-        sys->runtime->componentBits = f_bitfield_new(f_component__num);
+        sys->runtime->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
 
         for(unsigned c = sys->componentsNum; c--; ) {
             if(sys->components[c] == NULL) {
@@ -43,7 +43,7 @@ void f_system__init(void)
 
 void f_system__uninit(void)
 {
-    for(unsigned s = f_system__num; s--; ) {
+    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
         const FSystem* system = f_system__array[s];
 
         f_list_free(system->runtime->entities);

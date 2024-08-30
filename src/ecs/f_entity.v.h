@@ -57,7 +57,9 @@ struct FEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     unsigned flags; // various properties
-    FComponentInstance* componentsTable[1]; // [f_component__num] Buffer/NULL
+    #if F_CONFIG_ECS_COM_NUM > 0
+        FComponentInstance* componentsTable[F_CONFIG_ECS_COM_NUM]; // Data/NULL
+    #endif
 };
 
 extern unsigned f_entity__num;
