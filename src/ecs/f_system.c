@@ -18,6 +18,7 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
 void f_system__init(void)
 {
     for(unsigned s = f_system__num; s--; ) {
@@ -52,7 +53,6 @@ void f_system__uninit(void)
 
 void f_system_run(const FSystem* System)
 {
-    F__CHECK(f_ecs__isInit());
     F__CHECK(System != NULL);
 
     if(System->compare) {
@@ -76,3 +76,4 @@ void f_system_run(const FSystem* System)
 
     f_entity__flushFromSystems();
 }
+#endif // F_CONFIG_ECS

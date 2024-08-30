@@ -246,13 +246,15 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        f_font_printf("%u entities\n", f_entity__num);
+        #if F_CONFIG_ECS
+            f_font_printf("%u entities\n", f_entity__num);
 
-        if(f_entity__num > 0) {
-            f_font_printf(
-                "%u active (%u%%)",
-                f_entity__numActive, 100 * f_entity__numActive / f_entity__num);
-        }
+            if(f_entity__num > 0) {
+                f_font_printf("%u active (%u%%)\n",
+                              f_entity__numActive,
+                              100 * f_entity__numActive / f_entity__num);
+            }
+        #endif
     }
 
     f_align_pop();

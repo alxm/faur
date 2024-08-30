@@ -18,6 +18,7 @@
 #include "f_entity.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
 static FPool* g_pool; // To allocate entities from
 static FListIntr g_lists[F_LIST__NUM]; // FListIntr<FEntity*>
 static unsigned g_activeNumPermanent; // Number of always-active entities
@@ -74,10 +75,6 @@ void f_entity__uninit(void)
 
 void f_entity__tick(void)
 {
-    if(!f_ecs__isInit()) {
-        return;
-    }
-
     f_entity__numActive = g_activeNumPermanent;
 
     f_entity__flushFromSystems();
@@ -164,8 +161,6 @@ void f_entity__flushFromSystemsActive(FEntity* Entity)
 
 FEntity* f_entity_new(const char* Id)
 {
-    F__CHECK(f_ecs__isInit());
-
     if(F_CONFIG_DEBUG && f_entity__bulkFreeInProgress) {
         F__FATAL("f_entity_new(%s): Free in progress", Id);
     }
@@ -682,3 +677,4 @@ void f_entity_muteDec(FEntity* Entity)
         }
     }
 }
+#endif // F_CONFIG_ECS

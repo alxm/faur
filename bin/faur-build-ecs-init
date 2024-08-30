@@ -21,26 +21,12 @@ import re
 
 from faur.tool.tool import FTool
 
-g_tool = FTool('gen-file [files...]')
+g_tool = FTool('gen-file [com...] [sys...]')
 
 def main():
     gen_file = g_tool.args.get('gen-file')
-    files = g_tool.args.get('files')
-
-    components = []
-    systems = []
-
-    for f in files:
-        text = g_tool.files.read_text(f)
-
-        for m in re.finditer('F_COMPONENT\s*\(\s*(\w+)\s*,', text):
-            components.append(m.group(1))
-
-        for m in re.finditer('F_SYSTEM\s*\(\s*(\w+)\s*,', text):
-            systems.append(m.group(1))
-
-    components.sort()
-    systems.sort()
+    components = g_tool.args.get('com')
+    systems = g_tool.args.get('sys')
 
     if gen_file.endswith('.h'):
         content = """\

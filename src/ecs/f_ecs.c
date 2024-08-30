@@ -18,12 +18,9 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
 static void f_ecs__init(void)
 {
-    if(f_component__num == 0 || f_system__num == 0) {
-        return;
-    }
-
     f_out__info("%u components, %u systems", f_component__num, f_system__num);
 
     f_component__init();
@@ -33,11 +30,9 @@ static void f_ecs__init(void)
 
 static void f_ecs__uninit(void)
 {
-    if(f_ecs__isInit()) {
-        f_entity__uninit();
-        f_system__uninit();
-        f_component__uninit();
-    }
+    f_entity__uninit();
+    f_system__uninit();
+    f_component__uninit();
 }
 
 const FPack f_pack__ecs = {
@@ -45,3 +40,4 @@ const FPack f_pack__ecs = {
     f_ecs__init,
     f_ecs__uninit,
 };
+#endif // F_CONFIG_ECS

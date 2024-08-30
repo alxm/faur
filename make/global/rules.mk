@@ -21,21 +21,10 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     -I$(F_BUILD_DIR_GEN_UID) \
 
 #
-# The file that initializes ECS
+# ECS object declarations
 #
 F_BUILD_FILES_ECS_INIT_C := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_INIT_H := $(F_BUILD_DIR_GEN)/g_ecs_init.h
-
-F_BUILD_FILES_ECS_SOURCES := $(shell find $(F_BUILD_DIR_SRC) \
-				-type f \
-				-name "*.c" \
-				-not -path "$(F_BUILD_DIR_GEN_ROOT)/*" \
-				-exec \
-				    grep \
-					-l \
-					-e "F_COMPONENT" \
-					-e "F_SYSTEM" \
-					{} +)
 
 #
 # Project root-relative paths to embedded files
@@ -116,13 +105,13 @@ gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_G
 #
 # ECS init code
 #
-$(F_BUILD_FILES_ECS_INIT_C) : $(F_BUILD_FILES_ECS_SOURCES) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+$(F_BUILD_FILES_ECS_INIT_C) : $(F_FAUR_DIR_BIN)/faur-build-ecs-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --files $(F_BUILD_FILES_ECS_SOURCES)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --com $(F_CONFIG_ECS_COM) --sys $(F_CONFIG_ECS_SYS)
 
-$(F_BUILD_FILES_ECS_INIT_H) : $(F_BUILD_FILES_ECS_SOURCES) $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+$(F_BUILD_FILES_ECS_INIT_H) : $(F_FAUR_DIR_BIN)/faur-build-ecs-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --files $(F_BUILD_FILES_ECS_SOURCES)
+	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --com $(F_CONFIG_ECS_COM) --sys $(F_CONFIG_ECS_SYS)
 
 #
 # Embedded files

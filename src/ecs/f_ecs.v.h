@@ -26,9 +26,4 @@
 
 extern const FPack f_pack__ecs;
 
-static inline bool f_ecs__isInit(void)
-{
-    return f_component__num > 0 && f_system__num > 0;
-}
-
 #endif // F_INC_ECS_ECS_V_H

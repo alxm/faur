@@ -18,6 +18,7 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
 static FPool** g_pools;
 
 void f_component__init(void)
@@ -84,3 +85,4 @@ void f_component__instanceFree(FComponentInstance* Instance)
 
     f_pool_release(Instance);
 }
+#endif // F_CONFIG_ECS
