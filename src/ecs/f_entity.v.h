@@ -52,7 +52,7 @@ struct FEntity {
     FList* matchingSystemsRest; // FList<const FSystem*>
     FList* systemNodesActive; // FList<FListNode*> in active-only FSystem lists
     FList* systemNodesEither; // FList<FListNode*> in rest FSystem lists
-    FBitfield* componentBits; // each component's bit is set
+    F__EcsBitfield componentBits; // each component's bit ID is set
     unsigned lastActive; // frame when f_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems

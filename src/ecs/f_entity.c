@@ -77,7 +77,7 @@ void f_entity__tick(void)
         for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
             const FSystem* system = f_system__array[s];
 
-            if(f_bitfield_testMask(
+            if(F_ECS__BITS_TEST(
                 e->componentBits, system->runtime->componentBits)) {
 
                 if(system->onlyActiveEntities) {
@@ -167,7 +167,7 @@ FEntity* f_entity_new(const char* Id)
     e->matchingSystemsRest = f_list_new();
     e->systemNodesActive = f_list_new();
     e->systemNodesEither = f_list_new();
-    e->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+    e->componentBits = F_ECS__BITS_NEW();
     e->lastActive = f_fps_ticksGet() - 1;
 
     if(f__collection) {
@@ -212,7 +212,7 @@ void f_entity__free(FEntity* Entity)
         f_entity_refDec(Entity->parent);
     }
 
-    f_bitfield_free(Entity->componentBits);
+    F_ECS__BITS_FREE(Entity->componentBits);
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ALLOC_STRING_ID)) {
         f_mem_free(Entity->id);
@@ -528,7 +528,7 @@ void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
     FComponentInstance* c = f_component__instanceNew(Component, Entity);
 
     Entity->componentsTable[Component->runtime->bitId] = c;
-    f_bitfield_set(Entity->componentBits, Component->runtime->bitId);
+    F_ECS__BITS_SET(Entity->componentBits, Component->runtime->bitId);
 
     return c->buffer;
 }

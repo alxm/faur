@@ -25,7 +25,7 @@ void f_system__init(void)
         const FSystem* sys = f_system__array[s];
 
         sys->runtime->entities = f_list_new();
-        sys->runtime->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+        sys->runtime->componentBits = F_ECS__BITS_NEW();
 
         for(unsigned c = sys->componentsNum; c--; ) {
             if(sys->components[c] == NULL) {
@@ -35,8 +35,8 @@ void f_system__init(void)
                          sys->componentsNum);
             }
 
-            f_bitfield_set(sys->runtime->componentBits,
-                           sys->components[c]->runtime->bitId);
+            F_ECS__BITS_SET(sys->runtime->componentBits,
+                            sys->components[c]->runtime->bitId);
         }
     }
 }
@@ -47,7 +47,7 @@ void f_system__uninit(void)
         const FSystem* system = f_system__array[s];
 
         f_list_free(system->runtime->entities);
-        f_bitfield_free(system->runtime->componentBits);
+        F_ECS__BITS_FREE(system->runtime->componentBits);
     }
 }
 

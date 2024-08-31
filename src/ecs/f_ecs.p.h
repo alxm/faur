@@ -20,4 +20,14 @@
 
 #include "../general/f_system_includes.h"
 
+#include "../data/f_bitfield.p.h"
+
+#if F_CONFIG_ECS_COM_NUM <= 32
+    typedef uint32_t F__EcsBitfield;
+#elif F_CONFIG_ECS_COM_NUM <= 64
+    typedef uint64_t F__EcsBitfield;
+#else
+    typedef FBitfield* F__EcsBitfield;
+#endif
+
 #endif // F_INC_ECS_ECS_P_H

@@ -25,6 +25,7 @@ typedef struct FSystem FSystem;
 #include "../data/f_bitfield.p.h"
 #include "../data/f_list.p.h"
 #include "../ecs/f_component.p.h"
+#include "../ecs/f_ecs.p.h"
 #include "../ecs/f_entity.p.h"
 
 typedef void FCallSystemHandler(FEntity* Entity);
@@ -32,7 +33,7 @@ typedef int FCallSystemSort(const FEntity* A, const FEntity* B);
 
 typedef struct {
     FList* entities; // entities currently picked up by this system
-    FBitfield* componentBits; // IDs of components that this system works on
+    F__EcsBitfield componentBits; // IDs of components that this system works on
 } F__SystemRuntime;
 
 struct FSystem {
