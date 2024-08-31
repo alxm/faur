@@ -21,7 +21,6 @@
 #include "f_pool.p.h"
 
 typedef enum {
-    F_POOL__BITFIELD,
     F_POOL__BLOCK,
     F_POOL__CONSOLE,
     F_POOL__ENTITY,
