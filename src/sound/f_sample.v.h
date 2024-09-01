@@ -25,7 +25,7 @@
 struct FSample {
     unsigned size;
     const uint8_t* buffer;
-    #if F_CONFIG_SOUND_SAMPLE_NEEDS_RUNTIME_OBJECT
+    #if F_CONFIG_SOUND_SAMPLE_HAS_RUNTIME_OBJECT
         union {
             FPlatformSample* platform;
             FPlatformSample** platformIndirect;

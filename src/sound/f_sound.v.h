@@ -22,9 +22,6 @@
 
 #include "../general/f_init.v.h"
 
-#define F_SOUND_FORMAT_DYNAMIC 0
-#define F_SOUND_FORMAT_GAMEBUINO_META 1
-
 extern const FPack f_pack__sound;
 
 extern void f_sound__tick(void);
