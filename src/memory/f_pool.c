@@ -48,13 +48,6 @@ static const unsigned g_sizes[F_POOL__NUM] = {
 
 static FPool* g_pools[F_POOL__NUM];
 
-static void f_pool__init(void)
-{
-    for(int p = F_POOL__NUM; p--; ) {
-        g_pools[p] = f_pool_new(g_sizes[p]);
-    }
-}
-
 static void f_pool__uninit(void)
 {
     for(int p = F_POOL__NUM; p--; ) {
@@ -64,7 +57,7 @@ static void f_pool__uninit(void)
 
 const FPack f_pack__pool = {
     "Pool",
-    f_pool__init,
+    NULL,
     f_pool__uninit
 };
 
@@ -166,6 +159,10 @@ void f_pool_release(void* Buffer)
 
 void* f_pool__alloc(FPoolId Pool)
 {
+    if(g_pools[Pool] == NULL) {
+        g_pools[Pool] = f_pool_new(g_sizes[Pool]);
+    }
+
     return f_pool_alloc(g_pools[Pool]);
 }
 
