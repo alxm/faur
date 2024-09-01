@@ -148,11 +148,7 @@ $(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-
 #
 clean :
 	rm -rf $(F_BUILD_DIR)
-
-cleangen :
 	rm -rf $(F_BUILD_DIR_GEN_UID)
-
-cleanall : clean cleangen
 
 #
 # Turn off Make default suffix rules
@@ -162,4 +158,4 @@ cleanall : clean cleangen
 #
 # Not file targets
 #
-.PHONY : all all_build clean cleanall cleangen gen
+.PHONY : all all_build clean gen
