@@ -28,6 +28,7 @@ static const FPack* g_packs[] = {
     &f_pack__screen,
     &f_pack__align,
     &f_pack__color,
+    &f_pack__font,
     &f_pack__fps,
 #if F_CONFIG_TRAIT_SCREENSHOTS
     &f_pack__screenshot,
@@ -41,7 +42,6 @@ static const FPack* g_packs[] = {
     &f_pack__state,
     &f_pack__ecs,
     &f_pack__fade,
-    &f_pack__font,
 #if F_CONFIG_TRAIT_CONSOLE
     &f_pack__console_1,
 #endif

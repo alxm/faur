@@ -114,6 +114,7 @@ def process_h(VarName):
 //
 
 extern const FSprite* const f_gfx_{VarName};
+extern const FSprite f__gfx_sprite__{VarName};
 """
 
     return content
@@ -203,7 +204,7 @@ static const FColorPixel f__gfx_buffer__{VarName}[{width} * {height} * {frames_n
 
 {texture_object}
 
-static const FSprite f__gfx_sprite__{VarName} = {{
+const FSprite f__gfx_sprite__{VarName} = {{
     .pixels = {{
         .size = {{{width}, {height}}},
         .framesNum = {frames_num},

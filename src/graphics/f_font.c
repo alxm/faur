@@ -25,19 +25,19 @@
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
 #define F__LINE_SPACING 1
 
-static const FFont* g_defaultFonts[F_FONT__ID_NUM];
+static const FFont* const g_defaultFonts[F_FONT__ID_NUM] = {
+    [F_FONT__ID_BLOCK] = &f__gfx_sprite___g_font_6x8,
+    #if !F_CONFIG_TRAIT_LOW_MEM
+        [F_FONT__ID_KEYED] = &f__gfx_sprite___g_font_keyed_6x8,
+    #endif
+};
+
 static FFontState g_state;
 static F_LISTINTR(g_stack, FFontState, listNode);
 static char g_buffer[512];
 
 static void f_font__init(void)
 {
-    g_defaultFonts[F_FONT__ID_BLOCK] = f_gfx__g_font_6x8;
-
-    #if !F_CONFIG_TRAIT_LOW_MEM
-        g_defaultFonts[F_FONT__ID_KEYED] = f_gfx__g_font_keyed_6x8;
-    #endif
-
     f_font_reset();
 }
 
