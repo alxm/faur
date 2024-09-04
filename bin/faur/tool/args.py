@@ -16,11 +16,23 @@
 """
 
 class FParam:
-    def __init__(self, Name, IsOptional, IsList, IsFlag):
+    def __init__(self, Name):
+        self.is_optional = False
+        self.is_list = False
+        self.is_flag = False
+
+        if Name[0] == '[' and Name[-1] == ']':
+            Name = Name[1 : -1]
+            self.is_optional = True
+
+        if Name.endswith('...'):
+            Name = Name[ : -3]
+            self.is_list = True
+        elif Name.endswith('?'):
+            Name = Name[ : -1]
+            self.is_flag = True
+
         self.name = Name
-        self.is_optional = IsOptional
-        self.is_list = IsList
-        self.is_flag = IsFlag
         self.__values = []
 
     def is_empty(self):
@@ -43,22 +55,8 @@ class FArgs:
         self.__params = {}
 
         for name in ParamNames.split():
-            is_optional = False
-            is_list = False
-            is_flag = False
-
-            if name[0] == '[' and name[-1] == ']':
-                name = name[1 : -1]
-                is_optional = True
-
-            if name.endswith('...'):
-                name = name[ : -3]
-                is_list = True
-            elif name.endswith('?'):
-                name = name[ : -1]
-                is_flag = True
-
-            self.__params[name] = FParam(name, is_optional, is_list, is_flag)
+            param = FParam(name)
+            self.__params[param.name] = param
 
     def init(self, Argv):
         param = None
