@@ -16,7 +16,8 @@
 """
 
 class FParam:
-    def __init__(self, IsOptional, IsList):
+    def __init__(self, Name, IsOptional, IsList):
+        self.name = Name
         self.is_optional = IsOptional
         self.is_list = IsList
         self.__values = []
@@ -52,7 +53,7 @@ class FArgs:
                 name = name[ : -3]
                 is_list = True
 
-            self.__params[name] = FParam(is_optional, is_list)
+            self.__params[name] = FParam(name, is_optional, is_list)
 
     def init(self, Argv):
         param = None
@@ -65,6 +66,9 @@ class FArgs:
 
             if param is None:
                 self.__tool.usage(f'Invalid argument {arg}')
+
+            if not param.is_list and not param.is_empty():
+                self.__tool.usage(f'Extra argument {arg} for --{param.name}')
 
             param.set(arg)
 
