@@ -16,10 +16,11 @@
 """
 
 class FParam:
-    def __init__(self, Name, IsOptional, IsList):
+    def __init__(self, Name, IsOptional, IsList, IsFlag):
         self.name = Name
         self.is_optional = IsOptional
         self.is_list = IsList
+        self.is_flag = IsFlag
         self.__values = []
 
     def is_empty(self):
@@ -44,6 +45,7 @@ class FArgs:
         for name in ParamNames.split():
             is_optional = False
             is_list = False
+            is_flag = False
 
             if name[0] == '[' and name[-1] == ']':
                 name = name[1 : -1]
@@ -52,8 +54,11 @@ class FArgs:
             if name.endswith('...'):
                 name = name[ : -3]
                 is_list = True
+            elif name.endswith('?'):
+                name = name[ : -1]
+                is_flag = True
 
-            self.__params[name] = FParam(name, is_optional, is_list)
+            self.__params[name] = FParam(name, is_optional, is_list, is_flag)
 
     def init(self, Argv):
         param = None
@@ -62,6 +67,11 @@ class FArgs:
             if arg.startswith('--'):
                 if arg[2 : ] in self.__params:
                     param = self.__params[arg[2 : ]]
+
+                    if param.is_flag:
+                        param.set(True)
+                        param = None
+
                     continue
 
             if param is None:
@@ -87,10 +97,13 @@ class FArgs:
             if param.is_optional:
                 message += '['
 
-            message += f'--{name} \033[3m{values[values_index]}\033[0m'
+            message += f'--{name}'
 
-            if param.is_list:
-                message += '...'
+            if not param.is_flag:
+                message += f' \033[3m{values[values_index]}\033[0m'
+
+                if param.is_list:
+                    message += '...'
 
             if param.is_optional:
                 message += ']'
