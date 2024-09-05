@@ -18,8 +18,6 @@
 #include "f_main.v.h"
 #include <faur.v.h>
 
-#include <unistd.h>
-
 static int g_argsNum;
 static const char** g_args;
 
@@ -43,14 +41,6 @@ int main(int Argc, char* Argv[])
 
 void f__main(void)
 {
-    f_out__info("PID: %d", getpid());
-    f_out__info("Faur: %s %s", F_CONFIG_BUILD_UID, F_CONFIG_BUILD_FAUR_GIT);
-    f_out__info("App: %s %s by %s",
-                F_CONFIG_APP_NAME,
-                F__APP_VERSION_STRING,
-                F_CONFIG_APP_AUTHOR);
-    f_out__info("Build timestamp: %s", F_CONFIG_BUILD_FAUR_TIME);
-
     f_init__init();
     f_state_push(f_main);
 }
