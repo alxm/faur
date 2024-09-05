@@ -126,11 +126,11 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-bu
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 #
 # Files that bundle up the generated code
