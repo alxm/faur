@@ -31,6 +31,8 @@ struct FPack {
     FCallPackUninit* uninit;
 };
 
+extern bool f_init__done;
+
 extern void f_init__init(void);
 extern void f_init__uninit(void);
 

@@ -18,6 +18,8 @@
 #include "f_init.v.h"
 #include <faur.v.h>
 
+bool f_init__done;
+
 static const FPack* g_packs[] = {
     &f_pack__pool,
 #if F_CONFIG_TRAIT_CONSOLE
@@ -59,10 +61,14 @@ void f_init__init(void)
             pack->init();
         }
     }
+
+    f_init__done = true;
 }
 
 void f_init__uninit(void)
 {
+    f_init__done = false;
+
     unsigned num = F_ARRAY_LEN(g_packs);
 
     for(unsigned p = num; p--; ) {

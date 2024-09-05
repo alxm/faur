@@ -22,7 +22,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(const char* Format, va_list Args)
 {
     static bool g_handleFatalInProgress;
 
-    if(!g_handleFatalInProgress) {
+    if(f_init__done && !g_handleFatalInProgress) {
         g_handleFatalInProgress = true;
 
         f_color_reset();
