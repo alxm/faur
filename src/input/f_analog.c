@@ -97,7 +97,7 @@ FFix f_analog_valueGet(const FAnalog* Analog)
     #define F__ANALOG_MAX_DISTANCE (1 << F__ANALOG_BITS)
     #define F__ANALOG_ERROR_MARGIN (F__ANALOG_MAX_DISTANCE / 20)
 
-    F_LIST_ITERATE(Analog->platformInputs, FPlatformAnalog*, a) {
+    F_LIST_ITERATE(Analog->platformInputs, const FPlatformAnalog*, a) {
         value = f_platform_api__inputAnalogValueGet(a);
 
         if(f_math_abs(value) > F__ANALOG_ERROR_MARGIN) {

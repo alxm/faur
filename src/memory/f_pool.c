@@ -48,13 +48,6 @@ static const unsigned g_sizes[F_POOL__NUM] = {
 
 static FPool* g_pools[F_POOL__NUM];
 
-static void f_pool__init(void)
-{
-    for(int p = F_POOL__NUM; p--; ) {
-        g_pools[p] = f_pool_new(g_sizes[p]);
-    }
-}
-
 static void f_pool__uninit(void)
 {
     for(int p = F_POOL__NUM; p--; ) {
@@ -64,36 +57,9 @@ static void f_pool__uninit(void)
 
 const FPack f_pack__pool = {
     "Pool",
-    f_pool__init,
+    NULL,
     f_pool__uninit
 };
-
-static void slab_new(FPool* Pool)
-{
-    FPoolSlab* s =
-        f_mem_malloc(sizeof(FPoolSlab) - sizeof(FPoolEntryHeader)
-                        + Pool->numEntriesPerSlab * Pool->entrySize);
-
-    s->nextSlab = Pool->slabList;
-
-    Pool->slabList = s;
-    Pool->freeEntryList = s->buffer;
-
-    FPoolEntryHeader* entry;
-    FPoolEntryHeader* lastEntry = s->buffer;
-
-    for(unsigned e = 1; e < Pool->numEntriesPerSlab; e++) {
-        entry = (FPoolEntryHeader*)((uintptr_t)s->buffer + e * Pool->entrySize);
-
-        lastEntry->nextFreeEntry = entry;
-        lastEntry = entry;
-    }
-
-    lastEntry->nextFreeEntry = NULL;
-
-    Pool->numEntriesPerSlab =
-        f_math_minu(Pool->numEntriesPerSlab * 2, F__ENTRIES_NUM_MAX);
-}
 
 FPool* f_pool_new(size_t Size)
 {
@@ -135,7 +101,30 @@ void* f_pool_alloc(FPool* Pool)
         return f_mem_mallocz(Pool->objSize);
     #else
         if(Pool->freeEntryList == NULL) {
-            slab_new(Pool);
+            FPoolSlab* s =
+                f_mem_malloc(sizeof(FPoolSlab) - sizeof(FPoolEntryHeader)
+                                + Pool->numEntriesPerSlab * Pool->entrySize);
+
+            s->nextSlab = Pool->slabList;
+
+            Pool->slabList = s;
+            Pool->freeEntryList = s->buffer;
+
+            FPoolEntryHeader* entry;
+            FPoolEntryHeader* lastEntry = s->buffer;
+
+            for(unsigned e = 1; e < Pool->numEntriesPerSlab; e++) {
+                entry = (FPoolEntryHeader*)
+                            ((uintptr_t)s->buffer + e * Pool->entrySize);
+
+                lastEntry->nextFreeEntry = entry;
+                lastEntry = entry;
+            }
+
+            lastEntry->nextFreeEntry = NULL;
+
+            Pool->numEntriesPerSlab =
+                f_math_minu(Pool->numEntriesPerSlab * 2, F__ENTRIES_NUM_MAX);
         }
 
         FPoolEntryHeader* entry = Pool->freeEntryList;
@@ -170,6 +159,10 @@ void f_pool_release(void* Buffer)
 
 void* f_pool__alloc(FPoolId Pool)
 {
+    if(g_pools[Pool] == NULL) {
+        g_pools[Pool] = f_pool_new(g_sizes[Pool]);
+    }
+
     return f_pool_alloc(g_pools[Pool]);
 }
 

@@ -100,31 +100,33 @@ static const FButtonId g_defaultOrder[] = {
 };
 
 #if F_CONFIG_LIB_SDL == 2
+#define F__MAP_SDL2_INPUT(SdlId, Id) [SdlId] = Id + 1
+
 static const FButtonId g_buttonsMap[SDL_CONTROLLER_BUTTON_MAX] = {
-    [SDL_CONTROLLER_BUTTON_A] = F_BUTTON_A,
-    [SDL_CONTROLLER_BUTTON_B] = F_BUTTON_B,
-    [SDL_CONTROLLER_BUTTON_X] = F_BUTTON_X,
-    [SDL_CONTROLLER_BUTTON_Y] = F_BUTTON_Y,
-    [SDL_CONTROLLER_BUTTON_BACK] = F_BUTTON_SELECT,
-    [SDL_CONTROLLER_BUTTON_GUIDE] = F_BUTTON_GUIDE,
-    [SDL_CONTROLLER_BUTTON_START] = F_BUTTON_START,
-    [SDL_CONTROLLER_BUTTON_LEFTSTICK] = F_BUTTON_STICKCLICK,
-    [SDL_CONTROLLER_BUTTON_RIGHTSTICK] = F_BUTTON_INVALID,
-    [SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = F_BUTTON_L,
-    [SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = F_BUTTON_R,
-    [SDL_CONTROLLER_BUTTON_DPAD_UP] = F_BUTTON_UP,
-    [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = F_BUTTON_DOWN,
-    [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = F_BUTTON_LEFT,
-    [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = F_BUTTON_RIGHT,
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_A, F_BUTTON_A),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_B, F_BUTTON_B),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_X, F_BUTTON_X),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_Y, F_BUTTON_Y),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_BACK, F_BUTTON_SELECT),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_GUIDE, F_BUTTON_GUIDE),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_START, F_BUTTON_START),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_LEFTSTICK, F_BUTTON_STICKCLICK),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_RIGHTSTICK, F_BUTTON_STICKCLICK),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, F_BUTTON_L),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, F_BUTTON_R),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_DPAD_UP, F_BUTTON_UP),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_DPAD_DOWN, F_BUTTON_DOWN),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_DPAD_LEFT, F_BUTTON_LEFT),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, F_BUTTON_RIGHT),
 };
 
 static const FAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
-    [SDL_CONTROLLER_AXIS_LEFTX] = F_AXIS_LEFTX,
-    [SDL_CONTROLLER_AXIS_LEFTY] = F_AXIS_LEFTY,
-    [SDL_CONTROLLER_AXIS_RIGHTX] = F_AXIS_RIGHTX,
-    [SDL_CONTROLLER_AXIS_RIGHTY] = F_AXIS_RIGHTY,
-    [SDL_CONTROLLER_AXIS_TRIGGERLEFT] = F_AXIS_LEFTTRIGGER,
-    [SDL_CONTROLLER_AXIS_TRIGGERRIGHT] = F_AXIS_RIGHTTRIGGER,
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_LEFTX, F_AXIS_LEFTX),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_LEFTY, F_AXIS_LEFTY),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_RIGHTX, F_AXIS_RIGHTX),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_RIGHTY, F_AXIS_RIGHTY),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_TRIGGERLEFT, F_AXIS_LEFTTRIGGER),
+    F__MAP_SDL2_INPUT(SDL_CONTROLLER_AXIS_TRIGGERRIGHT, F_AXIS_RIGHTTRIGGER),
 };
 
 static FList* g_futureControllers; // FList<FPlatformController*>
@@ -194,7 +196,7 @@ static void keyAdd(FKeyId Id, int Code)
 
 static void buttonAdd(FPlatformController* Controller, FButtonId Id, int Code)
 {
-    if(Controller->buttons[Id] != NULL) {
+    if(Id == F_BUTTON_INVALID || Controller->buttons[Id] != NULL) {
         return;
     }
 
@@ -272,7 +274,7 @@ static void keyForward(FKeyId Source, const FPlatformController* Controller, FBu
 
 static void analogAdd(FPlatformController* Controller, FAnalogId Id, int AxisIndex)
 {
-    if(Controller->axes[Id] != NULL) {
+    if(Id == F_AXIS_INVALID || Controller->axes[Id] != NULL) {
         return;
     }
 
@@ -550,28 +552,22 @@ static bool controllerInit(FPlatformController* Controller, int Index)
             f_out__info("Mapped as '%s'",
                         SDL_GameControllerName(Controller->controller));
 
-            for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
-                b < SDL_CONTROLLER_BUTTON_MAX;
-                b++) {
-
+            for(int b = SDL_CONTROLLER_BUTTON_MAX; b--; ) {
                 SDL_GameControllerButtonBind bind =
                     SDL_GameControllerGetBindForButton(
                         Controller->controller, b);
 
                 if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
-                    buttonAdd(Controller, g_buttonsMap[b], b);
+                    buttonAdd(Controller, g_buttonsMap[b] - 1, b);
                 }
             }
 
-            for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
-                a < SDL_CONTROLLER_AXIS_MAX;
-                a++) {
-
+            for(int a = SDL_CONTROLLER_AXIS_MAX; a--; ) {
                 SDL_GameControllerButtonBind bind =
                     SDL_GameControllerGetBindForAxis(Controller->controller, a);
 
                 if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
-                    analogAdd(Controller, g_axesMap[a], a);
+                    analogAdd(Controller, g_axesMap[a] - 1, a);
                 }
             }
         } else {

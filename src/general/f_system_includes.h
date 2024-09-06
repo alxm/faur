@@ -20,7 +20,6 @@
 
 #define F_UNUSED(X) (X = X)
 #define F_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
-#define F_ENUM_SIGNED(Type) F_GLUE2(F__FIRST_ELEMENT_, Type) = -1
 
 #define F_FLAGS_BIT(N) (1u << (unsigned)(N))
 #define F_FLAGS_SET(Value, Mask) ((Value) |= (unsigned)(Mask))

@@ -24,7 +24,7 @@
 
 struct FAnalog {
     const char* name; // friendly name
-    FList* platformInputs; // FList<FPlatformAnalog*>
+    FList* platformInputs; // FList<const FPlatformAnalog*>
 };
 
 #endif // F_INC_INPUTS_ANALOG_V_H

@@ -110,11 +110,11 @@ $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_
 #
 $(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
 
 $(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
 
 $(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
@@ -126,11 +126,11 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-bu
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 #
 # Files that bundle up the generated code
@@ -148,11 +148,7 @@ $(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-
 #
 clean :
 	rm -rf $(F_BUILD_DIR)
-
-cleangen :
 	rm -rf $(F_BUILD_DIR_GEN_UID)
-
-cleanall : clean cleangen
 
 #
 # Turn off Make default suffix rules
@@ -162,4 +158,4 @@ cleanall : clean cleangen
 #
 # Not file targets
 #
-.PHONY : all all_build clean cleanall cleangen gen
+.PHONY : all all_build clean gen

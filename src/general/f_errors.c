@@ -18,14 +18,12 @@
 #include "f_errors.v.h"
 #include <faur.v.h>
 
-F__ATTRIBUTE_NORETURN static void handleFatal(FOutSource Source, const char* Format, va_list Args)
+F__ATTRIBUTE_NORETURN static void handleFatal(const char* Format, va_list Args)
 {
     static bool g_handleFatalInProgress;
 
-    if(!g_handleFatalInProgress) {
+    if(f_init__done && !g_handleFatalInProgress) {
         g_handleFatalInProgress = true;
-
-        f_out__backtrace(Source);
 
         f_color_reset();
         f_draw_fill();
@@ -63,7 +61,7 @@ void F__FATAL(const char* Format, ...)
     va_end(args);
 
     va_start(args, Format);
-    handleFatal(F_OUT__SOURCE_FAUR, Format, args);
+    handleFatal(Format, args);
     va_end(args);
 }
 
@@ -78,6 +76,6 @@ void F_FATAL(const char* Format, ...)
     va_end(args);
 
     va_start(args, Format);
-    handleFatal(F_OUT__SOURCE_APP, Format, args);
+    handleFatal(Format, args);
     va_end(args);
 }

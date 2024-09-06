@@ -16,9 +16,23 @@
 """
 
 class FParam:
-    def __init__(self, IsOptional, IsList):
-        self.is_optional = IsOptional
-        self.is_list = IsList
+    def __init__(self, Name):
+        self.is_optional = False
+        self.is_list = False
+        self.is_flag = False
+
+        if Name[0] == '[' and Name[-1] == ']':
+            Name = Name[1 : -1]
+            self.is_optional = True
+
+        if Name.endswith('...'):
+            Name = Name[ : -3]
+            self.is_list = True
+        elif Name.endswith('?'):
+            Name = Name[ : -1]
+            self.is_flag = True
+
+        self.name = Name
         self.__values = []
 
     def is_empty(self):
@@ -41,18 +55,8 @@ class FArgs:
         self.__params = {}
 
         for name in ParamNames.split():
-            is_optional = False
-            is_list = False
-
-            if name[0] == '[' and name[-1] == ']':
-                name = name[1 : -1]
-                is_optional = True
-
-            if name.endswith('...'):
-                name = name[ : -3]
-                is_list = True
-
-            self.__params[name] = FParam(is_optional, is_list)
+            param = FParam(name)
+            self.__params[param.name] = param
 
     def init(self, Argv):
         param = None
@@ -61,10 +65,18 @@ class FArgs:
             if arg.startswith('--'):
                 if arg[2 : ] in self.__params:
                     param = self.__params[arg[2 : ]]
+
+                    if param.is_flag:
+                        param.set(True)
+                        param = None
+
                     continue
 
             if param is None:
                 self.__tool.usage(f'Invalid argument {arg}')
+
+            if not param.is_list and not param.is_empty():
+                self.__tool.usage(f'Extra argument {arg} for --{param.name}')
 
             param.set(arg)
 
@@ -83,10 +95,13 @@ class FArgs:
             if param.is_optional:
                 message += '['
 
-            message += f'--{name} \033[3m{values[values_index]}\033[0m'
+            message += f'--{name}'
 
-            if param.is_list:
-                message += '...'
+            if not param.is_flag:
+                message += f' \033[3m{values[values_index]}\033[0m'
+
+                if param.is_list:
+                    message += '...'
 
             if param.is_optional:
                 message += ']'
