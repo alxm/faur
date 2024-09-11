@@ -18,6 +18,7 @@
 #include "f_collection.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
 FCollection* f__collection; // New entities are added to this collection
 
 void f_collection_set(FCollection* Collection)
@@ -27,8 +28,6 @@ void f_collection_set(FCollection* Collection)
 
 FCollection* f_collection_new(void)
 {
-    F__CHECK(f_ecs__isInit());
-
     FListIntr* l = f_pool__alloc(F_POOL__LISTINTR);
 
     f_listintr_init(l, FEntity, collectionNode);
@@ -77,3 +76,4 @@ void f_collection_muteDec(FCollection* Collection)
         f_entity_muteDec(e);
     }
 }
+#endif // F_CONFIG_ECS

@@ -20,10 +20,9 @@
 
 #include "f_system.p.h"
 
-extern const FSystem* const* f_system__array;
-extern unsigned f_system__num;
+extern const FSystem* const f_system__array[];
 
-extern void f_system__init(const FSystem* const* Systems, size_t SystemsNum);
+extern void f_system__init(void);
 extern void f_system__uninit(void);
 
 #endif // F_INC_ECS_SYSTEM_V_H

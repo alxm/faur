@@ -18,32 +18,32 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_ECS
+#if F_CONFIG_ECS_COM_NUM <= 0 || F_CONFIG_ECS_SYS_NUM <= 0
+    #error FAUR_ERROR: Invalid F_CONFIG_ECS
+#endif
+
+static void f_ecs__init(void)
+{
+    f_out__info("%u components, %u systems",
+                F_CONFIG_ECS_COM_NUM,
+                F_CONFIG_ECS_SYS_NUM);
+
+    f_component__init();
+    f_system__init();
+    f_entity__init();
+}
+
 static void f_ecs__uninit(void)
 {
-    if(f_ecs__isInit()) {
-        f_entity__uninit();
-        f_system__uninit();
-        f_component__uninit();
-    }
+    f_entity__uninit();
+    f_system__uninit();
+    f_component__uninit();
 }
 
 const FPack f_pack__ecs = {
     "ECS",
-    NULL,
+    f_ecs__init,
     f_ecs__uninit,
 };
-
-void f__ecs_init(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum)
-{
-    F__CHECK(!f_ecs__isInit());
-    F__CHECK(Components != NULL);
-    F__CHECK(ComponentsNum > 0);
-    F__CHECK(Systems != NULL);
-    F__CHECK(SystemsNum > 0);
-
-    f_out__info("ECS: %zu components, %zu systems", ComponentsNum, SystemsNum);
-
-    f_component__init(Components, ComponentsNum);
-    f_system__init(Systems, SystemsNum);
-    f_entity__init();
-}
+#endif // F_CONFIG_ECS

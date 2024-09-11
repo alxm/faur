@@ -330,7 +330,10 @@ bool f_state__runStep(void)
                 f_console__tick();
             #endif
 
-            f_entity__tick();
+            #if F_CONFIG_ECS
+                f_entity__tick();
+            #endif
+
             f_fade__tick();
 
             if(!f_listintr_sizeIsEmpty(&g_pending) && !f_state_blockGet()) {

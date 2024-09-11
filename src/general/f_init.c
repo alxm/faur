@@ -44,7 +44,9 @@ static const FPack* g_packs[] = {
     &f_pack__hash,
 #endif
     &f_pack__state,
+#if F_CONFIG_ECS
     &f_pack__ecs,
+#endif
     &f_pack__fade,
 #if F_CONFIG_TRAIT_CONSOLE
     &f_pack__console_1,

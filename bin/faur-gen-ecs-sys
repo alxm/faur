@@ -25,35 +25,24 @@ def main():
     sys_name = g_tool.args.get('name').lower()
 
     sys_c = f's_{sys_name}.c'
-    sys_h = f's_{sys_name}.h'
 
-    g_tool.files.assert_not_exist(sys_c, sys_h)
+    g_tool.files.assert_not_exist(sys_c)
 
     g_tool.files.write_text(sys_c,
 f"""\
-#include "s_{sys_name}.h"
+#include <faur.h>
 
 static void s_{sys_name}_handler(FEntity* Entity)
 {{
-    f_out_info("Handling entity '%s'\\n", f_entity_idGet(Entity));
+    f_out_info("Handling entity '%s'", f_entity_idGet(Entity));
 }}
 
 F_SYSTEM(
     s_{sys_name},
     s_{sys_name}_handler,
-    NULL,
     false,
     NULL // &c_1, &c_2, ...
 );
-""")
-
-    g_tool.files.write_text(sys_h,
-f"""\
-#pragma once
-
-#include <faur.h>
-
-extern const FSystem s_{sys_name};
 """)
 
 if __name__ == '__main__':

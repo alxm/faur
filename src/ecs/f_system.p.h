@@ -25,6 +25,7 @@ typedef struct FSystem FSystem;
 #include "../data/f_bitfield.p.h"
 #include "../data/f_list.p.h"
 #include "../ecs/f_component.p.h"
+#include "../ecs/f_ecs.p.h"
 #include "../ecs/f_entity.p.h"
 
 typedef void FCallSystemHandler(FEntity* Entity);
@@ -32,27 +33,25 @@ typedef int FCallSystemSort(const FEntity* A, const FEntity* B);
 
 typedef struct {
     FList* entities; // entities currently picked up by this system
-    FBitfield* componentBits; // IDs of components that this system works on
+    F__EcsBitfield componentBits; // IDs of components that this system works on
 } F__SystemRuntime;
 
 struct FSystem {
     F__SystemRuntime* runtime; // all the non-constant data
     const char* stringId; // unique string ID
     FCallSystemHandler* handler; // invoked on each entity in list
-    FCallSystemSort* compare; // for sorting the entities list before running
     bool onlyActiveEntities; // kick out entities that are not marked active
     const FComponent** components; // [componentsNum]
     unsigned componentsNum; // length of components array
 };
 
-#define F_SYSTEM(Name, Handler, SortCompare, OnlyActiveEntities, ...) \
-    static F__SystemRuntime F_GLUE2(f__system_runtime__, Name);       \
+#define F_SYSTEM(Name, Handler, OnlyActiveEntities, ...)              \
+    static F__SystemRuntime F_GLUE2(f__system_runtime_, Name);        \
                                                                       \
     const FSystem Name = {                                            \
-        .runtime = &F_GLUE2(f__system_runtime__, Name),               \
+        .runtime = &F_GLUE2(f__system_runtime_, Name),                \
         .stringId = F_STRINGIFY(Name),                                \
         .handler = Handler,                                           \
-        .compare = SortCompare,                                       \
         .onlyActiveEntities = OnlyActiveEntities,                     \
         .components = (const FComponent*[]){__VA_ARGS__},             \
         .componentsNum = sizeof((const FComponent*[]){__VA_ARGS__})   \
@@ -60,5 +59,6 @@ struct FSystem {
     }
 
 extern void f_system_run(const FSystem* System);
+extern void f_system_runEx(const FSystem* System, FCallSystemSort* SortCompare);
 
 #endif // F_INC_ECS_SYSTEM_P_H

@@ -52,7 +52,7 @@ static void c_{name}_instanceFree({ctype}* {paramVar})
 
 F_COMPONENT(
     c_{name},
-    sizeof({ctype}),
+    {ctype},
     c_{name}_instanceInit,
     c_{name}_instanceFree
 );
@@ -75,8 +75,6 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 #pragma once
 
 #include <faur.h>
-
-extern const FComponent c_{name};
 
 typedef struct {ctype} {ctype};
 

@@ -26,9 +26,21 @@
 
 extern const FPack f_pack__ecs;
 
-static inline bool f_ecs__isInit(void)
-{
-    return f_component__num > 0 && f_system__num > 0;
-}
+#if F_CONFIG_ECS_COM_NUM <= 32
+    #define F_ECS__BITS_NEW() ((uint32_t)0)
+    #define F_ECS__BITS_FREE(Bits)
+    #define F_ECS__BITS_SET(Bits, Index) ((Bits) |= (uint32_t)1 << (Index))
+    #define F_ECS__BITS_TEST(Bits, Mask) (((Bits) & (Mask)) == (Mask))
+#elif F_CONFIG_ECS_COM_NUM <= 64
+    #define F_ECS__BITS_NEW() ((uint64_t)0)
+    #define F_ECS__BITS_FREE(Bits)
+    #define F_ECS__BITS_SET(Bits, Index) ((Bits) |= (uint64_t)1 << (Index))
+    #define F_ECS__BITS_TEST(Bits, Mask) (((Bits) & (Mask)) == (Mask))
+#else
+    #define F_ECS__BITS_NEW() f_bitfield_new(F_CONFIG_ECS_COM_NUM)
+    #define F_ECS__BITS_FREE(Bits) f_bitfield_free(Bits)
+    #define F_ECS__BITS_SET(Bits, Index) f_bitfield_set((Bits), (Index))
+    #define F_ECS__BITS_TEST(Bits, Mask) f_bitfield_testMask((Bits), (Mask))
+#endif
 
 #endif // F_INC_ECS_ECS_V_H

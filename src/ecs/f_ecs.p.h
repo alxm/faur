@@ -20,17 +20,14 @@
 
 #include "../general/f_system_includes.h"
 
-#include "../ecs/f_component.p.h"
-#include "../ecs/f_system.p.h"
+#include "../data/f_bitfield.p.h"
 
-#define F_ECS(Components, Systems) \
-    static const FComponent* const f__c[] = Components; \
-    static const FSystem* const f__s[] = Systems; \
-    f__ecs_init(f__c, F_ARRAY_LEN(f__c), f__s, F_ARRAY_LEN(f__s))
-
-#define F_COMPONENTS(...) {__VA_ARGS__}
-#define F_SYSTEMS(...) {__VA_ARGS__}
-
-extern void f__ecs_init(const FComponent* const Components[], size_t ComponentsNum, const FSystem* const Systems[], size_t SystemsNum);
+#if F_CONFIG_ECS_COM_NUM <= 32
+    typedef uint32_t F__EcsBitfield;
+#elif F_CONFIG_ECS_COM_NUM <= 64
+    typedef uint64_t F__EcsBitfield;
+#else
+    typedef FBitfield* F__EcsBitfield;
+#endif
 
 #endif // F_INC_ECS_ECS_P_H

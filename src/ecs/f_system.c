@@ -18,19 +18,14 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-const FSystem* const* f_system__array; // [f_system__num]
-unsigned f_system__num;
-
-void f_system__init(const FSystem* const* Systems, size_t SystemsNum)
+#if F_CONFIG_ECS
+void f_system__init(void)
 {
-    f_system__array = Systems;
-    f_system__num = (unsigned)SystemsNum;
-
-    for(unsigned s = f_system__num; s--; ) {
+    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
         const FSystem* sys = f_system__array[s];
 
         sys->runtime->entities = f_list_new();
-        sys->runtime->componentBits = f_bitfield_new(f_component__num);
+        sys->runtime->componentBits = F_ECS__BITS_NEW();
 
         for(unsigned c = sys->componentsNum; c--; ) {
             if(sys->components[c] == NULL) {
@@ -40,31 +35,25 @@ void f_system__init(const FSystem* const* Systems, size_t SystemsNum)
                          sys->componentsNum);
             }
 
-            f_bitfield_set(sys->runtime->componentBits,
-                           sys->components[c]->runtime->bitId);
+            F_ECS__BITS_SET(sys->runtime->componentBits,
+                            sys->components[c]->runtime->bitId);
         }
     }
 }
 
 void f_system__uninit(void)
 {
-    for(unsigned s = f_system__num; s--; ) {
+    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
         const FSystem* system = f_system__array[s];
 
         f_list_free(system->runtime->entities);
-        f_bitfield_free(system->runtime->componentBits);
+        F_ECS__BITS_FREE(system->runtime->componentBits);
     }
 }
 
 void f_system_run(const FSystem* System)
 {
-    F__CHECK(f_ecs__isInit());
     F__CHECK(System != NULL);
-
-    if(System->compare) {
-        f_list_sort(
-            System->runtime->entities, (FCallListCompare*)System->compare);
-    }
 
     if(System->onlyActiveEntities) {
         F_LIST_ITERATE(System->runtime->entities, FEntity*, entity) {
@@ -82,3 +71,14 @@ void f_system_run(const FSystem* System)
 
     f_entity__flushFromSystems();
 }
+
+void f_system_runEx(const FSystem* System, FCallSystemSort* SortCompare)
+{
+    F__CHECK(System != NULL);
+    F__CHECK(SortCompare != NULL);
+
+    f_list_sort(System->runtime->entities, (FCallListCompare*)SortCompare);
+
+    f_system_run(System);
+}
+#endif // F_CONFIG_ECS
