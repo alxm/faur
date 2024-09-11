@@ -55,11 +55,6 @@ void f_system_run(const FSystem* System)
 {
     F__CHECK(System != NULL);
 
-    if(System->compare) {
-        f_list_sort(
-            System->runtime->entities, (FCallListCompare*)System->compare);
-    }
-
     if(System->onlyActiveEntities) {
         F_LIST_ITERATE(System->runtime->entities, FEntity*, entity) {
             if(f_entity_activeGet(entity)) {
@@ -75,5 +70,15 @@ void f_system_run(const FSystem* System)
     }
 
     f_entity__flushFromSystems();
+}
+
+void f_system_runEx(const FSystem* System, FCallSystemSort* SortCompare)
+{
+    F__CHECK(System != NULL);
+    F__CHECK(SortCompare != NULL);
+
+    f_list_sort(System->runtime->entities, (FCallListCompare*)SortCompare);
+
+    f_system_run(System);
 }
 #endif // F_CONFIG_ECS

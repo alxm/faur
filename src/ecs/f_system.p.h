@@ -40,20 +40,18 @@ struct FSystem {
     F__SystemRuntime* runtime; // all the non-constant data
     const char* stringId; // unique string ID
     FCallSystemHandler* handler; // invoked on each entity in list
-    FCallSystemSort* compare; // for sorting the entities list before running
     bool onlyActiveEntities; // kick out entities that are not marked active
     const FComponent** components; // [componentsNum]
     unsigned componentsNum; // length of components array
 };
 
-#define F_SYSTEM(Name, Handler, SortCompare, OnlyActiveEntities, ...) \
+#define F_SYSTEM(Name, Handler, OnlyActiveEntities, ...)              \
     static F__SystemRuntime F_GLUE2(f__system_runtime_, Name);        \
                                                                       \
     const FSystem Name = {                                            \
         .runtime = &F_GLUE2(f__system_runtime_, Name),                \
         .stringId = F_STRINGIFY(Name),                                \
         .handler = Handler,                                           \
-        .compare = SortCompare,                                       \
         .onlyActiveEntities = OnlyActiveEntities,                     \
         .components = (const FComponent*[]){__VA_ARGS__},             \
         .componentsNum = sizeof((const FComponent*[]){__VA_ARGS__})   \
@@ -61,5 +59,6 @@ struct FSystem {
     }
 
 extern void f_system_run(const FSystem* System);
+extern void f_system_runEx(const FSystem* System, FCallSystemSort* SortCompare);
 
 #endif // F_INC_ECS_SYSTEM_P_H

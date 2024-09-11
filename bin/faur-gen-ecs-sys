@@ -40,7 +40,6 @@ static void s_{sys_name}_handler(FEntity* Entity)
 F_SYSTEM(
     s_{sys_name},
     s_{sys_name}_handler,
-    NULL,
     false,
     NULL // &c_1, &c_2, ...
 );
