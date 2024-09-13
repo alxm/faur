@@ -28,4 +28,13 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-all : $(F_FAUR_FILE_GEANY_TAGS)
+f__target_post : $(F_FAUR_FILE_GEANY_TAGS)
+
+f__target_run :
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)
+
+valgrind : all
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 ./$(F_BUILD_FILE_BIN)
+
+valgrindall : all
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)

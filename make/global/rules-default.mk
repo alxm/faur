@@ -131,20 +131,33 @@ ifeq ($(F_CONFIG_LIB_SDL), 2)
 endif
 
 #
-# Default make targets
+# Internal targets
 #
-F_MAKE_ALL += \
-    $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) \
-    $(F_BUILD_LINK_BIN_MEDIA) \
-    $(F_BUILD_LINK_BIN_SCREENSHOTS) \
+f__target_build : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
+
+f__target_post : $(F_BUILD_LINK_BIN_MEDIA) $(F_BUILD_LINK_BIN_SCREENSHOTS)
 
 ifdef F_BUILD_DIR_STATIC
-    F_MAKE_ALL += copystatic
+    f__target_post : copystatic
 endif
 
 ifdef F_CONFIG_FILES_EMBED_BLOB
-    F_MAKE_ALL += $(F_BUILD_FILE_BLOB)
+    f__target_post : $(F_BUILD_FILE_BLOB)
 endif
+
+copystatic :
+	@ mkdir -p $(F_BUILD_DIR_BIN)
+	rsync \
+		--archive \
+		--progress \
+		--human-readable \
+		$(F_BUILD_DIR_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) \
+		$(F_BUILD_DIR_BIN)
+
+#
+# Not file targets
+#
+.PHONY : valgrind valgrindall copystatic
 
 #
 # Auto-generated object dependencies
@@ -201,24 +214,3 @@ $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 
 $(F_FAUR_FILE_SDK_MK) :
 	touch $@
-
-#
-# Action targets
-#
-run : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)
-
-valgrind : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 ./$(F_BUILD_FILE_BIN)
-
-valgrindall : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)
-
-copystatic :
-	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_BUILD_DIR_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) $(F_BUILD_DIR_BIN)
-
-#
-# Not file targets
-#
-.PHONY : run valgrind valgrindall copystatic

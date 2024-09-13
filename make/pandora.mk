@@ -62,7 +62,7 @@ F_PND_FILE := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPA
 F_PND_FILE_PATH := $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 
 ifeq ($(shell test -d $(F_PND_DIR_BASE) ; echo $$?), 0)
-    all : $(F_PND_FILE_PATH)
+    f__target_post : $(F_PND_FILE_PATH)
 endif
 
 $(F_PND_FILE_PATH) : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)

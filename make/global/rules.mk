@@ -74,14 +74,38 @@ F_BUILD_FILE_GEN_INC_C := $(F_BUILD_DIR_GEN)/include.c
 F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 
 #
-# Default make targets
+# Public targets
 #
-F_MAKE_ALL :=
+all :
+	$(F_MAKE_COMMAND) f__target_setup
+	$(F_MAKE_COMMAND) f__target_gen
+	$(F_MAKE_COMMAND) f__target_build
+	$(F_MAKE_COMMAND) f__target_post
+
+run : f__target_run
+
+clean :
+	rm -rf $(F_BUILD_DIR)
+	rm -rf $(F_BUILD_DIR_GEN_UID)
 
 #
-# Declare default target first
+# Internal targets
 #
-all : all_build
+f__target_setup :
+
+f__target_gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
+
+f__target_build :
+
+f__target_post :
+
+f__target_run : all
+
+#
+# Not file targets
+#
+.PHONY : all run clean
+.PHONY : f__target_setup f__target_gen f__target_build f__target_post f__target_run
 
 #
 # Include platform-specific build rules
@@ -91,16 +115,6 @@ ifneq ($(F_CONFIG_SYSTEM_ARDUINO), 0)
 else
     include $(FAUR_PATH)/make/global/rules-default.mk
 endif
-
-#
-# Default target
-#
-all_build : $(F_MAKE_ALL)
-
-#
-# Code generation target
-#
-gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
 
 #
 # ECS init code
@@ -161,20 +175,3 @@ $(F_BUILD_FILE_GEN_INC_C) : $(F_BUILD_FILES_GEN_C) $(F_FAUR_DIR_BIN)/faur-build-
 $(F_BUILD_FILE_GEN_INC_H) : $(F_BUILD_FILES_GEN_H) $(F_FAUR_DIR_BIN)/faur-build-inc
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-inc --gen-file $@ --files $(F_BUILD_FILES_GEN_H:$(F_BUILD_DIR_GEN)/%=%)
-
-#
-# Action targets
-#
-clean :
-	rm -rf $(F_BUILD_DIR)
-	rm -rf $(F_BUILD_DIR_GEN_UID)
-
-#
-# Turn off Make default suffix rules
-#
-.SUFFIXES :
-
-#
-# Not file targets
-#
-.PHONY : all all_build clean gen

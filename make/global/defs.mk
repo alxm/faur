@@ -8,9 +8,10 @@ F_BUILD_PLATFORM := \
             $(MAKEFILE_LIST))))
 
 #
-# Used when calling make recursively
+# Used to run sub-make
 #
 F_MAKE_PARALLEL_JOBS := 8
+F_MAKE_COMMAND := $(MAKE) -f $(firstword $(MAKEFILE_LIST)) --jobs=$(F_MAKE_PARALLEL_JOBS) --keep-going
 
 #
 # To support app and author names with spaces
@@ -46,3 +47,8 @@ F_FAUR_FILE_GEANY_TAGS := $(HOME)/.config/geany/tags/faur.c.tags
 #
 -include $(F_FAUR_FILE_SDK_MK)
 include $(FAUR_PATH)/make/global/sdk.mk
+
+#
+# Turn off Make default suffix rules
+#
+.SUFFIXES :

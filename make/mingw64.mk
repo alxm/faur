@@ -31,5 +31,5 @@ export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : all
+f__target_run :
 	cd $(F_BUILD_DIR_BIN) && wine ./$(F_BUILD_FILE_BIN)

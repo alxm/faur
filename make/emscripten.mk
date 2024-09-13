@@ -86,7 +86,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : all
+f__target_run :
 	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-build-runweb --file $(F_BUILD_FILE_BIN)
 
 endif
