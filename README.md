@@ -120,7 +120,7 @@ Linux (SDL 2) | Linux | OS build tools | Debian: `libsdl2-dev` `libsdl2-mixer-de
 Linux (SDL 1.2) | Linux | OS build tools | Debian: `libsdl1.2-dev` `libsdl-mixer1.2-dev` `libpng-dev` `valgrind`<br><br>Fedora: `sdl12-compat-devel` `SDL_mixer-devel` `libpng-devel` `libubsan` `valgrind`
 FreeBSD | FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on FreeBSD](https://www.alxm.org/notes/a2x-freebsd.html)
 Windows | Linux | MinGW-w64 | Debian: `mingw-w64` `libz-mingw-w64-dev` and local builds of `SDL2` `SDL2_mixer` `libpng`<br><br>Fedora: `mingw64-gcc` `mingw64-gcc-c++` `mingw64-SDL2` `mingw64-SDL2_mixer` `mingw64-libpng` `mingw64-zlib` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
-Web (Wasm) | Linux | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
+Web (Wasm) | Linux | Emscripten 3.1.66 | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
 ***Embedded Linux***
 GP2X, GP2X Wiz | Linux | Open2x SDK | Debian: `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
 Caanoo | Linux | GPH SDK | Debian: `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)

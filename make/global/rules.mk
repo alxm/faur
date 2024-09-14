@@ -74,13 +74,27 @@ F_BUILD_FILE_GEN_INC_C := $(F_BUILD_DIR_GEN)/include.c
 F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 
 #
+# Used to run sub-make
+#
+F_MAKE_COMMAND := \
+    $(MAKE) \
+        --file=$(firstword $(MAKEFILE_LIST)) \
+        --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --keep-going
+
+F_MAKE_COMMAND_SETUP ?= $(F_MAKE_COMMAND)
+F_MAKE_COMMAND_GEN ?= $(F_MAKE_COMMAND)
+F_MAKE_COMMAND_BUILD ?= $(F_MAKE_COMMAND)
+F_MAKE_COMMAND_POST ?= $(F_MAKE_COMMAND)
+
+#
 # Public targets
 #
 all :
-	$(F_MAKE_COMMAND) f__target_setup
-	$(F_MAKE_COMMAND) f__target_gen
-	$(F_MAKE_COMMAND) f__target_build
-	$(F_MAKE_COMMAND) f__target_post
+	$(F_MAKE_COMMAND_SETUP) f__target_setup
+	$(F_MAKE_COMMAND_GEN) f__target_gen
+	$(F_MAKE_COMMAND_BUILD) f__target_build
+	$(F_MAKE_COMMAND_POST) f__target_post
 
 run : f__target_run
 

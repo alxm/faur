@@ -192,7 +192,7 @@ void f_console__draw(void)
                           f_font_coordsGetY());
 
             f_sprite_blit(f_gfx__g_console_19x7,
-                          (unsigned)(F_OUT__SOURCE_NUM + l->type),
+                          (unsigned)F_OUT__SOURCE_NUM + (unsigned)l->type,
                           1 + tagWidth + 1,
                           f_font_coordsGetY());
 

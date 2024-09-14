@@ -1,25 +1,20 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-ifndef F_DO_BUILD
+#
+# emsdk_env needs Bash
+#
+SHELL := /bin/bash
 
-F_MAKE_CMD := \
+F_MAKE_COMMAND_BUILD := \
     source $(F_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
     && emmake $(MAKE) \
-        -f $(firstword $(MAKEFILE_LIST)) \
-        -j$(F_MAKE_PARALLEL_JOBS) \
-        F_DO_BUILD=1
-
-all :
-	bash -c "$(F_MAKE_CMD)"
-
-% :
-	bash -c "$(F_MAKE_CMD) $@"
-
-else
+        --file=$(firstword $(MAKEFILE_LIST)) \
+        --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --keep-going
 
 F_CONFIG_APP_NAME_SUFFIX := .html
-F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu11
-F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++11
+F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu23
+F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++23
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_FILES_PREFIX := /faur-idbfs/
 F_CONFIG_LIB_PNG := 1
@@ -81,12 +76,9 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension \
-    -Wno-gnu-zero-variadic-macro-arguments \
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :
 	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-build-runweb --file $(F_BUILD_FILE_BIN)
-
-endif

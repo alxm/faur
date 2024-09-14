@@ -11,7 +11,6 @@ F_BUILD_PLATFORM := \
 # Used to run sub-make
 #
 F_MAKE_PARALLEL_JOBS := 8
-F_MAKE_COMMAND := $(MAKE) -f $(firstword $(MAKEFILE_LIST)) --jobs=$(F_MAKE_PARALLEL_JOBS) --keep-going
 
 #
 # To support app and author names with spaces
