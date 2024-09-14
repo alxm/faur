@@ -21,7 +21,7 @@ include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :
-	$(F_SDK_ARDUINO_DIR_15)/packages/esp32/tools/esptool_py/2.6.1/esptool.py \
+	$(F_SDK_ODROID_GO_ESPTOOL)/esptool.py \
 		--chip esp32 \
 		--port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
 		--baud 921600 \
@@ -32,7 +32,7 @@ f__target_run :
 		--flash_mode dio \
 		--flash_freq 80m \
 		--flash_size detect \
-		0xe000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/partitions/boot_app0.bin \
-		0x1000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/sdk/bin/bootloader_qio_80m.bin \
+		0xe000 $(F_SDK_ODROID_GO_HARDWARE_TOOLS)/partitions/boot_app0.bin \
+		0x1000 $(F_SDK_ODROID_GO_HARDWARE_TOOLS)/sdk/bin/bootloader_qio_80m.bin \
 		0x10000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).bin \
 		0x8000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).partitions.bin
