@@ -45,10 +45,12 @@ f__target_run :
 		--verbose-upload \
 		--board $(F_CONFIG_SYSTEM_ARDUINO_BOARD) \
 		--port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
+		--pref sketchbook.path=$(F_SDK_ARDUINO_DIR_SKETCHBOOK) \
 		--pref build.path=$(F_BUILD_DIR_ARDUINO_BUILD) \
 		--pref build.cache=$(F_BUILD_DIR_ARDUINO_CACHE) \
 		--pref compiler.c.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
 		--pref compiler.cpp.extra_flags="$(F_BUILD_FLAGS_SHARED_C_AND_CPP)" \
+		--preserve-temp-files \
 		$(F_BUILD_FILE_INO)
 endif
 
