@@ -47,13 +47,22 @@ endif
 # Flags are in $(F_SDK_EMSCRIPTEN_ROOT)/upstream/emscripten/src/settings.js
 #
 F_EMSCRIPTEN_OPTIONS := \
-    -s USE_SDL=$(F_CONFIG_LIB_SDL) \
-    -s USE_SDL_MIXER=$(F_CONFIG_LIB_SDL) \
-    -s USE_ZLIB=1 \
-    -s USE_LIBPNG=1 \
+    --use-port=zlib \
+    --use-port=libpng \
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY
-    F_EMSCRIPTEN_OPTIONS += -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
+    F_EMSCRIPTEN_OPTIONS += \
+        -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
+endif
+
+ifeq ($(F_CONFIG_LIB_SDL), 1)
+    F_EMSCRIPTEN_OPTIONS += \
+        -s USE_SDL=1 \
+        -s USE_SDL_MIXER=1
+else ifeq ($(F_CONFIG_LIB_SDL), 2)
+    F_EMSCRIPTEN_OPTIONS += \
+        --use-port=sdl2 \
+        --use-port=sdl2_mixer
 endif
 
 F_CONFIG_BUILD_LIBS += \
