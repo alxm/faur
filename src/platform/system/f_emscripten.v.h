@@ -27,8 +27,6 @@ extern void f_platform_emscripten__init(void);
 
 extern FCallApi_CustomExit f_platform_api_emscripten__customExit;
 
-extern FCallApi_FileSync f_platform_api_emscripten__fileSync;
-
 extern FVecInt f_platform_emscripten__windowSizeGet(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H

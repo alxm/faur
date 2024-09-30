@@ -228,7 +228,6 @@ typedef struct FPlatformApi {
     FCallApi_FileFlush* fileFlush;
     FCallApi_FileReadChar* fileReadChar;
     FCallApi_FileReadCharUndo* fileReadCharUndo;
-    FCallApi_FileSync* fileSync;
 
     FCallApi_Malloc* malloc;
     FCallApi_Mallocz* mallocz;
@@ -329,7 +328,6 @@ extern void f_platform_api__filePrint(FPlatformFile* File, const char* String);
 extern bool f_platform_api__fileFlush(FPlatformFile* File);
 extern int f_platform_api__fileReadChar(FPlatformFile* File);
 extern int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char);
-extern void f_platform_api__fileSync(void);
 
 extern void* f_platform_api__malloc(size_t Size);
 extern void* f_platform_api__mallocz(size_t Size);
