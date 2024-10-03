@@ -18,11 +18,12 @@
 #include "f_platform.v.h"
 #include <faur.v.h>
 
+//
+// arduino-builder workaround: only the source files from the root source dir
+// are built, so include nested generated files in a single file that is itself
+// included in application code via this library code
+//
 #if F_CONFIG_SYSTEM_ARDUINO
-    //
-    // arduino-builder workaround: for apps, only the source files from the
-    // root source directory are built, so include nested generated files here.
-    //
     #include <faur_v/include.c>
 #endif
 
