@@ -74,6 +74,12 @@ F_BUILD_FILE_GEN_INC_C := $(F_BUILD_DIR_GEN)/include.c
 F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 
 #
+# Application that gets built
+#
+F_BUILD_DIR_BIN := $(F_BUILD_DIR)/bin
+F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
+
+#
 # Used to run sub-make
 #
 F_MAKE_COMMAND := \
@@ -109,7 +115,7 @@ f__target_setup :
 
 f__target_gen : $(F_BUILD_FILE_GEN_INC_C) $(F_BUILD_FILE_GEN_INC_H) $(F_BUILD_FILES_FAUR_GFX_H)
 
-f__target_build :
+f__target_build : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
 
 f__target_post :
 

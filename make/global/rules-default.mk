@@ -1,10 +1,4 @@
 #
-# Application that gets built
-#
-F_BUILD_DIR_BIN := $(F_BUILD_DIR)/bin
-F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
-
-#
 # Convenient symlinks available in target's bin dir
 #
 F_BUILD_LINK_BIN_MEDIA := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_MEDIA)
@@ -135,8 +129,6 @@ endif
 #
 # Internal targets
 #
-f__target_build : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
-
 f__target_post : $(F_BUILD_LINK_BIN_MEDIA) $(F_BUILD_LINK_BIN_SCREENSHOTS)
 
 ifdef F_BUILD_DIR_STATIC
