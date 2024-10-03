@@ -99,6 +99,7 @@ F_MAKE_COMMAND_POST ?= $(F_MAKE_COMMAND)
 all :
 	$(F_MAKE_COMMAND_SETUP) f__target_setup
 	$(F_MAKE_COMMAND_GEN) f__target_gen
+	@ sleep 1
 	$(F_MAKE_COMMAND_BUILD) f__target_build
 	$(F_MAKE_COMMAND_POST) f__target_post
 
