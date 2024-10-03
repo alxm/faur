@@ -30,7 +30,7 @@ F_FAUR_DIR_CONFIG := $(HOME)/.config/faur
 
 #
 # From <project>/build/make/ to <project> and
-# from <project>/build/builds/build_uid/bin/ to <project>
+# from <project>/build/targets/build_uid/bin/ to <project>
 #
 F_DIR_ROOT_FROM_MAKE := ../..
 F_DIR_ROOT_FROM_BIN := ../../../..

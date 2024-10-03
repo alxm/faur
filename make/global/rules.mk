@@ -1,7 +1,7 @@
 #
 # Unique build path
 #
-F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
+F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/targets/$(F_CONFIG_BUILD_UID)
 
 #
 # Source code dirs
