@@ -86,6 +86,7 @@ F_MAKE_COMMAND := \
     $(MAKE) \
         --file=$(firstword $(MAKEFILE_LIST)) \
         --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --no-builtin-rules \
         --keep-going
 
 F_MAKE_COMMAND_SETUP ?= $(F_MAKE_COMMAND)

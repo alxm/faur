@@ -46,8 +46,3 @@ F_FAUR_FILE_GEANY_TAGS := $(HOME)/.config/geany/tags/faur.c.tags
 #
 -include $(F_FAUR_FILE_SDK_MK)
 include $(FAUR_PATH)/make/global/sdk.mk
-
-#
-# Turn off Make default suffix rules
-#
-.SUFFIXES :
