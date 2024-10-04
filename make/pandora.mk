@@ -25,7 +25,7 @@ F_CONFIG_BUILD_LIBS += \
     -lts \
     -lpthread \
     -lm \
-    -ldl \
+    -ldl
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv7-a \
@@ -39,7 +39,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fomit-frame-pointer \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/include \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/usr/include \
-    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include \
+    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include
 
 F_TOOLCHAIN_PREFIX := arm-none-linux-gnueabi-
 

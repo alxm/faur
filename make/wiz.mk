@@ -30,7 +30,7 @@ F_CONFIG_BUILD_LIBS += \
     -lSDL \
     -lpthread \
     -lm \
-    -ldl \
+    -ldl
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv5te \
@@ -39,10 +39,10 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -ffast-math \
     -fomit-frame-pointer \
     -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/include \
-    -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/arm-open2x-linux/include \
+    -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/arm-open2x-linux/include
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
-    -Wno-conversion \
+    -Wno-conversion
 
 F_TOOLCHAIN_PREFIX := arm-open2x-linux-
 

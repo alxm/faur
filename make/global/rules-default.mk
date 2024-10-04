@@ -59,13 +59,13 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -I$(F_FAUR_DIR_SRC) \
     -I$(F_BUILD_DIR_FAUR_O) \
     -I$(F_BUILD_DIR_PROJ_O) \
-    -O$(F_CONFIG_BUILD_OPT) \
+    -O$(F_CONFIG_BUILD_OPT)
 
 ifeq ($(F_CONFIG_SYSTEM_EMSCRIPTEN), 0)
     ifeq ($(F_CONFIG_DEBUG), 0)
-	F_BUILD_FLAGS_SHARED_C_AND_CPP += -s
+        F_BUILD_FLAGS_SHARED_C_AND_CPP += -s
     else
-	F_BUILD_FLAGS_SHARED_C_AND_CPP += -g
+        F_BUILD_FLAGS_SHARED_C_AND_CPP += -g
     endif
 endif
 
@@ -78,7 +78,7 @@ F_BUILD_FLAGS_C := \
     $(F_CONFIG_BUILD_FLAGS_C) \
     -std=$(F_CONFIG_BUILD_FLAGS_C_STANDARD) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
-    $(F_CONFIG_BUILD_FLAGS_C_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_C_OVERRIDE)
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_C_PEDANTIC), 0)
     F_BUILD_FLAGS_C += -pedantic -pedantic-errors
@@ -89,7 +89,7 @@ F_BUILD_FLAGS_CPP := \
     $(F_CONFIG_BUILD_FLAGS_CPP) \
     -std=$(F_CONFIG_BUILD_FLAGS_CPP_STANDARD) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
-    $(F_CONFIG_BUILD_FLAGS_CPP_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_CPP_OVERRIDE)
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC), 0)
     F_BUILD_FLAGS_CPP += -pedantic -pedantic-errors
@@ -102,9 +102,9 @@ F_BUILD_LIBS := $(F_CONFIG_BUILD_LIBS)
 
 ifdef F_CONFIG_LIB_SDL_CONFIG
     ifeq ($(F_CONFIG_LIB_SDL), 1)
-	F_BUILD_LIBS += -lSDL_mixer
+        F_BUILD_LIBS += -lSDL_mixer
     else ifeq ($(F_CONFIG_LIB_SDL), 2)
-	F_BUILD_LIBS += -lSDL2_mixer
+        F_BUILD_LIBS += -lSDL2_mixer
     endif
 
     F_BUILD_LIBS += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --libs)
@@ -122,7 +122,7 @@ endif
 
 ifeq ($(F_CONFIG_LIB_SDL), 2)
     ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/sdl2 ; echo $$?), 0)
-	F_BUILD_DIR_STATIC += sdl2
+        F_BUILD_DIR_STATIC += sdl2
     endif
 endif
 

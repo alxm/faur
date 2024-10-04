@@ -11,10 +11,10 @@ F_CONFIG_TRAIT_DESKTOP := 1
 F_CONFIG_BUILD_LIBS += \
     -lpng \
     -lm \
-    -pie \
+    -pie
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
-    -fpie \
+    -fpie
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

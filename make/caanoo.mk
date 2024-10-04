@@ -29,7 +29,7 @@ F_CONFIG_BUILD_LIBS += \
     -lSDL \
     -lpthread \
     -lm \
-    -ldl \
+    -ldl
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv5te \
@@ -40,16 +40,16 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -isystem$(F_SDK_CAANOO_ROOT)/include \
     -isystem$(F_SDK_CAANOO_ROOT)/DGE/include \
     -isystem$(F_SDK_CAANOO_TOOLCHAIN)/include \
-    -isystem$(F_SDK_CAANOO_TOOLCHAIN)/arm-gph-linux-gnueabi/include \
+    -isystem$(F_SDK_CAANOO_TOOLCHAIN)/arm-gph-linux-gnueabi/include
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
-    -Wno-conversion \
+    -Wno-conversion
 
 F_CONFIG_BUILD_FLAGS_C += \
-    -fgnu89-inline \
+    -fgnu89-inline
 
 F_CONFIG_BUILD_FLAGS_C_OVERRIDE += \
-    -Wno-override-init \
+    -Wno-override-init
 
 F_TOOLCHAIN_PREFIX := arm-gph-linux-gnueabi-
 

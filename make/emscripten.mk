@@ -48,7 +48,7 @@ endif
 #
 F_EMSCRIPTEN_OPTIONS := \
     --use-port=zlib \
-    --use-port=libpng \
+    --use-port=libpng
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY
     F_EMSCRIPTEN_OPTIONS += \
@@ -75,17 +75,17 @@ F_CONFIG_BUILD_LIBS += \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
     -s FORCE_FILESYSTEM \
     -s ALLOW_MEMORY_GROWTH=1 \
-    -s WASM=1 \
+    -s WASM=1
 
 ifneq ($(F_CONFIG_DEBUG), 0)
     F_CONFIG_BUILD_LIBS += -sASSERTIONS
 endif
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
-    $(F_EMSCRIPTEN_OPTIONS) \
+    $(F_EMSCRIPTEN_OPTIONS)
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
-    -Wno-dollar-in-identifier-extension \
+    -Wno-dollar-in-identifier-extension
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

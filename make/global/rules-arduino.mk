@@ -14,7 +14,7 @@ F_BUILD_FILES_ALL_SOURCES := \
     $(F_BUILD_FILES_GEN_C) \
     $(F_BUILD_FILES_GEN_H) \
     $(shell find $(F_FAUR_DIR_SRC) -type f) \
-    $(shell find $(F_BUILD_DIR_SRC) -type f -not -path "$(F_BUILD_DIR_GEN_ROOT)/*") \
+    $(shell find $(F_BUILD_DIR_SRC) -type f -not -path "$(F_BUILD_DIR_GEN_ROOT)/*")
 
 #
 # Internal targets

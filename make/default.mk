@@ -19,11 +19,11 @@ F_CONFIG_BUILD_LIBS += \
     -lm \
     -rdynamic \
     -pie \
-    -fsanitize=undefined \
+    -fsanitize=undefined
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fpie \
-    -fsanitize=undefined \
+    -fsanitize=undefined
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

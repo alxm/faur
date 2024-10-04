@@ -13,10 +13,10 @@ F_CONFIG_BUILD_LIBS += \
     -u SDL_main \
     -lpng \
     -lm \
-    -lssp \
+    -lssp
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
-    -D__USE_MINGW_ANSI_STDIO=1 \
+    -D__USE_MINGW_ANSI_STDIO=1
 
 F_TOOLCHAIN_PREFIX := x86_64-w64-mingw32-
 

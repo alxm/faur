@@ -18,7 +18,7 @@ F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 F_BUILD_FLAGS_SHARED_C_AND_CPP := \
     $(F_CONFIG_BUILD_FLAGS_SETTINGS) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP) \
-    -I$(F_BUILD_DIR_GEN_UID) \
+    -I$(F_BUILD_DIR_GEN_UID)
 
 #
 # ECS object declarations
@@ -60,12 +60,12 @@ F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
-    $(F_BUILD_FILES_FAUR_GFX_C) \
+    $(F_BUILD_FILES_FAUR_GFX_C)
 
 F_BUILD_FILES_GEN_H := \
     $(F_BUILD_FILES_ECS_INIT_H) \
     $(F_BUILD_FILES_GFX_H) \
-    $(F_BUILD_FILES_SFX_H) \
+    $(F_BUILD_FILES_SFX_H)
 
 #
 # Generated files used by application
@@ -140,11 +140,7 @@ endif
 #
 # ECS init code
 #
-$(F_BUILD_FILES_ECS_INIT_C) : $(F_FAUR_DIR_BIN)/faur-build-ecs-init
-	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --com $(F_CONFIG_ECS_COM) --sys $(F_CONFIG_ECS_SYS)
-
-$(F_BUILD_FILES_ECS_INIT_H) : $(F_FAUR_DIR_BIN)/faur-build-ecs-init
+$(F_BUILD_FILES_ECS_INIT_C) $(F_BUILD_FILES_ECS_INIT_H) : $(F_FAUR_DIR_BIN)/faur-build-ecs-init
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-ecs-init --gen-file $@ --com $(F_CONFIG_ECS_COM) --sys $(F_CONFIG_ECS_SYS)
 
