@@ -41,17 +41,8 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/usr/include \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include
 
-F_TOOLCHAIN_PREFIX := arm-none-linux-gnueabi-
-
-export PATH    := $(F_SDK_PANDORA_TOOLCHAIN)/bin:$(PATH)
-export CC      := $(F_TOOLCHAIN_PREFIX)gcc
-export CXX     := $(F_TOOLCHAIN_PREFIX)g++
-export AS      := $(F_TOOLCHAIN_PREFIX)as
-export AR      := $(F_TOOLCHAIN_PREFIX)ar
-export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
-export READELF := $(F_TOOLCHAIN_PREFIX)readelf
-export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
-export LD      := $(F_TOOLCHAIN_PREFIX)ld
+F_CONFIG_BUILD_TOOL_CC := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-gcc
+F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-g++
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

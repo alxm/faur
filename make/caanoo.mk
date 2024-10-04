@@ -51,16 +51,8 @@ F_CONFIG_BUILD_FLAGS_C += \
 F_CONFIG_BUILD_FLAGS_C_OVERRIDE += \
     -Wno-override-init
 
-F_TOOLCHAIN_PREFIX := arm-gph-linux-gnueabi-
-
-export PATH    := $(F_SDK_CAANOO_TOOLCHAIN)/bin:$(PATH)
-export CC      := $(F_TOOLCHAIN_PREFIX)gcc
-export CXX     := $(F_TOOLCHAIN_PREFIX)g++
-export AS      := $(F_TOOLCHAIN_PREFIX)as
-export AR      := $(F_TOOLCHAIN_PREFIX)ar
-export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
-export READELF := $(F_TOOLCHAIN_PREFIX)readelf
-export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
+F_CONFIG_BUILD_TOOL_CC := $(F_SDK_CAANOO_TOOLCHAIN)/bin/arm-gph-linux-gnueabi-gcc
+F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_CAANOO_TOOLCHAIN)/bin/arm-gph-linux-gnueabi-g++
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

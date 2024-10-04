@@ -163,7 +163,7 @@ copystatic :
 #
 $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O)
 	@ mkdir -p $(@D)
-	$(CXX) -v -o $@ $^ $(F_BUILD_LIBS)
+	$(F_CONFIG_BUILD_TOOL_CPP) -v -o $@ $^ $(F_BUILD_LIBS)
 
 $(F_BUILD_LINK_BIN_MEDIA) :
 	@ mkdir -p $(@D)
@@ -183,7 +183,7 @@ $(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL) $(F_FAUR_DIR_BI
 #
 $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
+	$(F_CONFIG_BUILD_TOOL_CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
 #
 # Dependencies on generated code
@@ -197,11 +197,11 @@ $(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
 #
 $(F_BUILD_DIR_FAUR_O)/%.c.o : $(F_FAUR_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
+	$(F_CONFIG_BUILD_TOOL_CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
 $(F_BUILD_DIR_FAUR_O)/%.cpp.o : $(F_FAUR_DIR_SRC)/%.cpp
 	@ mkdir -p $(@D)
-	$(CXX) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
+	$(F_CONFIG_BUILD_TOOL_CPP) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
 
 $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" geany -g $@ $^

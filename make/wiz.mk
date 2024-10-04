@@ -44,16 +44,8 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-conversion
 
-F_TOOLCHAIN_PREFIX := arm-open2x-linux-
-
-export PATH    := $(F_SDK_OPEN2X_TOOLCHAIN)/bin:$(PATH)
-export CC      := $(F_TOOLCHAIN_PREFIX)gcc
-export CXX     := $(F_TOOLCHAIN_PREFIX)g++
-export AS      := $(F_TOOLCHAIN_PREFIX)as
-export AR      := $(F_TOOLCHAIN_PREFIX)ar
-export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
-export READELF := $(F_TOOLCHAIN_PREFIX)readelf
-export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
+F_CONFIG_BUILD_TOOL_CC := $(F_SDK_OPEN2X_TOOLCHAIN)/bin/arm-open2x-linux-gcc
+F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_OPEN2X_TOOLCHAIN)/bin/arm-open2x-linux-g++
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk

@@ -9,6 +9,12 @@ F_CONFIG_APP_VERSION_MINOR ?= 0
 F_CONFIG_APP_VERSION_MICRO ?= 0
 
 #
+# Build tools
+#
+F_CONFIG_BUILD_TOOL_CC ?= $(CC)
+F_CONFIG_BUILD_TOOL_CPP ?= $(CXX)
+
+#
 # Project dirs
 #
 F_CONFIG_DIR_BUILD ?= build
