@@ -94,15 +94,28 @@ F_MAKE_COMMAND_GEN ?= $(F_MAKE_COMMAND)
 F_MAKE_COMMAND_BUILD ?= $(F_MAKE_COMMAND)
 F_MAKE_COMMAND_POST ?= $(F_MAKE_COMMAND)
 
+F_MAKE_PRINT = printf "\033[97;40;1m[F\033[94;1ma\033[92;1mu\033[93;1mr] \033[97;1m$1\033[0m\n"
+F_MAKE_PRINT_START = $(call F_MAKE_PRINT,$1 start )
+F_MAKE_PRINT_DONE = $(call F_MAKE_PRINT,$1 done \033[0m\n)
+
 #
 # Public targets
 #
 all :
+	@ $(call F_MAKE_PRINT_START,Setup)
 	$(F_MAKE_COMMAND_SETUP) f__target_setup
+	@ $(call F_MAKE_PRINT_DONE,Setup)
+	@ $(call F_MAKE_PRINT_START,Code generation)
 	$(F_MAKE_COMMAND_GEN) f__target_gen
+	@ $(call F_MAKE_PRINT_DONE,Code generation)
+	@ $(call F_MAKE_PRINT_START,Build)
 	@ sleep 1
 	$(F_MAKE_COMMAND_BUILD) f__target_build
+	@ $(call F_MAKE_PRINT_DONE,Build)
+	@ $(call F_MAKE_PRINT_START,Post)
 	$(F_MAKE_COMMAND_POST) f__target_post
+	@ $(call F_MAKE_PRINT_DONE,Post)
+	@ $(call F_MAKE_PRINT,All done)
 
 run : f__target_run
 
