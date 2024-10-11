@@ -1,27 +1,22 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-ifndef F_DO_BUILD
+#
+# emsdk_env needs Bash
+#
+SHELL := /bin/bash
 
-F_MAKE_CMD := \
+F_MAKE_COMMAND_BUILD := \
     source $(F_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
     && emmake $(MAKE) \
-        -f $(firstword $(MAKEFILE_LIST)) \
-        -j$(F_MAKE_PARALLEL_JOBS) \
-        F_DO_BUILD=1
-
-all :
-	bash -c "$(F_MAKE_CMD)"
-
-% :
-	bash -c "$(F_MAKE_CMD) $@"
-
-else
+        --file=$(firstword $(MAKEFILE_LIST)) \
+        --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --keep-going
 
 F_CONFIG_APP_NAME_SUFFIX := .html
-F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu11
-F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++11
+F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu23
+F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++23
 F_CONFIG_BUILD_OPT := 3
-F_CONFIG_FILES_PREFIX := /faur-idbfs/
+F_CONFIG_FILES_STORAGE_PREFIX := /faur-$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))-idbfs/
 F_CONFIG_LIB_PNG := 1
 F_CONFIG_LIB_SDL ?= 2
 F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 2048
@@ -52,13 +47,22 @@ endif
 # Flags are in $(F_SDK_EMSCRIPTEN_ROOT)/upstream/emscripten/src/settings.js
 #
 F_EMSCRIPTEN_OPTIONS := \
-    -s USE_SDL=$(F_CONFIG_LIB_SDL) \
-    -s USE_SDL_MIXER=$(F_CONFIG_LIB_SDL) \
-    -s USE_ZLIB=1 \
-    -s USE_LIBPNG=1 \
+    --use-port=zlib \
+    --use-port=libpng
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY
-    F_EMSCRIPTEN_OPTIONS += -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
+    F_EMSCRIPTEN_OPTIONS += \
+        -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
+endif
+
+ifeq ($(F_CONFIG_LIB_SDL), 1)
+    F_EMSCRIPTEN_OPTIONS += \
+        -s USE_SDL=1 \
+        -s USE_SDL_MIXER=1
+else ifeq ($(F_CONFIG_LIB_SDL), 2)
+    F_EMSCRIPTEN_OPTIONS += \
+        --use-port=sdl2 \
+        --use-port=sdl2_mixer
 endif
 
 F_CONFIG_BUILD_LIBS += \
@@ -69,24 +73,22 @@ F_CONFIG_BUILD_LIBS += \
     --use-preload-plugins \
     $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_EMSCRIPTEN), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
+    -s FORCE_FILESYSTEM \
     -s ALLOW_MEMORY_GROWTH=1 \
-    -s WASM=1 \
+    -s WASM=1
 
 ifneq ($(F_CONFIG_DEBUG), 0)
     F_CONFIG_BUILD_LIBS += -sASSERTIONS
 endif
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
-    $(F_EMSCRIPTEN_OPTIONS) \
+    $(F_EMSCRIPTEN_OPTIONS)
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
-    -Wno-dollar-in-identifier-extension \
-    -Wno-gnu-zero-variadic-macro-arguments \
+    -Wno-dollar-in-identifier-extension
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : all
+f__target_run :
 	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-build-runweb --file $(F_BUILD_FILE_BIN)
-
-endif

@@ -120,14 +120,14 @@ Linux (SDL 2) | Linux | OS build tools | Debian: `libsdl2-dev` `libsdl2-mixer-de
 Linux (SDL 1.2) | Linux | OS build tools | Debian: `libsdl1.2-dev` `libsdl-mixer1.2-dev` `libpng-dev` `valgrind`<br><br>Fedora: `sdl12-compat-devel` `SDL_mixer-devel` `libpng-devel` `libubsan` `valgrind`
 FreeBSD | FreeBSD | OS build tools | `gmake` `devel/sdl20 audio/sdl2_mixer` | [Building on FreeBSD](https://www.alxm.org/notes/a2x-freebsd.html)
 Windows | Linux | MinGW-w64 | Debian: `mingw-w64` `libz-mingw-w64-dev` and local builds of `SDL2` `SDL2_mixer` `libpng`<br><br>Fedora: `mingw64-gcc` `mingw64-gcc-c++` `mingw64-SDL2` `mingw64-SDL2_mixer` `mingw64-libpng` `mingw64-zlib` | [Cross-compiling with MinGW](https://www.alxm.org/notes/a2x-mingw.html)
-Web (Wasm) | Linux | Emscripten | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
+Web (Wasm) | Linux | Emscripten 3.1.66 | | [Emscripten Notes](https://www.alxm.org/notes/emscripten.html)
 ***Embedded Linux***
 GP2X, GP2X Wiz | Linux | Open2x SDK | Debian: `ia32-libs` | [Open2x Project](https://sourceforge.net/p/open2x/code/HEAD/tree/)
 Caanoo | Linux | GPH SDK | Debian: `ia32-libs` | [Caanoo SDK for Linux](https://dl.openhandhelds.org/cgi-bin/caanoo.cgi?0,0,0,0,17,631)
 Open Pandora | Linux | Pandora SDK | Debian: `ia32-libs libxml2-utils` | [Open Pandora Forums](https://pyra-handheld.com/boards/)
 ***Arduino***
-Gamebuino META | Linux | Arduino 1.8.13, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | Arduino: `Gamebuino META 1.3`<br><br>Debian: `ffmpeg`<br><br>Fedora: `ffmpeg-free` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
-ODROID-GO | Linux | Arduino 1.8.13, Arduino-ESP32 1.0.6 | Arduino: `ODROID-GO 1.0.0`<br><br>Debian: `python3-serial` `python-is-python3`<br><br>Fedora: `python3-pyserial` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
+Gamebuino META | Linux | Arduino 1.8.19, Arduino SAMD Boards 1.8.11, Gamebuino META Boards 1.2.2 | Arduino: `Gamebuino META 1.3`<br><br>Debian: `ffmpeg`<br><br>Fedora: `ffmpeg-free` | [Gamebuino META Makefile](https://www.alxm.org/notes/gamebuino-meta-makefile.html)
+ODROID-GO | Linux | Arduino 1.8.19, Arduino-ESP32 1.0.6 | Arduino: `ODROID-GO 1.0.0`<br><br>Debian: `python3-serial` `python-is-python3`<br><br>Fedora: `python3-pyserial` | [ODROID Wiki](https://wiki.odroid.com/odroid_go/arduino/01_arduino_setup)
 
 The default toolchain paths are in `make/global/sdk.mk`, and they can be overridden in a project Makefile or globally in `~/.config/faur/sdk.mk`. To build for different targets, change `include $(FAUR_PATH)/make/default.mk` to use other files from `$(FAUR_PATH)/make`.
 

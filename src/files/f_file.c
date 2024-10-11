@@ -60,8 +60,6 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 
     if(!ret) {
         f_out__error("f_file_bufferWrite(%s, %zu): Failed", Path, Size);
-    } else {
-        f_platform_api__fileSync();
     }
 
     return ret;
@@ -191,8 +189,6 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
         f_out__error("f_file_write(%s): Cannot write %zu bytes",
                      f_path_getFull(File->path),
                      Size);
-    } else {
-        f_platform_api__fileSync();
     }
 
     return ret;
@@ -213,8 +209,6 @@ bool f_file_writef(FFile* File, const char* Format, ...)
     if(!ret) {
         f_out__error(
             "f_file_writef(%s): Cannot write", f_path_getFull(File->path));
-    } else {
-        f_platform_api__fileSync();
     }
 
     return ret;

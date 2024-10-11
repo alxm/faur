@@ -116,8 +116,8 @@ void f_main(void)
 
     dir_root.write_file('.gitignore',
 """\
-/build/builds/
 /build/shared/
+/build/targets/
 /src/faur_gen/
 """)
 

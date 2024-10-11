@@ -25,13 +25,13 @@ void f_platform_emscripten__init(void)
 {
     EM_ASM(
         {
-            // Strip trailing slash
-            var prefix = UTF8ToString($0).slice(0, -1);
+            var prefix = UTF8ToString($0);
 
             Module.faur_fsIsReady = 0;
 
             FS.mkdir(prefix);
-            FS.mount(IDBFS, {}, prefix);
+            FS.mount(FS.filesystems.IDBFS, { autoPersist: true }, prefix);
+
             FS.syncfs(
                 true,
                 function(Error)
@@ -45,7 +45,7 @@ void f_platform_emscripten__init(void)
                 }
             );
         },
-        F_CONFIG_FILES_PREFIX
+        F_CONFIG_FILES_STORAGE_PREFIX
     );
 }
 
@@ -90,14 +90,5 @@ FVecInt f_platform_emscripten__windowSizeGet(void)
             return window.innerHeight;
         })
     };
-}
-
-void f_platform_api_emscripten__fileSync(void)
-{
-    EM_ASM({
-        if(Module.faur_fsIsReady === 2) {
-            FS.syncfs(false, function(Error) {});
-        }
-    });
 }
 #endif // F_CONFIG_SYSTEM_EMSCRIPTEN

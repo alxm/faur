@@ -1,10 +1,4 @@
 #
-# Application that gets built
-#
-F_BUILD_DIR_BIN := $(F_BUILD_DIR)/bin
-F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
-
-#
 # Convenient symlinks available in target's bin dir
 #
 F_BUILD_LINK_BIN_MEDIA := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_MEDIA)
@@ -65,12 +59,14 @@ F_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -I$(F_FAUR_DIR_SRC) \
     -I$(F_BUILD_DIR_FAUR_O) \
     -I$(F_BUILD_DIR_PROJ_O) \
-    -O$(F_CONFIG_BUILD_OPT) \
+    -O$(F_CONFIG_BUILD_OPT)
 
-ifeq ($(F_CONFIG_DEBUG), 0)
-    F_BUILD_FLAGS_SHARED_C_AND_CPP += -s
-else
-    F_BUILD_FLAGS_SHARED_C_AND_CPP += -g
+ifeq ($(F_CONFIG_SYSTEM_EMSCRIPTEN), 0)
+    ifeq ($(F_CONFIG_DEBUG), 0)
+        F_BUILD_FLAGS_SHARED_C_AND_CPP += -s
+    else
+        F_BUILD_FLAGS_SHARED_C_AND_CPP += -g
+    endif
 endif
 
 ifdef F_CONFIG_LIB_SDL_CONFIG
@@ -82,7 +78,7 @@ F_BUILD_FLAGS_C := \
     $(F_CONFIG_BUILD_FLAGS_C) \
     -std=$(F_CONFIG_BUILD_FLAGS_C_STANDARD) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
-    $(F_CONFIG_BUILD_FLAGS_C_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_C_OVERRIDE)
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_C_PEDANTIC), 0)
     F_BUILD_FLAGS_C += -pedantic -pedantic-errors
@@ -93,7 +89,7 @@ F_BUILD_FLAGS_CPP := \
     $(F_CONFIG_BUILD_FLAGS_CPP) \
     -std=$(F_CONFIG_BUILD_FLAGS_CPP_STANDARD) \
     $(F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE) \
-    $(F_CONFIG_BUILD_FLAGS_CPP_OVERRIDE) \
+    $(F_CONFIG_BUILD_FLAGS_CPP_OVERRIDE)
 
 ifneq ($(F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC), 0)
     F_BUILD_FLAGS_CPP += -pedantic -pedantic-errors
@@ -106,9 +102,9 @@ F_BUILD_LIBS := $(F_CONFIG_BUILD_LIBS)
 
 ifdef F_CONFIG_LIB_SDL_CONFIG
     ifeq ($(F_CONFIG_LIB_SDL), 1)
-	F_BUILD_LIBS += -lSDL_mixer
+        F_BUILD_LIBS += -lSDL_mixer
     else ifeq ($(F_CONFIG_LIB_SDL), 2)
-	F_BUILD_LIBS += -lSDL2_mixer
+        F_BUILD_LIBS += -lSDL2_mixer
     endif
 
     F_BUILD_LIBS += $(shell $(F_CONFIG_LIB_SDL_CONFIG) --libs)
@@ -126,25 +122,36 @@ endif
 
 ifeq ($(F_CONFIG_LIB_SDL), 2)
     ifeq ($(shell test -d $(F_BUILD_DIR_STATIC_PREFIX)/sdl2 ; echo $$?), 0)
-	F_BUILD_DIR_STATIC += sdl2
+        F_BUILD_DIR_STATIC += sdl2
     endif
 endif
 
 #
-# Default make targets
+# Internal targets
 #
-F_MAKE_ALL += \
-    $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) \
-    $(F_BUILD_LINK_BIN_MEDIA) \
-    $(F_BUILD_LINK_BIN_SCREENSHOTS) \
+f__target_post : $(F_BUILD_LINK_BIN_MEDIA) $(F_BUILD_LINK_BIN_SCREENSHOTS)
 
 ifdef F_BUILD_DIR_STATIC
-    F_MAKE_ALL += copystatic
+    f__target_post : copystatic
 endif
 
 ifdef F_CONFIG_FILES_EMBED_BLOB
-    F_MAKE_ALL += $(F_BUILD_FILE_BLOB)
+    f__target_post : $(F_BUILD_FILE_BLOB)
 endif
+
+copystatic :
+	@ mkdir -p $(F_BUILD_DIR_BIN)
+	rsync \
+		--archive \
+		--progress \
+		--human-readable \
+		$(F_BUILD_DIR_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) \
+		$(F_BUILD_DIR_BIN)
+
+#
+# Not file targets
+#
+.PHONY : valgrind valgrindall copystatic
 
 #
 # Auto-generated object dependencies
@@ -156,7 +163,7 @@ endif
 #
 $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) : $(F_BUILD_FILES_O)
 	@ mkdir -p $(@D)
-	$(CXX) -v -o $@ $^ $(F_BUILD_LIBS)
+	$(F_CONFIG_BUILD_TOOL_CPP) -v -o $@ $^ $(F_BUILD_LIBS)
 
 $(F_BUILD_LINK_BIN_MEDIA) :
 	@ mkdir -p $(@D)
@@ -176,7 +183,7 @@ $(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_BIN_PATHS_BLOB_REL) $(F_FAUR_DIR_BI
 #
 $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
+	$(F_CONFIG_BUILD_TOOL_CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
 #
 # Dependencies on generated code
@@ -190,35 +197,14 @@ $(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
 #
 $(F_BUILD_DIR_FAUR_O)/%.c.o : $(F_FAUR_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
+	$(F_CONFIG_BUILD_TOOL_CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
 $(F_BUILD_DIR_FAUR_O)/%.cpp.o : $(F_FAUR_DIR_SRC)/%.cpp
 	@ mkdir -p $(@D)
-	$(CXX) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
+	$(F_CONFIG_BUILD_TOOL_CPP) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
 
 $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" geany -g $@ $^
 
 $(F_FAUR_FILE_SDK_MK) :
 	touch $@
-
-#
-# Action targets
-#
-run : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)
-
-valgrind : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 ./$(F_BUILD_FILE_BIN)
-
-valgrindall : all
-	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind --num-callers=64 --leak-check=full --track-origins=yes ./$(F_BUILD_FILE_BIN)
-
-copystatic :
-	@ mkdir -p $(F_BUILD_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_BUILD_DIR_STATIC:%=$(F_BUILD_DIR_STATIC_PREFIX)/%/) $(F_BUILD_DIR_BIN)
-
-#
-# Not file targets
-#
-.PHONY : run valgrind valgrindall copystatic

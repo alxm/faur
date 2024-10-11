@@ -34,11 +34,12 @@ def main():
 //
 #include <faur.v.h>
 
+//
+// arduino-builder workaround: only the source files from the root source dir
+// are built, so include nested generated files in a single file that is itself
+// included in application code via faur.h
+//
 #if F_CONFIG_SYSTEM_ARDUINO
-//
-// arduino-builder workaround: for apps, only the source files from the
-// root source directory are built, so include nested generated files here.
-//
 {includes}
 #endif
 """.format(cmd = g_tool.get_cmd(),

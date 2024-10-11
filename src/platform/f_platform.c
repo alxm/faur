@@ -18,11 +18,12 @@
 #include "f_platform.v.h"
 #include <faur.v.h>
 
+//
+// arduino-builder workaround: only the source files from the root source dir
+// are built, so include nested generated files in a single file that is itself
+// included in application code via this library code
+//
 #if F_CONFIG_SYSTEM_ARDUINO
-    //
-    // arduino-builder workaround: for apps, only the source files from the
-    // root source directory are built, so include nested generated files here.
-    //
     #include <faur_v/include.c>
 #endif
 
@@ -287,9 +288,6 @@ static const FPlatformApi f__platform_api = {
         .fileFlush = f_platform_api_standard__fileFlush,
         .fileReadChar = f_platform_api_standard__fileReadChar,
         .fileReadCharUndo = f_platform_api_standard__fileReadCharUndo,
-        #if F_CONFIG_SYSTEM_EMSCRIPTEN
-            .fileSync = f_platform_api_emscripten__fileSync,
-        #endif
     #elif F_CONFIG_SYSTEM_GAMEBUINO
         .fileStat = f_platform_api_gamebuino__fileStat,
         .fileBufferRead = f_platform_api_gamebuino__fileBufferRead,
@@ -1025,16 +1023,6 @@ int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char)
 
     return f__platform_api.fileReadCharUndo(File, Char);
 }
-
-void f_platform_api__fileSync(void)
-{
-    if(f__platform_api.fileSync == NULL) {
-        return;
-    }
-
-    f__platform_api.fileSync();
-}
-
 
 void* f_platform_api__malloc(size_t Size)
 {

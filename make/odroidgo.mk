@@ -1,7 +1,8 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
+F_CONFIG_APP_NAME_SUFFIX := .bin
 F_CONFIG_DEBUG_FATAL := F_DEBUG_FATAL_SPIN
-F_CONFIG_FILES_PREFIX := "/"
+F_CONFIG_FILES_STORAGE_PREFIX := "/"
 F_CONFIG_LIB_STDLIB_FILES := 0
 F_CONFIG_LIB_STDLIB_MEMORY := 0
 F_CONFIG_SCREEN_FORMAT := F_COLOR_FORMAT_RGB_565_B
@@ -20,8 +21,8 @@ F_CONFIG_TRAIT_SCREENSHOTS := 0
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : $(F_ARDUINO_PRE)
-	$(F_SDK_ARDUINO_DIR_15)/packages/esp32/tools/esptool_py/2.6.1/esptool.py \
+f__target_run :
+	$(F_SDK_ODROID_GO_ESPTOOL)/esptool.py \
 		--chip esp32 \
 		--port $(F_CONFIG_SYSTEM_ARDUINO_PORT) \
 		--baud 921600 \
@@ -32,7 +33,7 @@ run : $(F_ARDUINO_PRE)
 		--flash_mode dio \
 		--flash_freq 80m \
 		--flash_size detect \
-		0xe000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/partitions/boot_app0.bin \
-		0x1000 $(F_SDK_ARDUINO_DIR_15)/packages/esp32/hardware/esp32/1.0.4/tools/sdk/bin/bootloader_qio_80m.bin \
+		0xe000 $(F_SDK_ODROID_GO_HARDWARE_TOOLS)/partitions/boot_app0.bin \
+		0x1000 $(F_SDK_ODROID_GO_HARDWARE_TOOLS)/sdk/bin/bootloader_qio_80m.bin \
 		0x10000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).bin \
 		0x8000 $(F_BUILD_DIR_ARDUINO_BUILD)/$(notdir $(F_BUILD_FILE_INO)).partitions.bin

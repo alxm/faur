@@ -25,7 +25,7 @@ F_CONFIG_BUILD_LIBS += \
     -lts \
     -lpthread \
     -lm \
-    -ldl \
+    -ldl
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -march=armv7-a \
@@ -39,19 +39,10 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fomit-frame-pointer \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/include \
     -isystem$(F_SDK_PANDORA_TOOLCHAIN)/usr/include \
-    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include \
+    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include
 
-F_TOOLCHAIN_PREFIX := arm-none-linux-gnueabi-
-
-export PATH    := $(F_SDK_PANDORA_TOOLCHAIN)/bin:$(PATH)
-export CC      := $(F_TOOLCHAIN_PREFIX)gcc
-export CXX     := $(F_TOOLCHAIN_PREFIX)g++
-export AS      := $(F_TOOLCHAIN_PREFIX)as
-export AR      := $(F_TOOLCHAIN_PREFIX)ar
-export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
-export READELF := $(F_TOOLCHAIN_PREFIX)readelf
-export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
-export LD      := $(F_TOOLCHAIN_PREFIX)ld
+F_CONFIG_BUILD_TOOL_CC := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-gcc
+F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-g++
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
@@ -62,7 +53,7 @@ F_PND_FILE := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPA
 F_PND_FILE_PATH := $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 
 ifeq ($(shell test -d $(F_PND_DIR_BASE) ; echo $$?), 0)
-    all : $(F_PND_FILE_PATH)
+    f__target_post : $(F_PND_FILE_PATH)
 endif
 
 $(F_PND_FILE_PATH) : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)

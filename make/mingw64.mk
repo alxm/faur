@@ -13,23 +13,16 @@ F_CONFIG_BUILD_LIBS += \
     -u SDL_main \
     -lpng \
     -lm \
-    -lssp \
+    -lssp
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
-    -D__USE_MINGW_ANSI_STDIO=1 \
+    -D__USE_MINGW_ANSI_STDIO=1
 
-F_TOOLCHAIN_PREFIX := x86_64-w64-mingw32-
-
-export CC      := $(F_TOOLCHAIN_PREFIX)gcc
-export CXX     := $(F_TOOLCHAIN_PREFIX)g++
-export AS      := $(F_TOOLCHAIN_PREFIX)as
-export AR      := $(F_TOOLCHAIN_PREFIX)ar
-export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
-export READELF := $(F_TOOLCHAIN_PREFIX)readelf
-export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
+F_CONFIG_BUILD_TOOL_CC := x86_64-w64-mingw32-gcc
+F_CONFIG_BUILD_TOOL_CPP := x86_64-w64-mingw32-g++
 
 include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
-run : all
+f__target_run :
 	cd $(F_BUILD_DIR_BIN) && wine ./$(F_BUILD_FILE_BIN)
