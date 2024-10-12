@@ -12,6 +12,7 @@ F_BUILD_DIR_GEN_UID := $(F_BUILD_DIR_GEN_ROOT)/$(F_CONFIG_BUILD_UID)
 F_BUILD_DIR_GEN := $(F_BUILD_DIR_GEN_UID)/faur_v
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
 F_BUILD_DIR_GEN_FAUR_MEDIA := $(F_BUILD_DIR_GEN)/faur_gfx
+F_BUILD_DIR_GEN_BIN := $(F_BUILD_DIR_GEN)/bin
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
 F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 
@@ -41,6 +42,14 @@ F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR
 F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
 #
+# Embedded binary buffers
+#
+F_BUILD_DIR_EMBED_BIN := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/bin
+F_BUILD_FILES_BIN := $(shell find $(F_BUILD_DIR_EMBED_BIN) -type f)
+F_BUILD_FILES_BIN_C := $(F_BUILD_FILES_BIN:$(F_BUILD_DIR_EMBED_BIN)/%=$(F_BUILD_DIR_GEN_BIN)/%.c)
+F_BUILD_FILES_BIN_H := $(F_BUILD_FILES_BIN:$(F_BUILD_DIR_EMBED_BIN)/%=$(F_BUILD_DIR_GEN_BIN)/%.h)
+
+#
 # Embedded FSprite and FSample objects
 #
 F_BUILD_DIR_EMBED_GFX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/gfx
@@ -63,12 +72,14 @@ F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$
 F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_ECS_INIT_C) \
     $(F_BUILD_FILES_EMBED_INIT) \
+    $(F_BUILD_FILES_BIN_C) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
     $(F_BUILD_FILES_FAUR_GFX_C)
 
 F_BUILD_FILES_GEN_H := \
     $(F_BUILD_FILES_ECS_INIT_H) \
+    $(F_BUILD_FILES_BIN_H) \
     $(F_BUILD_FILES_GFX_H) \
     $(F_BUILD_FILES_SFX_H)
 
@@ -173,6 +184,17 @@ $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-
 $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-init --gen-file $@ --gen-dir $(F_BUILD_DIR_GEN_EMBED) --var-prefix f__bin_ --headers $(F_BUILD_FILES_EMBED_BIN_H)
+
+#
+# Embedded buffers
+#
+$(F_BUILD_DIR_GEN_BIN)/%.c : $(F_BUILD_DIR_EMBED_BIN)/% $(F_FAUR_DIR_BIN)/faur-build-embed-bin
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-bin --bin-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
+$(F_BUILD_DIR_GEN_BIN)/%.h : $(F_BUILD_DIR_EMBED_BIN)/% $(F_FAUR_DIR_BIN)/faur-build-embed-bin
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-bin --bin-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
 #
 # Embedded objects
