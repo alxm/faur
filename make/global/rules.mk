@@ -43,10 +43,15 @@ F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 #
 # Embedded FSprite and FSample objects
 #
-F_BUILD_FILES_GFX_C := $(F_CONFIG_FILES_EMBED_OBJ_SPRITE:%=$(F_BUILD_DIR_GEN_GFX)/%.c)
-F_BUILD_FILES_GFX_H := $(F_CONFIG_FILES_EMBED_OBJ_SPRITE:%=$(F_BUILD_DIR_GEN_GFX)/%.h)
-F_BUILD_FILES_SFX_C := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX)/%.c)
-F_BUILD_FILES_SFX_H := $(F_CONFIG_FILES_EMBED_OBJ_SAMPLE:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
+F_BUILD_DIR_EMBED_GFX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/gfx
+F_BUILD_FILES_GFX_PNG := $(shell find $(F_BUILD_DIR_EMBED_GFX) -type f -name "*.png")
+F_BUILD_FILES_GFX_C := $(F_BUILD_FILES_GFX_PNG:$(F_BUILD_DIR_EMBED_GFX)/%=$(F_BUILD_DIR_GEN_GFX)/%.c)
+F_BUILD_FILES_GFX_H := $(F_BUILD_FILES_GFX_PNG:$(F_BUILD_DIR_EMBED_GFX)/%=$(F_BUILD_DIR_GEN_GFX)/%.h)
+
+F_BUILD_DIR_EMBED_SFX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/sfx
+F_BUILD_FILES_SFX_WAV := $(shell find $(F_BUILD_DIR_EMBED_SFX) -type f -name "*.wav")
+F_BUILD_FILES_SFX_C := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.c)
+F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
 F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
 F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c)
@@ -172,19 +177,19 @@ $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_
 #
 # Embedded objects
 #
-$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_BUILD_DIR_EMBED_GFX)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
 
-$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_BUILD_DIR_EMBED_GFX)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER)
 
-$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_BUILD_DIR_EMBED_SFX)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-sfx --wav-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --sound-format $(F_CONFIG_SOUND_FORMAT)
 
-$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_BUILD_DIR_EMBED_SFX)/% $(F_FAUR_DIR_BIN)/faur-build-embed-sfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-sfx --wav-file $< --gen-file $@ --var-suffix $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --sound-format $(F_CONFIG_SOUND_FORMAT)
 
