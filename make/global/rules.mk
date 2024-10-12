@@ -53,7 +53,7 @@ F_BUILD_FILES_SFX_WAV := $(shell find $(F_BUILD_DIR_EMBED_SFX) -type f -name "*.
 F_BUILD_FILES_SFX_C := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.c)
 F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
-F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
+F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "f_*.png")
 F_BUILD_FILES_FAUR_GFX_C := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c)
 F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h)
 
@@ -195,11 +195,11 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_BUILD_DIR_EMBED_SFX)/% $(F_FAUR_DIR_BIN)/faur-b
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.c : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 $(F_BUILD_DIR_GEN_FAUR_MEDIA)/%.h : $(F_FAUR_DIR_MEDIA)/% $(F_FAUR_DIR_BIN)/faur-build-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix _$(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
+	$(F_FAUR_DIR_BIN)/faur-build-embed-gfx --image-file $< --gen-file $@ --var-suffix $(notdir $(basename $<)) --color-key-hex $(F_CONFIG_COLOR_SPRITE_KEY) --screen-format $(F_CONFIG_SCREEN_FORMAT) --render-mode $(F_CONFIG_SCREEN_RENDER) --expose-extern
 
 #
 # Files that bundle up the generated code

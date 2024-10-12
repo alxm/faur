@@ -115,12 +115,12 @@ def process_h(VarName, ExposeExtern):
 // {g_tool.get_cmd()}
 //
 
-extern const FSprite* const f_gfx_{VarName};
+extern const FSprite* const FSprite_{VarName};
 """
 
     if ExposeExtern:
         content += f"""\
-extern const FSprite f__gfx_sprite__{VarName};
+extern const FSprite FSprite__{VarName};
 """
 
     return content
@@ -165,29 +165,29 @@ def process_c(VarName, ExposeExtern, ImageFile, ColorKey, ScreenFormat, RenderMo
             spans_fmt = ','.join([str(s) for s in spans])
 
             span_buffers += f"""\
-static const FSpriteWord f__gfx_spans__{VarName}__{frame_index}[] = {{{spans_fmt}}};
+static const FSpriteWord g_spans_{VarName}_{frame_index}[] = {{{spans_fmt}}};
 """
 
             span_vars += f"""
-        (FSpriteWord*)f__gfx_spans__{VarName}__{frame_index},"""
+        (FSpriteWord*)g_spans_{VarName}_{frame_index},"""
 
         texture_object = f"""\
 {span_buffers}
 static const struct {{
     FSpriteWord framesNum;
     FSpriteWord* spans[{frames_num}];
-}} f__gfx_texture__{VarName} = {{
+}} g_texture_{VarName} = {{
     {frames_num},
     {{{span_vars}
     }},
 }};"""
         texture_assignment = f"""\
-.u.textureConst = (const FPlatformTexture*)&f__gfx_texture__{VarName},"""
+.u.textureConst = (const FPlatformTexture*)&g_texture_{VarName},"""
     else:
         texture_object = f"""\
-static FPlatformTexture* f__gfx_texture__{VarName};"""
+static FPlatformTexture* g_texture_{VarName};"""
         texture_assignment = f"""\
-.u.textureIndirect = &f__gfx_texture__{VarName},"""
+.u.textureIndirect = &g_texture_{VarName},"""
 
     content = f"""\
 //
@@ -204,25 +204,25 @@ static FPlatformTexture* f__gfx_texture__{VarName};"""
     #error FAUR_ERROR: Invalid F_CONFIG_SCREEN_RENDER
 #endif
 
-static const FColorPixel f__gfx_buffer__{VarName}[{width} * {height} * {frames_num}] = {{
+static const FColorPixel g_buffer_{VarName}[{width} * {height} * {frames_num}] = {{
     {','.join(pixels_fmt)}
 }};
 
 {texture_object}
 
-{'' if ExposeExtern else 'static '}const FSprite f__gfx_sprite__{VarName} = {{
+{'' if ExposeExtern else 'static '}const FSprite FSprite__{VarName} = {{
     .pixels = {{
         .size = {{{width}, {height}}},
         .framesNum = {frames_num},
         .bufferLen = {width} * {height},
         .bufferSize = {width} * {height} * sizeof(FColorPixel),
         .flags = F_PIXELS__CONST,
-        .u.bufferConst = f__gfx_buffer__{VarName},
+        .u.bufferConst = g_buffer_{VarName},
     }},
     {texture_assignment}
 }};
 
-const FSprite* const f_gfx_{VarName} = &f__gfx_sprite__{VarName};
+const FSprite* const FSprite_{VarName} = &FSprite__{VarName};
 """
 
     return content

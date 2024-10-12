@@ -48,7 +48,7 @@ def process_h(VarName):
 // {g_tool.get_cmd()}
 //
 
-extern const FSample* const f_sfx_{VarName};
+extern const FSample* const FSample_{VarName};
 """
 
     return content
@@ -87,21 +87,21 @@ def process_c(VarName, WavFile, SoundFormat):
 #define F__GEN_BUFFER_SIZE__{VarName} {len(sfx_bytes)}
 #define F__GEN_BUFFER_DATA__{VarName} {format_bytes(sfx_bytes)}
 
-static const uint8_t f__sfx_buffer__{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {{F__GEN_BUFFER_DATA__{VarName}}};
+static const uint8_t g_buffer_{VarName}[F__GEN_BUFFER_SIZE__{VarName}] = {{F__GEN_BUFFER_DATA__{VarName}}};
 
 #if F_CONFIG_SOUND_SAMPLE_HAS_RUNTIME_OBJECT
-    static FPlatformSample* f__sfx_platform__{VarName};
+    static FPlatformSample* g_platform_{VarName};
 #endif
 
-static const FSample f__sfx_sample__{VarName} = {{
+static const FSample FSample__{VarName} = {{
     .size = F__GEN_BUFFER_SIZE__{VarName},
-    .buffer = f__sfx_buffer__{VarName},
+    .buffer = g_buffer_{VarName},
     #if F_CONFIG_SOUND_SAMPLE_HAS_RUNTIME_OBJECT
-        .u.platformIndirect = &f__sfx_platform__{VarName}
+        .u.platformIndirect = &g_platform_{VarName}
     #endif
 }};
 
-const FSample* const f_sfx_{VarName} = &f__sfx_sample__{VarName};
+const FSample* const FSample_{VarName} = &FSample__{VarName};
 """
 
     return content
