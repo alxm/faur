@@ -15,6 +15,7 @@ F_MAKE_PARALLEL_JOBS := 8
 #
 # To support app and author names with spaces
 #
+F_MAKE_SPACE :=
 F_MAKE_SPACE := $(F_MAKE_SPACE) $(F_MAKE_SPACE)
 F_MAKE_SPACE_DASH = $(subst $(F_MAKE_SPACE),-,$1)
 F_MAKE_SPACE_ESCAPE = $(subst $(F_MAKE_SPACE),\$(F_MAKE_SPACE),$1)

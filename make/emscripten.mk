@@ -10,6 +10,8 @@ F_MAKE_COMMAND_BUILD := \
     && emmake $(MAKE) \
         --file=$(firstword $(MAKEFILE_LIST)) \
         --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --no-builtin-rules \
+        --warn-undefined-variables \
         --keep-going
 
 F_CONFIG_APP_NAME_SUFFIX := .html
@@ -77,8 +79,10 @@ F_CONFIG_BUILD_LIBS += \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s WASM=1
 
-ifneq ($(F_CONFIG_DEBUG), 0)
-    F_CONFIG_BUILD_LIBS += -sASSERTIONS
+ifdef F_CONFIG_DEBUG
+    ifneq ($(F_CONFIG_DEBUG), 0)
+        F_CONFIG_BUILD_LIBS += -sASSERTIONS
+    endif
 endif
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
