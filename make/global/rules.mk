@@ -45,7 +45,11 @@ F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 # Embedded binary buffers
 #
 F_BUILD_DIR_EMBED_BIN := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/bin
-F_BUILD_FILES_BIN := $(shell find $(F_BUILD_DIR_EMBED_BIN) -type f)
+
+ifeq ($(shell test -d $(F_BUILD_DIR_EMBED_BIN) ; echo $$?), 0)
+    F_BUILD_FILES_BIN := $(shell find $(F_BUILD_DIR_EMBED_BIN) -type f)
+endif
+
 F_BUILD_FILES_BIN_C := $(F_BUILD_FILES_BIN:$(F_BUILD_DIR_EMBED_BIN)/%=$(F_BUILD_DIR_GEN_BIN)/%.c)
 F_BUILD_FILES_BIN_H := $(F_BUILD_FILES_BIN:$(F_BUILD_DIR_EMBED_BIN)/%=$(F_BUILD_DIR_GEN_BIN)/%.h)
 
@@ -53,12 +57,20 @@ F_BUILD_FILES_BIN_H := $(F_BUILD_FILES_BIN:$(F_BUILD_DIR_EMBED_BIN)/%=$(F_BUILD_
 # Embedded FSprite and FSample objects
 #
 F_BUILD_DIR_EMBED_GFX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/gfx
-F_BUILD_FILES_GFX_PNG := $(shell find $(F_BUILD_DIR_EMBED_GFX) -type f -name "*.png")
+
+ifeq ($(shell test -d $(F_BUILD_DIR_EMBED_GFX) ; echo $$?), 0)
+    F_BUILD_FILES_GFX_PNG := $(shell find $(F_BUILD_DIR_EMBED_GFX) -type f -name "*.png")
+endif
+
 F_BUILD_FILES_GFX_C := $(F_BUILD_FILES_GFX_PNG:$(F_BUILD_DIR_EMBED_GFX)/%=$(F_BUILD_DIR_GEN_GFX)/%.c)
 F_BUILD_FILES_GFX_H := $(F_BUILD_FILES_GFX_PNG:$(F_BUILD_DIR_EMBED_GFX)/%=$(F_BUILD_DIR_GEN_GFX)/%.h)
 
 F_BUILD_DIR_EMBED_SFX := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_EMBED)/sfx
-F_BUILD_FILES_SFX_WAV := $(shell find $(F_BUILD_DIR_EMBED_SFX) -type f -name "*.wav")
+
+ifeq ($(shell test -d $(F_BUILD_DIR_EMBED_SFX) ; echo $$?), 0)
+    F_BUILD_FILES_SFX_WAV := $(shell find $(F_BUILD_DIR_EMBED_SFX) -type f -name "*.wav")
+endif
+
 F_BUILD_FILES_SFX_C := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.c)
 F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_WAV:$(F_BUILD_DIR_EMBED_SFX)/%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
