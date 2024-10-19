@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_APP_NAME_SUFFIX := .exe
 F_CONFIG_BUILD_ATTRIBUTE_FORMAT_PRINTF := gnu_printf
@@ -21,7 +22,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_TOOL_CC := x86_64-w64-mingw32-gcc
 F_CONFIG_BUILD_TOOL_CPP := x86_64-w64-mingw32-g++
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :

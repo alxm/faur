@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 #
 # emsdk_env needs Bash
@@ -91,7 +92,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :

@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_LIB_PNG := 1
@@ -44,7 +45,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_TOOL_CC := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-gcc
 F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-g++
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 F_PND_DIR_BASE := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/pnd

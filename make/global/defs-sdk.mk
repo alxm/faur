@@ -1,3 +1,8 @@
+#
+# Include the user SDK paths, then conditionally-set the default paths
+#
+-include $(F_FAUR_FILE_SDK_MK)
+
 F_SDK_ARDUINO_DIR_15 ?= /opt/arduino/.arduino15
 F_SDK_ARDUINO_DIR_INSTALL ?= /opt/arduino/arduino-1.8.19
 F_SDK_ARDUINO_DIR_SKETCHBOOK ?= /opt/arduino/Arduino

@@ -1,9 +1,4 @@
 #
-# Unique build path
-#
-F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/targets/$(F_CONFIG_BUILD_UID)
-
-#
 # Source code dirs
 #
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
@@ -105,30 +100,11 @@ F_BUILD_FILE_GEN_INC_C := $(F_BUILD_DIR_GEN)/include.c
 F_BUILD_FILE_GEN_INC_H := $(F_BUILD_DIR_GEN)/include.h
 
 #
-# Application that gets built
+# Unique build path and application that gets built
 #
+F_BUILD_DIR := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/targets/$(F_CONFIG_BUILD_UID)
 F_BUILD_DIR_BIN := $(F_BUILD_DIR)/bin
 F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
-
-#
-# Used to run sub-make
-#
-F_MAKE_COMMAND := \
-    $(MAKE) \
-        --file=$(firstword $(MAKEFILE_LIST)) \
-        --jobs=$(F_MAKE_PARALLEL_JOBS) \
-        --no-builtin-rules \
-        --warn-undefined-variables \
-        --keep-going
-
-F_MAKE_COMMAND_SETUP ?= $(F_MAKE_COMMAND)
-F_MAKE_COMMAND_GEN ?= $(F_MAKE_COMMAND)
-F_MAKE_COMMAND_BUILD ?= $(F_MAKE_COMMAND)
-F_MAKE_COMMAND_POST ?= $(F_MAKE_COMMAND)
-
-F_MAKE_PRINT = printf "\033[97;40;1m[F\033[94;1ma\033[92;1mu\033[93;1mr] \033[97;1m$1\033[0m\n"
-F_MAKE_PRINT_START = $(call F_MAKE_PRINT,$1 start )
-F_MAKE_PRINT_DONE = $(call F_MAKE_PRINT,$1 done \033[0m\n)
 
 #
 # Public targets
@@ -180,7 +156,7 @@ f__target_run : all
 ifneq ($(F_CONFIG_SYSTEM_ARDUINO), 0)
     include $(FAUR_PATH)/make/global/rules-arduino.mk
 else
-    include $(FAUR_PATH)/make/global/rules-default.mk
+    include $(FAUR_PATH)/make/global/rules-standard.mk
 endif
 
 #
