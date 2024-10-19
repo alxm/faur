@@ -10,7 +10,7 @@ F_BUILD_PLATFORM := \
 #
 # Used to run sub-make
 #
-F_MAKE_PARALLEL_JOBS := 8
+F_MAKE_PARALLEL_JOBS := $(shell nproc)
 
 F_MAKE_COMMAND := \
     $(MAKE) \
