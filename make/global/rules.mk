@@ -23,18 +23,32 @@ F_BUILD_FILES_ECS_INIT_C := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_INIT_H := $(F_BUILD_DIR_GEN)/g_ecs_init.h
 
 #
-# Project root-relative paths to embedded files
+# Embedded files and directories
 #
-F_BUILD_FILES_EMBED_BIN_PATHS_C_REL := $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_C), $(shell find $(f:%=$(F_DIR_ROOT_FROM_MAKE)/%)))
-F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+F_BUILD_FILES_EMBED_INIT_C := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
-F_BUILD_FILES_EMBED_BIN_H := $(F_BUILD_FILES_EMBED_BIN_PATHS_C_ABS:%=%.h)
-F_BUILD_FILES_EMBED_BIN_H_TARGETS := $(F_BUILD_FILES_EMBED_BIN_H:%=$(F_BUILD_DIR_GEN_EMBED)/%)
+ifneq ($(F_CONFIG_FILES_EMBED_C)$(F_CONFIG_FILES_EMBED_BLOB), 00)
+    F_BUILD_FILES_EMBED_FS_BIN_REL := \
+        $(shell find $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_MEDIA) \
+            \( -type d \) -o \( -type f -a \
+            \( -name "*$(firstword $(F_CONFIG_FILES_EMBED_EXTS))" \
+            $(foreach ext, $(wordlist 2, $(words $(F_CONFIG_FILES_EMBED_EXTS)), \
+                $(F_CONFIG_FILES_EMBED_EXTS)), -o -name "*$(ext)") \) \) )
+    F_BUILD_FILES_EMBED_FS_BIN_ABS := $(F_BUILD_FILES_EMBED_FS_BIN_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
-#
-# The file that contains embedded file entries
-#
-F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
+    F_BUILD_FILES_EMBED_FS_H_REL := $(F_BUILD_FILES_EMBED_FS_BIN_ABS:%=$(F_BUILD_DIR_GEN_EMBED)/%.h)
+    F_BUILD_FILES_EMBED_FS_H_ABS := $(F_BUILD_FILES_EMBED_FS_H_REL:$(F_BUILD_DIR_GEN_EMBED)/%=%)
+endif
+
+ifeq ($(F_CONFIG_FILES_EMBED_BLOB), 0)
+    F_BUILD_FILES_EMBED_FS_BIN_REL :=
+    F_BUILD_FILES_EMBED_FS_BIN_ABS :=
+endif
+
+ifeq ($(F_CONFIG_FILES_EMBED_C), 0)
+    F_BUILD_FILES_EMBED_FS_H_REL :=
+    F_BUILD_FILES_EMBED_FS_H_ABS :=
+endif
 
 #
 # Embedded binary buffers
@@ -81,7 +95,7 @@ F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_MEDIA)/%=$
 #
 F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_ECS_INIT_C) \
-    $(F_BUILD_FILES_EMBED_INIT) \
+    $(F_BUILD_FILES_EMBED_INIT_C) \
     $(F_BUILD_FILES_BIN_C) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
@@ -171,11 +185,11 @@ $(F_BUILD_FILES_ECS_INIT_C) $(F_BUILD_FILES_ECS_INIT_H) : $(F_FAUR_DIR_BIN)/faur
 #
 $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-file
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-file --bin-file $< --gen-file $@ --original-path $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --var-prefix f__bin_
+	$(F_FAUR_DIR_BIN)/faur-build-embed-file --bin-file $< --gen-file $@ --original-path $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --var-prefix f__bin_ --exts $(F_CONFIG_FILES_EMBED_EXTS)
 
-$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_BIN_H_TARGETS) $(F_FAUR_DIR_BIN)/faur-build-embed-init
+$(F_BUILD_FILES_EMBED_INIT_C) : $(F_BUILD_FILES_EMBED_FS_H_REL) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-init --gen-file $@ --gen-dir $(F_BUILD_DIR_GEN_EMBED) --var-prefix f__bin_ --headers $(F_BUILD_FILES_EMBED_BIN_H)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-init --gen-file $@ --bin-dir $(F_DIR_ROOT_FROM_MAKE) --var-prefix f__bin_ --headers $(F_BUILD_FILES_EMBED_FS_H_ABS)
 
 #
 # Embedded buffers

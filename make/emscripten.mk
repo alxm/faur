@@ -68,13 +68,23 @@ else ifeq ($(F_CONFIG_LIB_SDL), 2)
         --use-port=sdl2_mixer
 endif
 
+include $(FAUR_PATH)/make/global/defs-config.mk
+
+F_BUILD_FILES_EMBED_EMSCRIPTEN_REL := \
+    $(shell find $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_MEDIA) \
+        -type f -a \
+        \( -name "*$(firstword $(F_CONFIG_FILES_EMBED_EXTS))" \
+        $(foreach ext, $(wordlist 2, $(words $(F_CONFIG_FILES_EMBED_EXTS)), \
+            $(F_CONFIG_FILES_EMBED_EXTS)), -o -name "*$(ext)") \) )
+F_BUILD_FILES_EMBED_EMSCRIPTEN_ABS := $(F_BUILD_FILES_EMBED_EMSCRIPTEN_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
     $(F_EMSCRIPTEN_OPTIONS) \
     --shell-file $(F_EMSCRIPTEN_SHELL) \
     -lidbfs.js \
     --use-preload-plugins \
-    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_EMSCRIPTEN), \
+    $(foreach f, $(F_BUILD_FILES_EMBED_EMSCRIPTEN_ABS), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
     -s FORCE_FILESYSTEM \
     -s ALLOW_MEMORY_GROWTH=1 \
@@ -92,7 +102,6 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension
 
-include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :

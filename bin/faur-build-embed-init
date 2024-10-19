@@ -21,11 +21,11 @@ import os
 
 from faur.tool.tool import FTool
 
-g_tool = FTool('gen-file gen-dir var-prefix [headers...]')
+g_tool = FTool('gen-file bin-dir var-prefix [headers...]')
 
 def main():
     c_file = g_tool.args.get('gen-file')
-    gen_dir = g_tool.args.get('gen-dir')
+    bin_dir = g_tool.args.get('bin-dir')
     cvar_prefix = g_tool.args.get('var-prefix')
     h_files = g_tool.args.get('headers')
 
@@ -33,16 +33,17 @@ def main():
     dirs = []
     files = []
 
-    if os.path.isdir(gen_dir):
-        for h in h_files:
-            includes.append(f'#include "embed/{h}"')
+    for h in h_files:
+        includes.append(f'#include "embed/{h}"')
 
-            no_h = h[ : -2]
+        no_h = h[ : -2]
 
-            if os.path.isdir(f'{gen_dir}/{no_h}'):
-                dirs.append(g_tool.sanitize_c_var(no_h))
-            else:
-                files.append(g_tool.sanitize_c_var(no_h))
+        if os.path.isdir(f'{bin_dir}/{no_h}'):
+            dirs.append(g_tool.sanitize_c_var(no_h))
+        elif os.path.isfile(f'{bin_dir}/{no_h}'):
+            files.append(g_tool.sanitize_c_var(no_h))
+        else:
+            g_tool.out.error(f'{bin_dir}/{no_h} is an invalid file')
 
     if len(includes) > 0:
         includes.insert(0, '\n')
