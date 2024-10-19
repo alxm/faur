@@ -121,6 +121,11 @@ F_BUILD_DIR_BIN := $(F_BUILD_DIR)/bin
 F_BUILD_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
 
 #
+# Default files blob
+#
+F_BUILD_FILE_BLOB := $(F_BUILD_DIR_BIN)/$(F_CONFIG_FILES_EMBED_BLOB_FILE)
+
+#
 # Public targets
 #
 all :
@@ -156,6 +161,10 @@ f__target_build : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
 
 f__target_post :
 
+ifneq ($(F_CONFIG_FILES_EMBED_BLOB), 0)
+    f__target_post : $(F_BUILD_FILE_BLOB)
+endif
+
 f__target_run : all
 
 #
@@ -183,6 +192,10 @@ $(F_BUILD_FILES_ECS_INIT_C) $(F_BUILD_FILES_ECS_INIT_H) : $(F_FAUR_DIR_BIN)/faur
 #
 # Embedded files
 #
+$(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_FS_BIN_REL) $(F_FAUR_DIR_BIN)/faur-blob
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-blob --blob-file $@ --root-dir $(F_DIR_ROOT_FROM_MAKE) --files $(F_BUILD_FILES_EMBED_FS_BIN_ABS)
+
 $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-file
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-build-embed-file --bin-file $< --gen-file $@ --original-path $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --var-prefix f__bin_ --exts $(F_CONFIG_FILES_EMBED_EXTS)

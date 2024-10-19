@@ -5,11 +5,6 @@ F_BUILD_LINK_BIN_MEDIA := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_MEDIA)
 F_BUILD_LINK_BIN_SCREENSHOTS := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_SCREENSHOTS)
 
 #
-# Default files blob
-#
-F_BUILD_FILE_BLOB := $(F_BUILD_DIR_BIN)/$(F_CONFIG_FILES_EMBED_BLOB_FILE)
-
-#
 # Object dirs
 #
 F_BUILD_DIR_FAUR_O := $(F_BUILD_DIR)/obj/faur
@@ -132,10 +127,6 @@ ifdef F_BUILD_DIR_STATIC
     f__target_post : copystatic
 endif
 
-ifneq ($(F_CONFIG_FILES_EMBED_BLOB), 0)
-    f__target_post : $(F_BUILD_FILE_BLOB)
-endif
-
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
 	rsync \
@@ -170,10 +161,6 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 	@ mkdir -p $(@D)
 	@ mkdir -p $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS)
 	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
-
-$(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_FS_BIN_REL) $(F_FAUR_DIR_BIN)/faur-blob
-	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-blob --blob-file $@ --root-dir $(F_DIR_ROOT_FROM_MAKE) --files $(F_BUILD_FILES_EMBED_FS_BIN_ABS)
 
 #
 # Project source code, including generated code
