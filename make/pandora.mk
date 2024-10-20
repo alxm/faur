@@ -50,7 +50,7 @@ include $(FAUR_PATH)/make/global/rules.mk
 
 F_PND_DIR_BASE := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/pnd
 F_PND_DIR_STAGE := $(F_BUILD_DIR)/pnd
-F_PND_FILE := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME)).pnd
+F_PND_FILE := $(F_CONFIG_APP_AUTHOR).$(F_CONFIG_APP_NAME).pnd
 F_PND_FILE_PATH := $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 
 ifeq ($(shell test -d $(F_PND_DIR_BASE) ; echo $$?), 0)
