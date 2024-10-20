@@ -75,8 +75,7 @@ FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
     FEmbeddedDir* d = f_mem_malloc(sizeof(FEmbeddedDir));
 
     d->path = Path;
-    d->size = Size;
-    d->entries = f_mem_malloc(Size * sizeof(const char*));
+    d->entries = f_mem_mallocz((Size + 1) * sizeof(const char*));
 
     if(g_dirs == NULL) {
         g_dirs = f_hash_newStr(F__EMBED_HASH_SLOTS, false);

@@ -66,14 +66,12 @@ static const char* {prefix}{var}__entries[] = {{{data}
 
 static const FEmbeddedDir {prefix}{var} = {{
     "{path}",
-    {size},
     {prefix}{var}__entries,
 }};
 """.format(cmd = g_tool.get_cmd(),
            prefix = CVarPrefix,
            var = g_tool.sanitize_c_var(OriginalPath),
            path = OriginalPath,
-           size = len(entries),
            data = ''.join([f'\n    "{f}",' for f in entries]))
 
     return content
