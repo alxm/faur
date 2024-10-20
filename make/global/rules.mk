@@ -198,11 +198,11 @@ $(F_BUILD_FILE_BLOB) : $(F_BUILD_FILES_EMBED_FS_BIN_REL) $(F_FAUR_DIR_BIN)/faur-
 
 $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-build-embed-file
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-file --bin-file $< --gen-file $@ --original-path $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --var-prefix f__bin_ --exts $(F_CONFIG_FILES_EMBED_EXTS)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-file --bin-file $< --gen-file $@ --original-path $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) --exts $(F_CONFIG_FILES_EMBED_EXTS)
 
 $(F_BUILD_FILES_EMBED_INIT_C) : $(F_BUILD_FILES_EMBED_FS_H_REL) $(F_FAUR_DIR_BIN)/faur-build-embed-init
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-build-embed-init --gen-file $@ --bin-dir $(F_DIR_ROOT_FROM_MAKE) --var-prefix f__bin_ --headers $(F_BUILD_FILES_EMBED_FS_H_ABS)
+	$(F_FAUR_DIR_BIN)/faur-build-embed-init --gen-file $@ --bin-dir $(F_DIR_ROOT_FROM_MAKE) --headers $(F_BUILD_FILES_EMBED_FS_H_ABS)
 
 #
 # Embedded buffers
