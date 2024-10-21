@@ -6,29 +6,29 @@ Features include software or accelerated 2D graphics, abstractions for inputs an
 
 Faur builds native on Linux and cross-compiles for Web, Windows, and some embedded devices like the GP2X and Gamebuino handhelds. The build system uses GNU Make 4.1 and Python 3.6 or later.
 
-## Install on Debian-based Linux
+## Install on Debian and Create a New Project
 
 ```sh
-$ sudo apt install build-essential git python3 python3-pil
-$ sudo apt install libsdl2-dev libsdl2-mixer-dev libpng-dev
+$ sudo apt install build-essential git
+$ sudo apt install python3 python3-pil
+$ sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+$
+$ cd $HOME
 $ git clone https://github.com/alxm/faur.git
+$
+$ export FAUR_PATH=$HOME/faur
+$ export PATH=$PATH:$FAUR_PATH/bin
+$
+$ faur-new --name hello
+$ cd hello/build/make/
+$ make run
 ```
 
-## Create New Project
+![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")<br>*Move the square with the arrow keys or with a game controller.*
+
+### Generated Project Files
 
 ```sh
-$ faur/bin/faur-new --name hello
-$ cd hello/build/make
-$ make run FAUR_PATH=../../../faur
-```
-
-![Hello, World screenshot](./media/hello.gif "Hello, World screenshot")
-
-Move the square with the arrow keys or with a game controller.
-
-### Project Files
-
-```
 $ tree hello/
 
 hello/
@@ -39,7 +39,7 @@ hello/
     └── main.c
 ```
 
-### hello/src/main.c
+#### hello/src/main.c
 
 ```c
 #include <faur.h>
@@ -100,7 +100,7 @@ void f_main(void)
 }
 ```
 
-### hello/build/make/Makefile
+#### hello/build/make/Makefile
 
 ```make
 F_CONFIG_APP_AUTHOR := <name>
