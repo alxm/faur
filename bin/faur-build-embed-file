@@ -21,25 +21,37 @@ import os
 
 from faur.tool.tool import FTool
 
-g_tool = FTool('bin-file gen-file original-path var-prefix')
+g_tool = FTool('bin-file gen-file original-path exts...')
 
 def main():
     bin_file = g_tool.args.get('bin-file')
     h_file = g_tool.args.get('gen-file')
     original_path = g_tool.args.get('original-path')
-    cvar_prefix = g_tool.args.get('var-prefix')
+    exts = g_tool.args.get('exts')
 
     if os.path.isdir(bin_file):
-        content = process_dir(bin_file, cvar_prefix, original_path)
+        content = process_dir(bin_file, original_path, exts)
     elif os.path.isfile(bin_file):
-        content = process_file(bin_file, cvar_prefix, original_path)
+        content = process_file(bin_file, original_path, exts)
     else:
         g_tool.out.error(f'{bin_file} is an invalid file')
 
     g_tool.files.write_text(h_file, content)
 
-def process_dir(BinFile, CVarPrefix, OriginalPath):
-    entries = g_tool.files.list_dir(BinFile)
+def process_dir(BinFile, OriginalPath, Exts):
+    all_entries = g_tool.files.list_dir(BinFile)
+    entries = []
+
+    for e in all_entries:
+        full_path = f'{BinFile}/{e}'
+
+        if os.path.isdir(full_path):
+            entries.append(e)
+        elif os.path.isfile(full_path):
+            _, ext = os.path.splitext(e)
+
+            if ext in Exts:
+                entries.append(e)
 
     content = """\
 //
@@ -47,25 +59,27 @@ def process_dir(BinFile, CVarPrefix, OriginalPath):
 // {cmd}
 //
 
-static const char* {prefix}{var}__entries[{size}] = {{
-{data}
+static const char* g_entries_{var}[] = {{{data}
+    NULL
 }};
 
-static const FEmbeddedDir {prefix}{var} = {{
+static const FEmbeddedDir g_dir_{var} = {{
     "{path}",
-    {size},
-    {prefix}{var}__entries,
+    g_entries_{var},
 }};
 """.format(cmd = g_tool.get_cmd(),
-           prefix = CVarPrefix,
            var = g_tool.sanitize_c_var(OriginalPath),
            path = OriginalPath,
-           size = len(entries),
-           data = '\n'.join([f'    "{f}",' for f in entries]))
+           data = ''.join([f'\n    "{f}",' for f in entries]))
 
     return content
 
-def process_file(BinFile, CVarPrefix, OriginalPath):
+def process_file(BinFile, OriginalPath, Exts):
+    _, ext = os.path.splitext(BinFile)
+
+    if ext not in Exts:
+        g_tool.out.error(f'{BinFile} has an invalid type')
+
     bin_bytes = g_tool.files.read_bytes(BinFile)
 
     content = """\
@@ -74,15 +88,14 @@ def process_file(BinFile, CVarPrefix, OriginalPath):
 // {cmd}
 //
 
-static const uint8_t {prefix}{var}__buffer[{size}] F__ATTRIBUTE_ALIGN(F_BLOB__BUFFER_ALIGN_MAX) = {{{data}}};
+static const uint8_t g_buffer_{var}[{size}] F__ATTRIBUTE_ALIGN(F_BLOB__BUFFER_ALIGN_MAX) = {{{data}}};
 
-static const FEmbeddedFile {prefix}{var} = {{
+static const FEmbeddedFile g_file_{var} = {{
     "{path}",
     {size},
-    {prefix}{var}__buffer,
+    g_buffer_{var},
 }};
 """.format(cmd = g_tool.get_cmd(),
-           prefix = CVarPrefix,
            var = g_tool.sanitize_c_var(OriginalPath),
            path = OriginalPath,
            size = len(bin_bytes),

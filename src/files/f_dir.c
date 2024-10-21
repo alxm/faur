@@ -25,8 +25,8 @@ static FList* dirEmbeddedOpen(FPath* Path)
 
     FList* files = f_list_new();
 
-    for(size_t e = data->size; e--; ) {
-        f_list_addLast(files, f_path_newf("%s/%s", path, data->entries[e]));
+    for(const char** entry = data->entries; *entry != NULL; entry++) {
+        f_list_addLast(files, f_path_newf("%s/%s", path, *entry));
     }
 
     return files;

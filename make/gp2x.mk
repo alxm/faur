@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_APP_NAME_SUFFIX := .gpe
 F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC := 0
@@ -50,5 +51,5 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
 F_CONFIG_BUILD_TOOL_CC := $(F_SDK_OPEN2X_TOOLCHAIN)/bin/arm-open2x-linux-gcc
 F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_OPEN2X_TOOLCHAIN)/bin/arm-open2x-linux-g++
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk

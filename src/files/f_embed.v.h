@@ -30,7 +30,6 @@ typedef struct FFileEmbedded FFileEmbedded;
 
 struct FEmbeddedDir {
     const char* path;
-    size_t size;
     const char** entries;
 };
 

@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 #
 # emsdk_env needs Bash
@@ -10,13 +11,15 @@ F_MAKE_COMMAND_BUILD := \
     && emmake $(MAKE) \
         --file=$(firstword $(MAKEFILE_LIST)) \
         --jobs=$(F_MAKE_PARALLEL_JOBS) \
+        --no-builtin-rules \
+        --warn-undefined-variables \
         --keep-going
 
 F_CONFIG_APP_NAME_SUFFIX := .html
 F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu23
 F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++23
 F_CONFIG_BUILD_OPT := 3
-F_CONFIG_FILES_STORAGE_PREFIX := /faur-$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))-idbfs/
+F_CONFIG_FILES_STORAGE_PREFIX := /faur-$(F_CONFIG_APP_NAME)-idbfs/
 F_CONFIG_LIB_PNG := 1
 F_CONFIG_LIB_SDL ?= 2
 F_CONFIG_LIB_SDL_MIXER_CHUNK_SIZE ?= 2048
@@ -65,20 +68,32 @@ else ifeq ($(F_CONFIG_LIB_SDL), 2)
         --use-port=sdl2_mixer
 endif
 
+include $(FAUR_PATH)/make/global/defs-config.mk
+
+F_BUILD_FILES_EMBED_EMSCRIPTEN_REL := \
+    $(shell find $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_MEDIA) \
+        -type f -a \
+        \( -name "*$(firstword $(F_CONFIG_FILES_EMBED_EXTS))" \
+        $(foreach ext, $(wordlist 2, $(words $(F_CONFIG_FILES_EMBED_EXTS)), \
+            $(F_CONFIG_FILES_EMBED_EXTS)), -o -name "*$(ext)") \) )
+F_BUILD_FILES_EMBED_EMSCRIPTEN_ABS := $(F_BUILD_FILES_EMBED_EMSCRIPTEN_REL:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
     $(F_EMSCRIPTEN_OPTIONS) \
     --shell-file $(F_EMSCRIPTEN_SHELL) \
     -lidbfs.js \
     --use-preload-plugins \
-    $(foreach f, $(F_CONFIG_FILES_EMBED_PATHS_EMSCRIPTEN), \
+    $(foreach f, $(F_BUILD_FILES_EMBED_EMSCRIPTEN_ABS), \
         --preload-file $(F_DIR_ROOT_FROM_MAKE)/$(f)@$(f)) \
     -s FORCE_FILESYSTEM \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s WASM=1
 
-ifneq ($(F_CONFIG_DEBUG), 0)
-    F_CONFIG_BUILD_LIBS += -sASSERTIONS
+ifdef F_CONFIG_DEBUG
+    ifneq ($(F_CONFIG_DEBUG), 0)
+        F_CONFIG_BUILD_LIBS += -sASSERTIONS
+    endif
 endif
 
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
@@ -87,7 +102,6 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP_OVERRIDE += \
     -Wno-dollar-in-identifier-extension
 
-include $(FAUR_PATH)/make/global/config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :

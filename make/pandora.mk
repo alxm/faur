@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_LIB_PNG := 1
@@ -44,12 +45,12 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
 F_CONFIG_BUILD_TOOL_CC := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-gcc
 F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_PANDORA_TOOLCHAIN)/bin/arm-none-linux-gnueabi-g++
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 F_PND_DIR_BASE := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/pnd
 F_PND_DIR_STAGE := $(F_BUILD_DIR)/pnd
-F_PND_FILE := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME)).pnd
+F_PND_FILE := $(F_CONFIG_APP_AUTHOR).$(F_CONFIG_APP_NAME).pnd
 F_PND_FILE_PATH := $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 
 ifeq ($(shell test -d $(F_PND_DIR_BASE) ; echo $$?), 0)

@@ -1,6 +1,6 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
-F_CONFIG_BUILD_OPT ?= 0
 F_CONFIG_DEBUG ?= 1
 F_CONFIG_LIB_PNG ?= 1
 F_CONFIG_LIB_SDL ?= 2
@@ -25,7 +25,7 @@ F_CONFIG_BUILD_FLAGS_SHARED_C_AND_CPP += \
     -fpie \
     -fsanitize=undefined
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_post : $(F_FAUR_FILE_GEANY_TAGS)

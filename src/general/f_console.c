@@ -20,7 +20,7 @@
 #include <faur.v.h>
 
 #if F_CONFIG_TRAIT_CONSOLE
-#include <faur_v/faur_gfx/g_console_19x7.png.h>
+#include <faur_v/faur_gfx/f_console_19x7.png.h>
 
 #include <unistd.h>
 
@@ -178,7 +178,7 @@ void f_console__draw(void)
     }
 
     {
-        int tagWidth = f_sprite_sizeGetWidth(f_gfx__g_console_19x7);
+        int tagWidth = f_sprite_sizeGetWidth(FSprite_f_console_19x7);
 
         f_font_coordsSet(
             1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY() + 2);
@@ -186,12 +186,12 @@ void f_console__draw(void)
 
         F_LIST_ITERATE(g_lines, FConsoleLine*, l) {
             f_color_fillBlitSet(false);
-            f_sprite_blit(f_gfx__g_console_19x7,
+            f_sprite_blit(FSprite_f_console_19x7,
                           (unsigned)l->source,
                           1,
                           f_font_coordsGetY());
 
-            f_sprite_blit(f_gfx__g_console_19x7,
+            f_sprite_blit(FSprite_f_console_19x7,
                           (unsigned)F_OUT__SOURCE_NUM + (unsigned)l->type,
                           1 + tagWidth + 1,
                           f_font_coordsGetY());

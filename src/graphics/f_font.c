@@ -18,17 +18,17 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
-#include <faur_v/faur_gfx/g_font_6x8.png.h>
-#include <faur_v/faur_gfx/g_font_keyed_6x8.png.h>
+#include <faur_v/faur_gfx/f_font_6x8.png.h>
+#include <faur_v/faur_gfx/f_font_keyed_6x8.png.h>
 
 #define F__CHAR_START 32
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
 #define F__LINE_SPACING 1
 
 static const FFont* const g_defaultFonts[F_FONT__ID_NUM] = {
-    [F_FONT__ID_BLOCK] = &f__gfx_sprite___g_font_6x8,
+    [F_FONT__ID_BLOCK] = &FSprite__f_font_6x8,
     #if !F_CONFIG_TRAIT_LOW_MEM
-        [F_FONT__ID_KEYED] = &f__gfx_sprite___g_font_keyed_6x8,
+        [F_FONT__ID_KEYED] = &FSprite__f_font_keyed_6x8,
     #endif
 };
 

@@ -21,7 +21,9 @@
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
-static FBlob* g_blob;
+#if F_CONFIG_FILES_EMBED_BLOB
+    static FBlob* g_blob;
+#endif
 
 #if F_CONFIG_TRAIT_LOW_MEM
     #define F__EMBED_HASH_SLOTS 8
@@ -47,16 +49,16 @@ static void f_embed__init(void)
         f_hash_add(g_files, (*f)->path, (void*)(*f));
     }
 
-    if(strlen(F_CONFIG_FILES_EMBED_BLOB) > 0
-        && f_path_exists(F_CONFIG_FILES_EMBED_BLOB, F_PATH_FILE)) {
-
-        g_blob = f_blob_new(F_CONFIG_FILES_EMBED_BLOB);
-    }
+    #if F_CONFIG_FILES_EMBED_BLOB
+        g_blob = f_blob_new(F_CONFIG_FILES_EMBED_BLOB_FILE);
+    #endif
 }
 
 static void f_embed__uninit(void)
 {
-    f_blob_free(g_blob);
+    #if F_CONFIG_FILES_EMBED_BLOB
+        f_blob_free(g_blob);
+    #endif
 
     f_hash_free(g_dirs);
     f_hash_free(g_files);
@@ -73,8 +75,7 @@ FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
     FEmbeddedDir* d = f_mem_malloc(sizeof(FEmbeddedDir));
 
     d->path = Path;
-    d->size = Size;
-    d->entries = f_mem_malloc(Size * sizeof(const char*));
+    d->entries = f_mem_mallocz((Size + 1) * sizeof(const char*));
 
     if(g_dirs == NULL) {
         g_dirs = f_hash_newStr(F__EMBED_HASH_SLOTS, false);

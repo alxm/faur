@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_APP_NAME_SUFFIX := .bin
 F_CONFIG_DEBUG_FATAL := F_DEBUG_FATAL_SPIN
@@ -18,7 +19,7 @@ F_CONFIG_TRAIT_CONSOLE_TOGGLE := F_BUTTON_A,F_BUTTON_B,F_BUTTON_START,F_BUTTON_S
 F_CONFIG_TRAIT_CUSTOM_MAIN := 1
 F_CONFIG_TRAIT_SCREENSHOTS := 0
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
 
 f__target_run :

@@ -1,4 +1,5 @@
-include $(FAUR_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs-first.mk
+include $(FAUR_PATH)/make/global/defs-sdk.mk
 
 F_CONFIG_APP_NAME_SUFFIX := .gpe
 F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC := 0
@@ -54,5 +55,5 @@ F_CONFIG_BUILD_FLAGS_C_OVERRIDE += \
 F_CONFIG_BUILD_TOOL_CC := $(F_SDK_CAANOO_TOOLCHAIN)/bin/arm-gph-linux-gnueabi-gcc
 F_CONFIG_BUILD_TOOL_CPP := $(F_SDK_CAANOO_TOOLCHAIN)/bin/arm-gph-linux-gnueabi-g++
 
-include $(FAUR_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/defs-config.mk
 include $(FAUR_PATH)/make/global/rules.mk
